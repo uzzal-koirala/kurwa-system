@@ -1,3 +1,4 @@
+// Updated database connection path for production setup
 <?php
 $host = "localhost";
 $user = "root";
