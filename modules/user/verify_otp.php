@@ -56,6 +56,9 @@ if (isset($_POST['resend'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verify OTP - Kurwa System</title>
 
+   <!-- External stylesheet for signup page -->
+  <link rel="stylesheet" href="../../assets/css/otp.css">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -63,52 +66,7 @@ if (isset($_POST['resend'])) {
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #E8EAF6;
-    }
-
-    .otp-input {
-      width: 3rem;
-      height: 3rem;
-      text-align: center;
-      font-size: 1.2rem;
-      border: 2px solid #4C5BFF;
-      border-radius: 6px;
-      outline: none;
-      transition: 0.2s;
-    }
-
-    .otp-input:focus {
-      border-color: #2430D8;
-      box-shadow: 0 0 0 2px rgba(47, 60, 255, 0.3);
-    }
-
-    .otp-error {
-      border-color: #FF4C4C !important;
-      box-shadow: 0 0 0 1.5px rgba(255, 76, 76, 0.5) !important;
-    }
-
-    .btn-primary {
-      background-color: #2F3CFF;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background-color: #2430D8;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(36, 48, 216, 0.25);
-    }
-
-    .btn-secondary {
-      color: #2F3CFF;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-      text-decoration: underline;
-    }
+   
   </style>
 </head>
 
@@ -140,34 +98,7 @@ if (isset($_POST['resend'])) {
     </div>
   </div>
 
-  <script>
-    const inputs = document.querySelectorAll(".otp-input");
+<script src="../../assets/js/otp.js"></script>
 
-    // Auto move cursor between boxes
-    inputs.forEach((input, index) => {
-      input.addEventListener("input", (e) => {
-        const value = e.target.value;
-        if (value.length === 1 && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-      });
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace" && input.value === "" && index > 0) {
-          inputs[index - 1].focus();
-        }
-      });
-    });
-
-    // Paste full OTP at once
-    inputs[0].addEventListener("paste", (e) => {
-      e.preventDefault();
-      const pasteData = (e.clipboardData || window.clipboardData).getData("text").trim();
-      if (pasteData.length === inputs.length) {
-        pasteData.split("").forEach((char, i) => {
-          if (inputs[i]) inputs[i].value = char;
-        });
-      }
-    });
-  </script>
 </body>
 </html>

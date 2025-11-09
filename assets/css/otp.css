@@ -1,39 +1,7 @@
-
-/* Global style start here */
-    body {
+ body {
       font-family: 'Poppins', sans-serif;
       background-color: #E8EAF6;
     }
-
-/*-----Global style end here-----*/
-
-
-
-/* Signup page style start here */
-    input:focus {
-      border-color: #4C5BFF;
-      box-shadow: 0 0 0 1.5px #4C5BFF;
-    }
-    .btn-primary {
-      background-color: #2F3CFF;
-      transition: all 0.3s ease;
-    }
-    .btn-primary:hover {
-      background-color: #2430D8;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(36, 48, 216, 0.25);
-    }
-
-    /* Responsive heading size */
-    @media (min-width: 768px) {
-      .heading-desktop {
-        font-size: 30px !important;
-      }
-    }
-
-/*------Signup page style end here------ */    
-
-/* OTP verification page style start here */
 
     .otp-input {
       width: 3rem;
@@ -76,5 +44,3 @@
     .btn-secondary:hover {
       text-decoration: underline;
     }
-
-    /*-----OTP verification page style end here-----*/

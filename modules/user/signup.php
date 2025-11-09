@@ -16,8 +16,6 @@
   <!-- External stylesheet for signup page -->
   <link rel="stylesheet" href="../../assets/css/style.css">
 
-
-  
 </head>
 
 <body class="flex items-center justify-center min-h-screen px-4">
