@@ -1,4 +1,7 @@
 <?php
+// Define absolute paths for reliable inclusion
+define('SITE_ROOT', dirname(dirname(__DIR__)));
+define('INC_PATH', SITE_ROOT . '/includes');
 // Database credentials
 $host = "localhost";
 $user = "root";

@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../includes/core/config.php';
+require_once '../../includes/core/auth_check.php';
 
 $current_page = 'food_orders';
 $user_id = $_SESSION['user_id'];
@@ -33,7 +33,7 @@ $canteens_res = $conn->query($canteens_sql);
 </head>
 <body>
 
-<?php include '../../includes/sidebar.php'; ?>
+<?php include '../../includes/components/sidebar.php'; ?>
 
 <div class="main-content" id="mainContent">
     <button class="mobile-menu-btn" id="openSidebar" type="button">
@@ -149,7 +149,7 @@ $canteens_res = $conn->query($canteens_sql);
         document.getElementById('foodSearch').value = ''; // Clear search when switching view
 
         // Fetch food items
-        fetch(`fetch_menu.php?canteen_id=${canteenId}`)
+        fetch(`handlers/fetch_menu.php?canteen_id=${canteenId}`)
             .then(response => response.json())
             .then(data => {
                 document.getElementById('menuLoader').style.display = 'none';

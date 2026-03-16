@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../includes/core/config.php';
+require_once '../../includes/core/auth_check.php';
 
 $current_page = 'payments';
 $user_id = $_SESSION['user_id'];
@@ -43,24 +43,16 @@ if ($tx_stmt) {
 </head>
 <body>
 
-<?php include '../../includes/sidebar.php'; ?>
+<?php include '../../includes/components/sidebar.php'; ?>
 
 <div class="main-content" id="mainContent">
-    <header class="dashboard-header">
-        <div class="header-left">
-            <h1>Payments & Topup</h1>
-            <p>Manage your wallet balance and view transaction history</p>
-        </div>
-        <div class="header-right">
-            <div class="user-display">
-                <div class="info">
-                    <h4><?= htmlspecialchars($user_name) ?></h4>
-                    <p>Wallet Verified</p>
-                </div>
-                <img src="https://ui-avatars.com/api/?name=<?= urlencode($user_name) ?>&background=3b82f6&color=fff" alt="User">
-            </div>
-        </div>
-    </header>
+    
+    <!-- Global Header Section -->
+    <?php 
+    $page_title = "Payments & Wallet";
+    $page_subtitle = "Manage your balance and transactions";
+    include "../../includes/components/user_header.php"; 
+    ?>
 
     <div class="payments-container">
         <!-- Top Section: Balance & Topup Form -->
@@ -116,10 +108,6 @@ if ($tx_stmt) {
                     <div class="method-item active" onclick="setMethod(this, 'esewa')">
                         <img src="../../assets/images/esewa.png" alt="eSewa">
                         <span>eSewa</span>
-                    </div>
-                    <div class="method-item" onclick="setMethod(this, 'khalti')">
-                        <img src="../../assets/images/khalti.png" alt="Khalti">
-                        <span>Khalti</span>
                     </div>
                     <div class="method-item" onclick="setMethod(this, 'iphay')">
                          <i class="ri-bank-card-line" style="font-size: 24px; color: #2F3CFF;"></i>
@@ -182,7 +170,12 @@ if ($tx_stmt) {
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="status-tag success">Completed</span>
+                                    <?php 
+                                        $status_class = 'pending';
+                                        if ($tx['status'] === 'completed') $status_class = 'success';
+                                        if ($tx['status'] === 'failed' || $tx['status'] === 'canceled') $status_class = 'failed';
+                                    ?>
+                                    <span class="status-tag <?= $status_class ?>"><?= ucfirst($tx['status']) ?></span>
                                 </td>
                                 <td class="amount-cell <?= $tx['amount'] > 0 ? 'positive' : 'negative' ?>">
                                     <?= $tx['amount'] > 0 ? '+' : '' ?>Rs. <?= number_format(abs($tx['amount']), 2) ?>
@@ -192,6 +185,38 @@ if ($tx_stmt) {
                     <?php endif; ?>
                 </tbody>
             </table>
+
+            <!-- Mobile Transaction Cards -->
+            <div class="transaction-cards">
+                <?php if (empty($transactions)): ?>
+                    <div style="text-align: center; padding: 20px; color: #a0aec0;">No transactions found.</div>
+                <?php else: ?>
+                    <?php foreach ($transactions as $tx): ?>
+                        <div class="transaction-card">
+                            <div class="t-card-icon <?= $tx['amount'] > 0 ? 'topup' : 'payment' ?>" style="background: <?= $tx['amount'] > 0 ? '#e6fffa' : '#fff5f5' ?>; color: <?= $tx['amount'] > 0 ? '#38b2ac' : '#f56565' ?>;">
+                                <i class="<?= $tx['amount'] > 0 ? 'ri-arrow-down-line' : 'ri-arrow-up-line' ?>"></i>
+                            </div>
+                            <div class="t-card-info">
+                                <h4><?= ucfirst($tx['type']) ?></h4>
+                                <p><?= htmlspecialchars($tx['description']) ?></p>
+                                <p style="font-size: 10px; opacity: 0.7;"><?= date('M d, h:i A', strtotime($tx['created_at'])) ?></p>
+                            </div>
+                            <div class="t-card-amount">
+                                <span class="val <?= $tx['amount'] > 0 ? 'positive' : 'negative' ?>" style="color: <?= $tx['amount'] > 0 ? '#10b981' : '#ef4444' ?>;">
+                                    <?= $tx['amount'] > 0 ? '+' : '-' ?>Rs. <?= number_format(abs($tx['amount']), 2) ?>
+                                </span>
+                                <?php 
+                                    $status_class = 'pending';
+                                    $status_bg = '#fef9c3'; $status_color = '#854d0e';
+                                    if ($tx['status'] === 'completed') { $status_class = 'success'; $status_bg = '#ecfdf5'; $status_color = '#059669'; }
+                                    if ($tx['status'] === 'failed' || $tx['status'] === 'canceled') { $status_class = 'failed'; $status_bg = '#fee2e2'; $status_color = '#991b1b'; }
+                                ?>
+                                <span class="status <?= $status_class ?>" style="background: <?= $status_bg ?>; color: <?= $status_color ?>; font-size: 9px; padding: 2px 6px; border-radius: 4px;"><?= ucfirst($tx['status']) ?></span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -220,6 +245,8 @@ if ($tx_stmt) {
 
     function processTopUp() {
         const amount = document.getElementById('topupAmount').value;
+        const method = document.querySelector('.method-item.active span').innerText.toLowerCase();
+
         if (amount < 100) {
             alert('Minimum top up amount is Rs. 100');
             return;
@@ -228,14 +255,77 @@ if ($tx_stmt) {
         const btn = document.querySelector('.topup-submit-btn');
         const originalHtml = btn.innerHTML;
         
-        btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> redirecting to payment gateway...';
+        btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> initiating payment...';
         btn.disabled = true;
-        
-        setTimeout(() => {
-            alert(`Redirecting to secure payment page for Rs. ${parseFloat(amount).toLocaleString()}...`);
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        }, 1500);
+
+        if (method === 'esewa') {
+            // Process via eSewa
+            const formData = new FormData();
+            formData.append('amount', amount);
+
+            fetch('handlers/process_esewa.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Create a hidden form to submit to eSewa
+                    const form = document.createElement('form');
+                    form.setAttribute('method', 'POST');
+                    form.setAttribute('action', data.url);
+
+                    for (const key in data.params) {
+                        const hiddenField = document.createElement('input');
+                        hiddenField.setAttribute('type', 'hidden');
+                        hiddenField.setAttribute('name', key);
+                        hiddenField.setAttribute('value', data.params[key]);
+                        form.appendChild(hiddenField);
+                    }
+
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    alert(data.message || 'Error occurred');
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Connection error. Please try again.');
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            });
+        } else {
+            // For other methods (Placeholder)
+            setTimeout(() => {
+                alert(`Redirecting to secure payment page for ${method.toUpperCase()} for Rs. ${parseFloat(amount).toLocaleString()}...`);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }, 1000);
+        }
+    }
+
+    // Check for URL parameters to show success/error alerts
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('success')) {
+            const msg = params.get('success');
+            const alertBox = document.createElement('div');
+            alertBox.style = "position:fixed; top:20px; right:20px; background:#10b981; color:white; padding:15px 25px; border-radius:10px; z-index:9999; box-shadow:0 10px 20px rgba(0,0,0,0.1); animation: slideIn 0.3s ease-out;";
+            alertBox.innerHTML = `<i class="ri-checkbox-circle-line"></i> ${msg}`;
+            document.body.appendChild(alertBox);
+            setTimeout(() => alertBox.remove(), 5000);
+        }
+        if (params.has('error')) {
+            const msg = params.get('error');
+            const alertBox = document.createElement('div');
+            alertBox.style = "position:fixed; top:20px; right:20px; background:#ef4444; color:white; padding:15px 25px; border-radius:10px; z-index:9999; box-shadow:0 10px 20px rgba(0,0,0,0.1); animation: slideIn 0.3s ease-out;";
+            alertBox.innerHTML = `<i class="ri-error-warning-line"></i> ${msg}`;
+            document.body.appendChild(alertBox);
+            setTimeout(() => alertBox.remove(), 5000);
+        }
     }
 
     function redeemCoupon() {
@@ -255,7 +345,7 @@ if ($tx_stmt) {
         const formData = new FormData();
         formData.append('code', code);
 
-        fetch('redeem_coupon.php', {
+        fetch('handlers/redeem_coupon.php', {
             method: 'POST',
             body: formData
         })

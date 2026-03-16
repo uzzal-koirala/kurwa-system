@@ -1,7 +1,11 @@
 <?php
-require_once __DIR__ . '/../includes/config.php';
+require_once '../includes/core/config.php';
 $result = $conn->query("SHOW TABLES");
-while($row = $result->fetch_array()) {
-    echo $row[0] . "\n";
+if ($result) {
+    while ($row = $result->fetch_array()) {
+        echo $row[0] . "\n";
+    }
+} else {
+    echo "Error: " . $conn->error;
 }
 ?>

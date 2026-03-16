@@ -7,7 +7,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-include '../../includes/config.php';
+include '../../includes/core/config.php';
 
 // Redirect user if accessed directly (no email provided)
 if (!isset($_GET['email']) || empty($_GET['email'])) {

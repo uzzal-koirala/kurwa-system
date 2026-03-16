@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../includes/core/config.php';
+require_once '../../includes/core/auth_check.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -88,11 +88,23 @@ $current_page = 'medicine_orders';
             top: 30px;
         }
         .p-badge { background: #3542f3; color: #fff; padding: 4px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+
+        @media (max-width: 1024px) {
+            .hero-info { flex-direction: column; padding: 30px; }
+            .cta-box { width: 100%; position: static; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner { height: 200px; }
+            .info-main h1 { font-size: 26px; }
+            .info-main div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+            .hero-info { padding: 20px; }
+        }
     </style>
 </head>
 <body>
 
-<?php include '../../includes/sidebar.php'; ?>
+<?php include '../../includes/components/sidebar.php'; ?>
 
 <div class="main-content">
     <div class="med-order-container">

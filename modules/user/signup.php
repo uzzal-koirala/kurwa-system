@@ -1,5 +1,5 @@
 <?php 
-include '../../includes/config.php';
+include '../../includes/core/config.php';
 
 $error = "";
 

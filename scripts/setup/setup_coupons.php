@@ -2,7 +2,7 @@
 /**
  * DB Setup Script - Run this once in your browser to setup coupon tables.
  */
-require_once 'includes/config.php';
+require_once '../../includes/core/config.php';
 
 echo "<h2>Kurwa System - Coupon DB Setup</h2>";
 
@@ -36,9 +36,12 @@ $queries = [
         `user_id` int(11) NOT NULL,
         `amount` decimal(10,2) NOT NULL,
         `type` enum('topup','payment','bonus','coupon') NOT NULL,
+        `status` enum('pending','completed','failed','canceled') NOT NULL DEFAULT 'completed',
+        `transaction_id` varchar(100) DEFAULT NULL,
         `description` varchar(255) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
         PRIMARY KEY (`id`),
+        UNIQUE KEY `unique_txn` (`transaction_id`),
         FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 

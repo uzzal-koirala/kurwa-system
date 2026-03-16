@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../includes/core/config.php';
+require_once '../../includes/core/auth_check.php';
 
 $current_page = 'support';
 $user_id = $_SESSION['user_id'];
@@ -9,6 +9,11 @@ $user_name = $_SESSION['full_name'];
 // Fetch tickets
 $tickets_sql = "SELECT * FROM support_tickets WHERE user_id = $user_id ORDER BY created_at DESC";
 $tickets_res = $conn->query($tickets_sql);
+
+// Support Stats
+$total_tickets = $tickets_res->num_rows;
+$active_tickets = $conn->query("SELECT COUNT(*) FROM support_tickets WHERE user_id = $user_id AND status = 'pending'")->fetch_row()[0];
+$resolved_tickets = $conn->query("SELECT COUNT(*) FROM support_tickets WHERE user_id = $user_id AND status = 'resolved'")->fetch_row()[0];
 
 // Handle new ticket submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['raise_ticket'])) {
@@ -42,39 +47,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['raise_ticket'])) {
 </head>
 <body>
 
-<?php include '../../includes/sidebar.php'; ?>
+<?php include '../../includes/components/sidebar.php'; ?>
 
 <div class="main-content" id="mainContent">
-    <header class="dashboard-header">
-        <div class="header-left">
-            <h1>Support Center</h1>
-        </div>
-    </header>
+    
+    <!-- Global Header Section -->
+    <?php 
+    $page_title = "Support Center";
+    $page_subtitle = "How can we help you today?";
+    include "../../includes/components/user_header.php"; 
+    ?>
 
     <main class="support-container">
 
 
-        <!-- Support Stat Cards -->
-        <div class="support-stats">
-            <div class="s-card">
-                <div class="s-icon purple"><i class="ri-ticket-2-line"></i></div>
-                <div class="s-info">
+        <!-- Support Stat Cards (Dashboard Style) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="ri-customer-service-2-line"></i></div>
+                <div class="stat-details">
+                    <span class="label">Support Team</span>
+                    <span class="value">5</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="ri-ticket-2-line"></i></div>
+                <div class="stat-details">
                     <span class="label">Total Tickets</span>
-                    <span class="value"><?= $tickets_res->num_rows ?></span>
+                    <span class="value"><?= $total_tickets ?></span>
                 </div>
             </div>
-            <div class="s-card">
-                <div class="s-icon orange"><i class="ri-time-line"></i></div>
-                <div class="s-info">
-                    <span class="label">Pending Review</span>
-                    <span class="value"><?= $conn->query("SELECT COUNT(*) FROM support_tickets WHERE user_id = $user_id AND status = 'pending'")->fetch_row()[0] ?></span>
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="ri-time-line"></i></div>
+                <div class="stat-details">
+                    <span class="label">Active Tickets</span>
+                    <span class="value"><?= $active_tickets ?></span>
                 </div>
             </div>
-            <div class="s-card">
-                <div class="s-icon green"><i class="ri-checkbox-circle-line"></i></div>
-                <div class="s-info">
-                    <span class="label">Resolved Tickets</span>
-                    <span class="value"><?= $conn->query("SELECT COUNT(*) FROM support_tickets WHERE user_id = $user_id AND status = 'resolved'")->fetch_row()[0] ?></span>
+            <div class="stat-card">
+                <div class="stat-icon teal"><i class="ri-checkbox-circle-line"></i></div>
+                <div class="stat-details">
+                    <span class="label">Resolved</span>
+                    <span class="value"><?= $resolved_tickets ?></span>
                 </div>
             </div>
         </div>

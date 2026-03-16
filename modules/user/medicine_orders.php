@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../includes/core/config.php';
+require_once '../../includes/core/auth_check.php';
 
 $current_page = 'medicine_orders';
 $user_id = $_SESSION['user_id'];
@@ -24,7 +24,7 @@ $pharmacies_res = $conn->query($pharmacies_sql);
 </head>
 <body>
 
-<?php include '../../includes/sidebar.php'; ?>
+<?php include '../../includes/components/sidebar.php'; ?>
 
 <div class="main-content" id="mainContent">
     <button class="mobile-menu-btn" id="openSidebar" type="button">

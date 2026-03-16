@@ -59,6 +59,23 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.addEventListener('click', closeSidebar);
     }
     
+    // Profile Dropdown Toggle Global
+    const profileToggle = document.getElementById('profileToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
+
+    if (profileToggle && profileDropdown) {
+        profileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileDropdown.contains(e.target) && !profileToggle.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
+        });
+    }
+
     // Resize Handle
     window.addEventListener('resize', function () {
         if (window.innerWidth > 1024) {

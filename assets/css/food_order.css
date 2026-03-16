@@ -309,17 +309,39 @@
 
 .cart-float:hover { transform: scale(1.05); }
 
-@media (max-width: 1300px) {
-    .canteens-grid { grid-template-columns: repeat(3, 1fr); }
-    .foods-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 768px) {
+    .order-header h1 { font-size: 24px; }
+    .food-order-container { padding: 10px 15px 40px; }
+    .order-header h1 { font-size: 24px; }
+    .search-box { max-width: 100%; }
+    .menu-header { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 20px; 
+        padding: 20px;
+    }
+    .menu-title-area h2 { font-size: 24px; }
+    .foods-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 992px) {
-    .canteens-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 600px) {
+@media (max-width: 480px) {
     .canteens-grid { grid-template-columns: 1fr; }
-    .food-card { flex-direction: column; text-align: center; }
-    .food-img-sm { width: 100%; height: 160px; }
+    .food-card { 
+        flex-direction: column; 
+        text-align: center; 
+        padding: 15px;
+    }
+    .food-img-sm { 
+        width: 100%; 
+        height: 180px; 
+        margin-bottom: 10px;
+    }
+    .cart-float {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        justify-content: center;
+        padding: 12px 20px;
+        border-radius: 16px;
+    }
 }

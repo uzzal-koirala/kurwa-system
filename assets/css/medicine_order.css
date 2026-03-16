@@ -249,12 +249,37 @@
 .btn-primary:hover { background: #2f39df; transform: translateY(-2px); }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    .pharmacy-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) {
+    .med-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .med-header h1 { font-size: 22px; }
+    
+    .search-area {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+    .med-order-container { padding: 10px 15px 40px; }
+    .med-header { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 20px;
+    }
+    .med-header h1 { font-size: 24px; }
+    .search-box { max-width: 100%; }
+    .pharmacy-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
 }
-@media (max-width: 900px) {
-    .pharmacy-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
+
+@media (max-width: 480px) {
     .pharmacy-grid { grid-template-columns: 1fr; }
+    .pharmacy-image { height: 180px; }
+    .pharmacy-card { padding: 10px; }
+    .view-profile-btn { opacity: 1; transform: translateY(0); } /* Always show on small touch screens */
 }

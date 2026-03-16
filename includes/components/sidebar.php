@@ -8,10 +8,20 @@ $user_role = isset($user_role) ? $user_role : 'Patient Account';
 $user_avatar = isset($user_avatar) ? $user_avatar : '../../assets/images/user-avatar.jpg';
 ?>
 
-<!-- Universal Mobile Toggle Button -->
-<button class="mobile-toggle-btn" id="openSidebarUniversal" aria-label="Open Sidebar">
-    <i class="ri-menu-4-line"></i>
-</button>
+<!-- Universal Mobile Top Bar -->
+<div class="mobile-top-bar">
+    <button class="mobile-toggle-btn" id="openSidebarUniversal" aria-label="Open Sidebar">
+        <i class="ri-menu-4-line"></i>
+    </button>
+    
+    <div class="mobile-user-info">
+        <div class="info">
+            <h4><?php echo htmlspecialchars($user_name); ?></h4>
+            <p>Verified Member</p>
+        </div>
+        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($user_name); ?>&background=3b82f6&color=fff" alt="User">
+    </div>
+</div>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -47,6 +57,10 @@ $user_avatar = isset($user_avatar) ? $user_avatar : '../../assets/images/user-av
         <a href="caretaker.php" class="menu-item <?php echo($current_page === 'caretaker' || $current_page === 'caretakers') ? 'active' : ''; ?>">
             <i class="ri-user-heart-line"></i>
             <span>Hire Caretaker</span>
+        </a>
+        <a href="chat.php" class="menu-item <?php echo($current_page === 'chat') ? 'active' : ''; ?>" style="position:relative;">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
         </a>
         <a href="food_orders.php" class="menu-item <?php echo($current_page === 'food_orders') ? 'active' : ''; ?>">
             <i class="ri-restaurant-2-line"></i>

@@ -3,8 +3,8 @@
  * AJAX Endpoint for Coupon Redemption
  */
 header('Content-Type: application/json');
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../../includes/core/config.php';
+require_once '../../../includes/core/auth_check.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
@@ -69,9 +69,10 @@ try {
     $stmt->execute();
 
     // D. Log transaction
+    $txn_id = uniqid('CPN-', true);
     $desc = "Coupon Redeemed: $code";
-    $stmt = $conn->prepare("INSERT INTO transactions (user_id, amount, type, description) VALUES (?, ?, 'coupon', ?)");
-    $stmt->bind_param("ids", $user_id, $amount, $desc);
+    $stmt = $conn->prepare("INSERT INTO transactions (user_id, amount, type, status, transaction_id, description) VALUES (?, ?, 'coupon', 'completed', ?, ?)");
+    $stmt->bind_param("idss", $user_id, $amount, $txn_id, $desc);
     $stmt->execute();
 
     $conn->commit();

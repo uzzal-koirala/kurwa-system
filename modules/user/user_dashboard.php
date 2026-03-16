@@ -1,6 +1,6 @@
-<?php 
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+<?php
+require_once '../../includes/core/config.php';
+require_once INC_PATH . '/core/auth_check.php';
 
 $current_page = "dashboard"; 
 $user_id = $_SESSION['user_id'];
@@ -18,10 +18,12 @@ $kurwa_stats = $conn->query("SELECT COUNT(*) as count FROM caretakers")->fetch_a
 $pharmacy_stats = $conn->query("SELECT COUNT(*) as count FROM pharmacies")->fetch_assoc();
 // "Total Canteen" (Total Canteens)
 $canteen_stats = $conn->query("SELECT COUNT(*) as count FROM canteens")->fetch_assoc();
+// "Total Doctor" (Hardcoded as per request)
+$doctor_count = 10;
 
 // 2. Recent Activity (Unified Service History)
 $recent_activity_sql = "
-    (SELECT 'Caretaker' as category, b.booking_date as date_in, c.full_name as name, 'Confirmed' as status 
+    (SELECT 'Caretaker' as category, b.created_at as date_in, c.full_name as name, b.status 
      FROM caretaker_bookings b 
      JOIN caretakers c ON b.caretaker_id = c.id 
      WHERE b.user_id = $user_id)
@@ -37,19 +39,30 @@ $recent_activity_sql = "
      WHERE m.user_id = $user_id)
     ORDER BY date_in DESC LIMIT 5";
 $recent_activity = $conn->query($recent_activity_sql);
+if (!$recent_activity) {
+    $recent_activity = null;
+    error_log("Dashboard recent_activity query failed: " . $conn->error);
+}
 
 // 3. Dynamic Service Updates (Latest system additions)
-$latest_pharmacy = $conn->query("SELECT name FROM pharmacies ORDER BY id DESC LIMIT 1")->fetch_assoc();
-$latest_caretaker = $conn->query("SELECT full_name FROM caretakers ORDER BY id DESC LIMIT 1")->fetch_assoc();
-$latest_canteen = $conn->query("SELECT name FROM canteens ORDER BY id DESC LIMIT 1")->fetch_assoc();
+$latest_pharmacy_res = $conn->query("SELECT name FROM pharmacies ORDER BY id DESC LIMIT 1");
+$latest_pharmacy = $latest_pharmacy_res ? $latest_pharmacy_res->fetch_assoc() : ['name' => 'N/A'];
+$latest_caretaker_res = $conn->query("SELECT full_name FROM caretakers ORDER BY id DESC LIMIT 1");
+$latest_caretaker = $latest_caretaker_res ? $latest_caretaker_res->fetch_assoc() : ['full_name' => 'N/A'];
+$latest_canteen_res = $conn->query("SELECT name FROM canteens ORDER BY id DESC LIMIT 1");
+$latest_canteen = $latest_canteen_res ? $latest_canteen_res->fetch_assoc() : ['name' => 'N/A'];
 
 // 4. Upcoming Appointments
 $upcoming_appointments = $conn->query("
     SELECT b.*, c.full_name, c.specialization, c.image_url 
     FROM caretaker_bookings b 
     JOIN caretakers c ON b.caretaker_id = c.id 
-    WHERE b.user_id = $user_id AND b.booking_date >= CURDATE() 
-    ORDER BY b.booking_date ASC LIMIT 4");
+    WHERE b.user_id = $user_id AND b.start_date >= CURDATE() 
+    ORDER BY b.start_date ASC LIMIT 4");
+if (!$upcoming_appointments) {
+    $upcoming_appointments = null;
+    error_log("Dashboard upcoming_appointments query failed: " . $conn->error);
+}
 
 // 4. Chart Data (Real System Activity)
 $chart_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
@@ -60,12 +73,17 @@ foreach ($chart_labels as $key => $label) {
     $month = $key + 1;
     $query = "
         SELECT 
-            (SELECT COUNT(*) FROM caretaker_bookings WHERE user_id = $user_id AND MONTH(booking_date) = $month AND YEAR(booking_date) = $year) +
+            (SELECT COUNT(*) FROM caretaker_bookings WHERE user_id = $user_id AND MONTH(created_at) = $month AND YEAR(created_at) = $year) +
             (SELECT COUNT(*) FROM food_orders WHERE user_id = $user_id AND MONTH(order_date) = $month AND YEAR(order_date) = $year) +
             (SELECT COUNT(*) FROM medicine_orders WHERE user_id = $user_id AND MONTH(created_at) = $month AND YEAR(created_at) = $year) 
         as total_activity";
-    $result = $conn->query($query)->fetch_assoc();
-    $chart_values[] = (int)$result['total_activity'];
+    $res = $conn->query($query);
+    if ($res) {
+        $result = $res->fetch_assoc();
+        $chart_values[] = (int)($result['total_activity'] ?? 0);
+    } else {
+        $chart_values[] = 0;
+    }
 }
 ?>
 
@@ -82,26 +100,16 @@ foreach ($chart_labels as $key => $label) {
 </head>
 <body>
 
-<?php include "../../includes/sidebar.php"; ?>
+<?php include INC_PATH . '/components/sidebar.php'; ?>
 
 <div class="main-content" id="mainContent">
     
-    <!-- Top Header Section -->
-    <header class="dashboard-header">
-        <div class="header-left">
-            <h1>Hi <?= explode(' ', $user_name)[0] ?>,</h1>
-            <p>How is your patient today?</p>
-        </div>
-        <div class="header-right">
-            <div class="user-display">
-                <div class="info">
-                    <h4><?= $user_name ?></h4>
-                    <p>Verified Member</p>
-                </div>
-                <img src="https://ui-avatars.com/api/?name=Ujwal+Koirala&background=3b82f6&color=fff" alt="User">
-            </div>
-        </div>
-    </header>
+    <!-- Global Header Section -->
+    <?php 
+    $page_title = "Hi " . explode(' ', $user_name)[0] . ",";
+    $page_subtitle = "How is your patient today?";
+    include INC_PATH . "/components/user_header.php"; 
+    ?>
 
     <div class="dashboard-container">
         <!-- Middle Column Content -->
@@ -133,6 +141,15 @@ foreach ($chart_labels as $key => $label) {
                         <div class="stat-details">
                             <span class="label">Total Canteen</span>
                             <span class="value"><?= $canteen_stats['count'] ?></span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="stat-link">
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="ri-nurse-line"></i></div>
+                        <div class="stat-details">
+                            <span class="label">Total Doctor</span>
+                            <span class="value"><?= $doctor_count ?></span>
                         </div>
                     </div>
                 </a>
@@ -201,19 +218,21 @@ foreach ($chart_labels as $key => $label) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $i = 1; while($row = $recent_activity->fetch_assoc()): ?>
+                        <?php if ($recent_activity && $recent_activity->num_rows > 0): $i = 1; while($row = $recent_activity->fetch_assoc()): ?>
                         <tr>
                             <td><?= sprintf("%02d", $i++) ?></td>
                             <td><?= date('m/d/y', strtotime($row['date_in'])) ?></td>
                             <td style="font-weight:700;"><?= htmlspecialchars($row['name']) ?></td>
                             <td><?= $row['category'] ?></td>
                             <td>
-                                <span class="status-badge <?= $row['status'] == 'Confirmed' ? 'status-confirmed' : 'status-pending' ?>">
-                                    <?= $row['status'] ?>
+                                <span class="status-badge <?= (strtolower($row['status']) === 'confirmed' || strtolower($row['status']) === 'pending') ? 'status-'.strtolower($row['status']) : 'status-pending' ?>">
+                                    <?= ucfirst($row['status']) ?>
                                 </span>
                             </td>
                         </tr>
-                        <?php endwhile; ?>
+                        <?php endwhile; else: ?>
+                        <tr><td colspan="5" style="text-align:center; color:#94a3b8; padding: 20px;">No recent activity yet.</td></tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -238,8 +257,10 @@ foreach ($chart_labels as $key => $label) {
                     <h3>Nepali Calendar</h3>
                 </div>
                 <!-- Hamro Patro Calendar Widget -->
-                <div style="text-align:center; display: flex; justify-content: center;">
-                    <iframe src="https://www.hamropatro.com/widgets/calender-medium.php" frameborder="0" scrolling="no" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:295px; height:385px; border-radius: 12px;" allowtransparency="true"></iframe>
+                <div class="calendar-wrapper" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <div style="text-align:center; display: flex; justify-content: center; min-width: 295px;">
+                        <iframe src="https://www.hamropatro.com/widgets/calender-medium.php" frameborder="0" scrolling="no" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:295px; height:385px; border-radius: 12px;" allowtransparency="true"></iframe>
+                    </div>
                 </div>
             </div>
 
@@ -250,6 +271,7 @@ foreach ($chart_labels as $key => $label) {
                 <div class="appoint-list">
                     <?php 
                     $count = 0;
+                    if ($upcoming_appointments && $upcoming_appointments->num_rows > 0):
                     while($app = $upcoming_appointments->fetch_assoc()): 
                         $count++;
                     ?>
@@ -258,12 +280,12 @@ foreach ($chart_labels as $key => $label) {
                             <i class="ri-user-heart-line"></i>
                         </div>
                         <div class="appoint-info">
-                            <h4><?= $app['specialization'] ?></h4>
-                            <span><?= date('H:i', strtotime($app['booking_date'])) ?> • Dr. <?= explode(' ', $app['full_name'])[0] ?></span>
+                            <h4><?= htmlspecialchars($app['specialization']) ?></h4>
+                            <span><?= date('M d', strtotime($app['start_date'])) ?> • <?= htmlspecialchars(explode(' ', $app['full_name'])[0]) ?></span>
                         </div>
                         <i class="ri-arrow-right-s-line" style="margin-left:auto;"></i>
                     </div>
-                    <?php endwhile; ?>
+                    <?php endwhile; endif; ?>
                     
                     <?php if($count == 0): ?>
                     <p style="font-size:12px; color:var(--text-muted); text-align:center;">No upcoming appointments.</p>

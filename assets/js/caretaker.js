@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchCaretakers(category) {
         gridContainer.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Loading caretakers...</p>';
 
-        fetch(`/Kurwa/kurwa-system/modules/user/fetch_caretakers.php?category=${encodeURIComponent(category)}`)
+        fetch(`handlers/fetch_caretakers.php?category=${encodeURIComponent(category)}`)
             .then(async response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,13 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="caretaker-image">
                     <img src="${person.image_url || 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=600&q=80'}" alt="${person.full_name}">
+                    <span class="ct-role-badge"><i class="ri-user-heart-line"></i> Caretaker</span>
                 </div>
                 <div class="caretaker-info">
                     <h3>${person.full_name}</h3>
                     <p>${person.specialization}</p>
                     <div class="caretaker-meta">
                         <span><i class="ri-star-fill"></i> ${person.rating}</span>
-                        <span><i class="ri-briefcase-4-line"></i> ${person.experience_years} Years</span>
+                        <span><i class="ri-briefcase-4-line"></i> ${person.experience_years} Yrs</span>
+                        <span><i class="ri-user-heart-line"></i> ${person.patients_helped}+ patients</span>
                     </div>
                     <div class="caretaker-bottom">
                         <strong>Rs. ${parseFloat(person.price_per_day).toLocaleString()}/day</strong>
@@ -98,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // Click listener for the card to go direct to profile
             card.addEventListener('click', () => {
                 window.location.href = `caretaker_profile.php?id=${person.id}`;
             });
@@ -115,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('caretaker_id', caretakerId);
 
-        fetch('toggle_favorite.php', {
+        fetch('handlers/toggle_favorite.php', {
             method: 'POST',
             body: formData
         })

@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/config.php';
-require_once '../../includes/auth_check.php';
+require_once '../../includes/core/config.php';
+require_once '../../includes/core/auth_check.php';
 
 $caretaker_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -26,9 +26,9 @@ $stmt->close();
 
 $current_page = 'caretakers';
 
-// Mock additional fields requested by the user but potentially not in DB yet
+// Mock additional fields
 $status_options = ['Available', 'Busy', 'Active', 'Offline'];
-$status = $status_options[array_rand($status_options)]; // Mocked random status for now or use algorithm based on availability
+$status = $status_options[array_rand($status_options)];
 if (strtolower($caretaker['availability']) === 'available') {
     $status = 'Available';
 }
@@ -48,24 +48,6 @@ $skills = [
     "Meal Preparation & Feeding",
     "Companionship & Emotional Support"
 ];
-
-// Calendar logic for "Real" feel
-$month = isset($_GET['month']) ? intval($_GET['month']) : intval(date('m'));
-$year = isset($_GET['year']) ? intval($_GET['year']) : intval(date('Y'));
-
-if ($month < 1) { $month = 12; $year--; }
-if ($month > 12) { $month = 1; $year++; }
-
-$prevMonth = $month - 1;
-$prevYear = $year;
-if ($prevMonth < 1) { $prevMonth = 12; $prevYear--; }
-
-$nextMonth = $month + 1;
-$nextYear = $year;
-if ($nextMonth > 12) { $nextMonth = 1; $nextYear++; }
-
-$monthName = date('F', mktime(0, 0, 0, $month, 10));
-$todayDate = date('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -78,10 +60,173 @@ $todayDate = date('Y-m-d');
     <link rel="stylesheet" href="../../assets/css/caretaker_profile.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Flatpickr for better date selection -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        /* Booking Modal Styles */
+        .booking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+        }
+
+        .price-summary {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 10px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .price-row.total {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 18px;
+        }
+
+        /* Chat Modal Styles */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        #chatMessages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            background: #f8fafc;
+            margin-bottom: 15px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .msg.sent {
+            align-self: flex-end;
+            background: #2F3CFF;
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg.received {
+            align-self: flex-start;
+            background: white;
+            color: #1e293b;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-row input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .chat-send-btn {
+            background: #2F3CFF;
+            color: white;
+            border: none;
+            width: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
 
-<?php include '../../includes/sidebar.php'; ?>
+<?php include '../../includes/components/sidebar.php'; ?>
 
 <div class="main-content" id="mainContent">
     <button class="mobile-menu-btn" id="openSidebar" type="button">
@@ -119,12 +264,14 @@ $todayDate = date('Y-m-d');
                         
                         <div class="action-buttons">
                             <button class="btn-primary" id="bookNowBtn"><i class="ri-calendar-check-line"></i> Book Now</button>
-                            <button class="btn-secondary"><i class="ri-message-3-line"></i> Message</button>
+                            <a href="chat.php?caretaker_id=<?= $caretaker_id ?>" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i class="ri-message-3-line"></i> Message
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contact & Working Hours -->
+                <!-- Availability & Info -->
                 <div class="info-card glass-card">
                     <h3><i class="ri-time-line"></i> Availability</h3>
                     <ul class="info-list">
@@ -153,7 +300,6 @@ $todayDate = date('Y-m-d');
                     </ul>
                 </div>
 
-
                 <!-- Languages -->
                 <div class="info-card glass-card">
                     <h3><i class="ri-translate-2"></i> Languages</h3>
@@ -165,6 +311,33 @@ $todayDate = date('Y-m-d');
                 </div>
             </div>
 
+<?php
+// Fetch booked dates for this caretaker to disable them in Flatpickr
+$booked_dates = [];
+$booking_sql = "SELECT start_date, end_date FROM caretaker_bookings WHERE caretaker_id = ? AND status IN ('pending', 'confirmed')";
+$b_stmt = $conn->prepare($booking_sql);
+if ($b_stmt) {
+    $b_stmt->bind_param("i", $caretaker_id);
+    $b_stmt->execute();
+    $b_res = $b_stmt->get_result();
+    while ($row = $b_res->fetch_assoc()) {
+        $period = new DatePeriod(
+            new DateTime($row['start_date']),
+            new DateInterval('P1D'),
+            (new DateTime($row['end_date']))->modify('+1 day')
+        );
+        foreach ($period as $date) {
+            $booked_dates[] = $date->format("Y-m-d");
+        }
+    }
+    $b_stmt->close();
+} else {
+    error_log("MySQL Prepare Error (Booking): " . $conn->error);
+    // Optional: display error for debugging if requested, but better to keep it in log for production
+    // echo "<!-- DB Error: " . htmlspecialchars($conn->error) . " -->";
+}
+?>
+            
             <!-- Right Column: Details & Stats -->
             <div class="profile-right">
                 
@@ -206,7 +379,6 @@ $todayDate = date('Y-m-d');
                     <h3><i class="ri-video-line"></i> Caretaker Introduction</h3>
                     <div class="video-container">
                         <?php 
-                        // Mock YouTube ID extraction from a link (Real link would come from DB)
                         $youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; 
                         $video_id = "";
                         if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $youtube_url, $match)) {
@@ -214,17 +386,9 @@ $todayDate = date('Y-m-d');
                         }
                         ?>
                         <?php if ($video_id): ?>
-                            <iframe 
-                                src="https://www.youtube.com/embed/<?= $video_id ?>" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                            </iframe>
+                            <iframe src="https://www.youtube.com/embed/<?= $video_id ?>" frameborder="0" allowfullscreen></iframe>
                         <?php else: ?>
-                            <div class="no-video">
-                                <i class="ri-video-off-line"></i>
-                                <p>No introduction video available.</p>
-                            </div>
+                            <div class="no-video"><i class="ri-video-off-line"></i><p>No video available.</p></div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -234,76 +398,8 @@ $todayDate = date('Y-m-d');
                     <h3><i class="ri-tools-fill"></i> Skills & Expertise</h3>
                     <div class="skills-container">
                         <?php foreach ($skills as $skill): ?>
-                            <div class="skill-pill">
-                                <?= htmlspecialchars($skill) ?>
-                            </div>
+                            <div class="skill-pill"><?= htmlspecialchars($skill) ?></div>
                         <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <!-- Availability Calendar -->
-                <div class="details-card glass-card">
-                    <h3><i class="ri-calendar-event-line"></i> Caretaker Availability Schedule</h3>
-                    <div class="calendar-main-view">
-                        <div class="calendar-info-row">
-                            <div class="calendar-month-title">
-                                <h4><?= $monthName ?> <?= $year ?></h4>
-                                <p>Standard working days for selected period</p>
-                            </div>
-                            <div class="calendar-nav">
-                                <a href="?id=<?= $caretaker_id ?>&month=<?= $prevMonth ?>&year=<?= $prevYear ?>#calendar" class="cal-nav-btn"><i class="ri-arrow-left-s-line"></i></a>
-                                <a href="?id=<?= $caretaker_id ?>&month=<?= date('m') ?>&year=<?= date('Y') ?>#calendar" class="cal-nav-today">Today</a>
-                                <a href="?id=<?= $caretaker_id ?>&month=<?= $nextMonth ?>&year=<?= $nextYear ?>#calendar" class="cal-nav-btn"><i class="ri-arrow-right-s-line"></i></a>
-                            </div>
-                            <div class="calendar-legend-box" id="calendar">
-                                <div class="legend-item">
-                                    <span class="l-dot available"></span>
-                                    <span>Available</span>
-                                </div>
-                                <div class="legend-item">
-                                    <span class="l-dot booked"></span>
-                                    <span>Booked</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="calendar-modern-grid">
-                            <?php 
-                            $days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-                            foreach($days as $day) echo "<div class='cal-header-day'>$day</div>";
-
-                            $firstDayOfMonth = date('w', strtotime("$year-$month-01"));
-                            $daysInMonth = date('t', strtotime("$year-$month-01"));
-                            
-                            // Fetch bookings for selected month
-                            $booking_sql = "SELECT booking_date FROM caretaker_bookings WHERE caretaker_id = ? AND status = 'confirmed' AND MONTH(booking_date) = ? AND YEAR(booking_date) = ?";
-                            $b_stmt = $conn->prepare($booking_sql);
-                            $b_stmt->bind_param("iii", $caretaker_id, $month, $year);
-                            $b_stmt->execute();
-                            $b_res = $b_stmt->get_result();
-                            $booked_dates = [];
-                            while($brow = $b_res->fetch_assoc()) $booked_dates[] = $brow['booking_date'];
-                            $b_stmt->close();
-
-                            for($i = 0; $i < $firstDayOfMonth; $i++) echo "<div class='cal-day empty'></div>";
-                            
-                            for($day = 1; $day <= $daysInMonth; $day++) {
-                                $currentDateStr = "$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-                                $isBooked = in_array($currentDateStr, $booked_dates);
-                                $isToday = ($currentDateStr === $todayDate);
-                                
-                                $class = $isBooked ? 'booked' : 'available';
-                                if ($isToday) $class .= ' is-today';
-                                
-                                $booking_status_text = $isBooked ? 'Reserved' : 'Open';
-                                echo "
-                                <div class='cal-day $class' title='" . date('jS F, Y', strtotime($currentDateStr)) . "'>
-                                    <span class='day-num'>$day</span>
-                                    <span class='day-status'>$booking_status_text</span>
-                                </div>";
-                            }
-                            ?>
-                        </div>
                     </div>
                 </div>
 
@@ -312,53 +408,84 @@ $todayDate = date('Y-m-d');
                     <h3><i class="ri-chat-smile-3-line"></i> Patient Reviews</h3>
                     <div class="reviews-container">
                         <?php 
-                        // Fetch real reviews from database
-                        $review_sql = "SELECT r.*, u.full_name as user_name, u.email 
-                                      FROM caretaker_reviews r 
-                                      JOIN users u ON r.user_id = u.id 
-                                      WHERE r.caretaker_id = ? 
-                                      ORDER BY r.created_at DESC";
-                        $review_stmt = $conn->prepare($review_sql);
-                        $review_stmt->bind_param("i", $caretaker_id);
-                        $review_stmt->execute();
-                        $reviews_result = $review_stmt->get_result();
-                        
-                        if ($reviews_result->num_rows > 0):
-                            while ($review = $reviews_result->fetch_assoc()):
-                                $avatar_url = 'https://ui-avatars.com/api/?name=' . urlencode($review['user_name']) . '&background=random';
-                                $review_date = date('M d, Y', strtotime($review['created_at']));
+                        $review_sql = "SELECT r.*, u.full_name as user_name FROM caretaker_reviews r JOIN users u ON r.user_id = u.id WHERE r.caretaker_id = ? ORDER BY r.created_at DESC";
+                        $r_stmt = $conn->prepare($review_sql);
+                        if ($r_stmt) {
+                            $r_stmt->bind_param("i", $caretaker_id);
+                            $r_stmt->execute();
+                            $rev_res = $r_stmt->get_result();
+                            if ($rev_res->num_rows > 0) {
+                                while($rev = $rev_res->fetch_assoc()) {
+                                    $rev_date = date('M d, Y', strtotime($rev['created_at']));
+                                    echo "<div class='review-item'>
+                                            <div class='review-header'>
+                                                <div class='user-info'>
+                                                    <img src='https://ui-avatars.com/api/?name=".urlencode($rev['user_name'] ?? 'User')."&background=random&color=fff&bold=true'>
+                                                    <div>
+                                                        <h5>".htmlspecialchars($rev['user_name'] ?? 'Anonymous')."</h5>
+                                                        <div class='stars'>";
+                                    for($i=1; $i<=5; $i++) echo "<i class='ri-star-".($i<=($rev['rating'] ?? 0) ? 'fill' : 'line')."'></i>";
+                                    echo "</div>
+                                                    </div>
+                                                </div>
+                                                <span class='review-date'>$rev_date</span>
+                                            </div>
+                                            <p class='review-text'>".nl2br(htmlspecialchars($rev['comment'] ?? ''))."</p>
+                                          </div>";
+                                }
+                            } else { echo "<div class='glass-card' style='text-align:center; padding: 40px; color: #64748b;'><i class='ri-chat-voice-line' style='font-size: 40px; display: block; margin-bottom: 10px;'></i>No reviews yet. Be the first to book!</div>"; }
+                        } else { echo "<p class='no-reviews'>Reviews unavailable.</p>"; }
                         ?>
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <img src="<?= $avatar_url ?>" alt="<?= htmlspecialchars($review['user_name']) ?>" class="review-avatar">
-                                    <div class="review-meta">
-                                        <h4><?= htmlspecialchars($review['user_name']) ?></h4>
-                                        <span><?= $review_date ?></span>
-                                    </div>
-                                    <div class="review-stars">
-                                        <?php for($i=0; $i<$review['rating']; $i++): ?>
-                                            <i class="ri-star-fill"></i>
-                                        <?php endfor; ?>
-                                        <?php for($i=$review['rating']; $i<5; $i++): ?>
-                                            <i class="ri-star-line"></i>
-                                        <?php endfor; ?>
-                                    </div>
-                                </div>
-                                <p class="review-comment"><?= nl2br(htmlspecialchars($review['comment'])) ?></p>
-                            </div>
-                        <?php 
-                            endwhile;
-                            $review_stmt->close();
-                        else:
-                        ?>
-                            <div class="no-reviews">
-                                <i class="ri-chat-voice-line"></i>
-                                <p>No reviews yet for this caretaker.</p>
-                            </div>
-                        <?php endif; ?>
+                    </div>
+                </div>
+            </div> <!-- End Profile Right -->
+        </div>
+    </div>
+</div>
+
+<!-- Premium Booking Modal -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content" style="max-width: 520px; padding: 0; overflow: hidden;">
+        <!-- Modal Header -->
+        <div style="background: linear-gradient(135deg, #3542f3 0%, #7c3aed 100%); padding: 30px; text-align: center; position: relative;">
+            <button onclick="closeModal('bookingModal')" style="position: absolute; top: 15px; right: 18px; background: rgba(255,255,255,0.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">&times;</button>
+            <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; backdrop-filter: blur(5px);">
+                <i class="ri-calendar-check-line" style="font-size: 30px; color: #fff;"></i>
+            </div>
+            <h2 style="color: #fff; font-size: 22px; margin: 0 0 5px;">Book <?= htmlspecialchars(explode(' ', $caretaker['full_name'])[0]) ?></h2>
+            <p style="color: rgba(255,255,255,0.75); font-size: 13px; margin: 0;">Select your dates and confirm booking</p>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 28px;">
+            <div class="booking-form">
+                <div class="input-group">
+                    <label><i class="ri-calendar-line" style="color: #3542f3;"></i> &nbsp;Select Date Range</label>
+                    <input type="text" id="dateRangePicker" placeholder="Pick start & end dates..." style="cursor: pointer;">
+                </div>
+
+                <!-- Price Summary Card -->
+                <div class="price-summary" style="border-radius: 18px; padding: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;">Booking Summary</div>
+                    <div class="price-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                        <span style="color: #64748b; display: flex; align-items: center; gap: 6px;"><i class="ri-money-dollar-circle-line"></i> Daily Rate</span>
+                        <span style="font-weight: 600; color: #1e293b;">Rs. <?= number_format($caretaker['price_per_day']) ?></span>
+                    </div>
+                    <div class="price-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                        <span style="color: #64748b; display: flex; align-items: center; gap: 6px;"><i class="ri-calendar-2-line"></i> Duration</span>
+                        <span style="font-weight: 600; color: #1e293b;" id="durationText">Select dates</span>
+                    </div>
+                    <div style="height: 1px; background: #e2e8f0; margin: 14px 0;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; color: #0f172a; font-size: 15px;">Total Amount</span>
+                        <span style="font-weight: 800; color: #3542f3; font-size: 22px;" id="totalAmountText">Rs. 0</span>
                     </div>
                 </div>
 
+                <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 16px; border-radius: 16px; gap: 10px;" onclick="confirmBooking()" id="confirmBtn" disabled>
+                    <i class="ri-secure-payment-line"></i> Confirm & Pay Now
+                </button>
+                <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 10px;"><i class="ri-shield-check-line"></i> Secure booking. Amount deducted from your wallet.</p>
             </div>
         </div>
     </div>
@@ -366,10 +493,65 @@ $todayDate = date('Y-m-d');
 
 <script src="../../assets/js/sidebar.js"></script>
 <script>
-    // Booking button interaction mock
-    document.getElementById('bookNowBtn')?.addEventListener('click', () => {
-        alert('Booking modal would open here to book <?= htmlspecialchars($caretaker['full_name']) ?>.');
+    const caretakerId = <?= $caretaker_id ?>;
+    const dailyRate = <?= $caretaker['price_per_day'] ?>;
+    const bookedDates = <?= json_encode($booked_dates) ?>;
+
+    let selectedStart = null;
+    let selectedEnd = null;
+
+    // Initialize Flatpickr
+    const fp = flatpickr("#dateRangePicker", {
+        mode: "range",
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        disable: bookedDates,
+        onChange: function(selectedDates) {
+            if (selectedDates.length === 2) {
+                selectedStart = selectedDates[0];
+                selectedEnd = selectedDates[1];
+                
+                const diffTime = Math.abs(selectedEnd - selectedStart);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                
+                document.getElementById('durationText').innerText = diffDays + (diffDays > 1 ? ' Days' : ' Day');
+                document.getElementById('totalAmountText').innerText = 'Rs. ' + (diffDays * dailyRate).toLocaleString();
+                document.getElementById('confirmBtn').disabled = false;
+            } else {
+                document.getElementById('durationText').innerText = '0 Days';
+                document.getElementById('totalAmountText').innerText = 'Rs. 0';
+                document.getElementById('confirmBtn').disabled = true;
+                selectedStart = null;
+                selectedEnd = null;
+            }
+        }
     });
+
+    document.getElementById('bookNowBtn').onclick = () => document.getElementById('bookingModal').style.display = 'flex';
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    window.onclick = (e) => { if (e.target.className === 'modal') e.target.style.display = 'none'; }
+
+    async function confirmBooking() {
+        if (!selectedStart || !selectedEnd) return;
+        
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = true; btn.innerText = 'Processing...';
+
+        const formatDate = (date) => date.toISOString().split('T')[0];
+
+        const formData = new FormData();
+        formData.append('caretaker_id', caretakerId);
+        formData.append('start_date', formatDate(selectedStart));
+        formData.append('end_date', formatDate(selectedEnd));
+
+        try {
+            const res = await fetch('handlers/process_booking.php', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) { alert(data.message); location.reload(); }
+            else { alert(data.message); }
+        } catch (e) { alert('Error occurred.'); }
+        finally { btn.disabled = false; btn.innerText = 'Confirm & Pay Now'; }
+    }
 </script>
 </body>
 </html>
