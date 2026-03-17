@@ -4,11 +4,11 @@
     --white: #ffffff;
     --text-primary: #1b2559;
     --text-muted: #a3aed0;
-    --mint-primary: #00bcc2;
-    --mint-glow: rgba(0, 188, 194, 0.15);
+    --primary-blue: #4361ee;
+    --blue-glow: rgba(67, 97, 238, 0.15);
     --radius-3xl: 20px;
-    --radius-2xl: 12px; /* Sharper, cleaner corners */
-    --shadow-premium: 0 10px 40px rgba(29, 33, 41, 0.05); /* Softer shadow */
+    --radius-2xl: 12px;
+    --shadow-premium: 0 10px 40px rgba(29, 33, 41, 0.05);
     --border-light: 1px solid #f1f5f9;
 }
 
@@ -20,14 +20,16 @@ body.caretaker-body {
 
 /* FIX: Sidbar Collision - Integrated approach */
 .caretaker-body .main-content {
-    margin-left: 280px; /* Matches sidebar-caretaker width */
-    padding: 0; /* Header handles internal padding */
+    margin-left: 280px; 
+    width: calc(100% - 280px); /* CRITICAL FIX: Stops dashboard from going out of box */
+    padding: 0;
     min-height: 100vh;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.caretaker-body:has(.sidebar-caretaker.collapsed) .main-content {
-    margin-left: 100px; /* Matches collapsed width */
+    margin-left: 100px;
+    width: calc(100% - 100px);
 }
 
 /* Clinical Header */
@@ -83,7 +85,7 @@ body.caretaker-body:has(.sidebar-caretaker.collapsed) .main-content {
 }
 
 .header-right i:hover {
-    color: var(--mint-primary);
+    color: var(--primary-blue);
 }
 
 .header-left h1 {
@@ -113,7 +115,7 @@ body.caretaker-body:has(.sidebar-caretaker.collapsed) .main-content {
 }
 
 .search-bar button {
-    background: var(--mint-primary);
+    background: var(--primary-blue);
     color: white;
     border: none;
     padding: 6px 15px;
