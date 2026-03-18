@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         desktopToggleBtn.addEventListener('click', () => {
             if (sidebar) {
                 sidebar.classList.toggle('collapsed');
+                document.body.classList.toggle('sidebar-collapsed');
                 
                 // Change icon based on state
                 const icon = desktopToggleBtn.querySelector('i');

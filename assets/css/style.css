@@ -1,8 +1,13 @@
 
 /* Global style start here */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #E8EAF6;
+      overflow-x: hidden;
     }
 
 /*-----Global style end here-----*/

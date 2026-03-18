@@ -26,18 +26,19 @@
 /* Sidebar Core */
 .sidebar-caretaker {
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
     width: 280px; 
-    background: var(--sb-bg);
+    border-radius: 24px;
+    background: var(--primary); /* Deep vibrant blue */
     display: flex;
     flex-direction: column;
     padding: 30px 20px;
     z-index: 1000;
     transition: var(--transition);
-    border-right: 1px solid #f1f5f9;
-    box-shadow: none;
+    border: none;
+    box-shadow: 0 15px 40px rgba(67, 97, 238, 0.25);
     overflow: visible;
 }
 
@@ -60,20 +61,20 @@
 .sidebar-caretaker .brand-icon {
     width: 36px;
     height: 36px;
-    background: var(--primary);
+    background: var(--white);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 22px;
-    color: var(--white);
-    box-shadow: 0 8px 16px var(--blue-glow);
+    color: var(--primary);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
 
 .sidebar-caretaker .brand-text {
     font-size: 22px;
     font-weight: 700;
-    color: #1b2559;
+    color: var(--white);
     letter-spacing: -0.5px;
 }
 
@@ -116,8 +117,8 @@
     align-items: center;
     gap: 16px;
     padding: 14px 20px;
-    border-radius: 18px;
-    color: var(--sb-text);
+    border-radius: 16px;
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     font-size: 15px;
     font-weight: 500;
@@ -130,17 +131,16 @@
 }
 
 .sidebar-caretaker .menu-item:hover {
-    background: var(--sb-hover);
-    color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
 }
 
 .sidebar-caretaker .menu-item.active {
-    background: var(--sb-active-bg);
+    background: var(--white); /* Crisp white floating active block */
     color: var(--primary);
     font-weight: 700;
-    box-shadow: none;
-    border-right: 3px solid var(--primary);
-    border-radius: 0 10px 10px 0;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border: none;
 }
 
 /* Premium Card (Blue Style) */
@@ -254,8 +254,8 @@
 }
 
 .sidebar-caretaker .support-btn {
-    background: var(--white);
-    color: #4b5563;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
     border: none;
     padding: 14px;
     border-radius: 16px;
@@ -268,16 +268,16 @@
     cursor: pointer;
     text-decoration: none;
     transition: var(--transition);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: none;
 }
 
 .sidebar-caretaker .support-btn i {
-    color: var(--primary);
+    color: var(--white);
     font-size: 18px;
 }
 
 .sidebar-caretaker .support-btn:hover {
-    background: #f9fafb;
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 }
 
@@ -286,9 +286,78 @@
     align-items: center;
     justify-content: space-between;
     padding: 15px 5px;
-    color: #1b2559;
+    color: var(--white);
     font-size: 14px;
     font-weight: 500;
+}
+
+.mobile-close-toggle {
+    display: none;
+}
+
+/* Mobile & Tablet Sidebar Overrides */
+@media (max-width: 1024px) {
+    .sidebar-caretaker {
+        left: -350px;
+        transform: translateX(-100%);
+        visibility: hidden;
+        opacity: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 0;
+        width: 280px;
+        box-shadow: none;
+        padding-top: 20px;
+    }
+
+    .mobile-close-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: var(--white);
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .mobile-close-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    body:has(.sidebar-caretaker.active) .sidebar-caretaker,
+    .sidebar-caretaker.active {
+        left: 0;
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+        backdrop-filter: blur(4px);
+    }
+
+    body:has(.sidebar-caretaker.active) .sidebar-overlay,
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .sidebar-caretaker .desktop-toggle {
+        display: none;
+    }
 }
 
 .sidebar-caretaker .mode-toggle-label {

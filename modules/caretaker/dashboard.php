@@ -50,20 +50,13 @@ $requests = $conn->query("
 <body class="caretaker-body">
 
 <?php include '../../includes/components/caretaker_sidebar.php'; ?>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="main-content">
     <div class="dashboard-header">
-        <div class="header-left">
-            <div class="search-bar">
-                <i class="ri-search-line"></i>
-                <input type="text" placeholder="Quick Patient Search...">
-                <button>Add Patient</button>
-            </div>
-            <div class="nav-links">
-                <span class="active">TREATMENTS</span>
-                <span>DOCTORS</span>
-                <span>HELP</span>
-            </div>
+        <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
+            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+            <h1 style="font-size: 16px; font-weight: 800; color: #1b2559; opacity: 0.8; margin: 0; text-transform: uppercase;">Overview</h1>
         </div>
         <div class="header-right">
             <i class="ri-global-line"></i>
@@ -75,8 +68,17 @@ $requests = $conn->query("
         </div>
     </div>
 
-    <div class="page-title">
-        <h1 style="font-size: 14px; font-weight: 800; color: #1b2559; opacity: 0.8;">DASHBOARD</h1>
+    <div class="page-title" style="margin-top: 15px;">
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: #1b2559; margin-bottom: 5px; line-height: 1.2;">
+            <?php 
+            $hour = date('H');
+            $greeting = "Good Morning";
+            if ($hour >= 12 && $hour < 17) $greeting = "Good Afternoon";
+            elseif ($hour >= 17) $greeting = "Good Evening";
+            echo "$greeting, " . explode(' ', $caretaker_name)[0] . "!"; 
+            ?>
+        </h2>
+        <p style="font-size: 13px; color: #8f9bba; font-weight: 600; margin-top: 0;">Welcome to your clinical dashboard</p>
     </div>
 
     <div class="stats-row">
@@ -131,10 +133,10 @@ $requests = $conn->query("
                     </div>
                 </div>
                 <div style="display: flex; gap: 30px; align-items: stretch;">
-                    <div style="flex: 1; height: 250px;">
+                    <div style="flex: 1; height: 250px; min-width: 0;">
                         <canvas id="clinicChart"></canvas>
                     </div>
-                    <div style="width: 200px; background: #4361ee; border-radius: 12px; padding: 30px 20px; color: white; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 200px; background: #4361ee; border-radius: 12px; padding: 30px 20px; color: white; text-align: center; display: flex; flex-direction: column; justify-content: center; flex-shrink: 0;">
                         <p style="font-size: 11px; font-weight: 600; opacity: 0.9; margin-bottom: 8px;">Total Patients</p>
                         <h2 style="font-size: 42px; font-weight: 800; margin-bottom: 25px;">120</h2>
                         <div style="height: 60px;">
@@ -193,84 +195,60 @@ $requests = $conn->query("
         </div>
 
         <div class="sidebar-stats-col">
-            <!-- Reports Widget -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h3>REPORTS</h3>
-                    <i class="ri-more-2-line" style="color: #a3aed0; cursor: pointer;"></i>
+            <!-- Earnings Widget (Moved to Top) -->
+            <div class="balance-card">
+                <div class="balance-info">
+                    <span class="label">Total Earnings</span>
+                    <h2 class="amount">Rs. <?= number_format($total_earnings, 0) ?></h2>
+                </div>
+                <div class="balance-actions">
+                    <a href="#" class="topup-btn" style="color: var(--primary);"><i class="ri-bank-card-line"></i> Withdraw</a>
+                    <a href="#" class="history-btn"><i class="ri-history-line"></i> History</a>
+                </div>
+            </div>
+
+            <!-- Reports Widget (Redesigned as floating items) -->
+            <div style="margin-bottom: 25px;">
+                <div class="card-header" style="margin-bottom: 20px; padding: 0 5px; border: none;">
+                    <h3 style="font-size: 16px; font-weight: 800; color: #1b2559;">REPORTS</h3>
+                    <i class="ri-more-2-line" style="color: #a3aed0; cursor: pointer; font-size: 20px;"></i>
                 </div>
                 <div class="reports-list">
                     <div class="report-item">
                         <div class="report-meta">
-                            <div style="width: 40px; height: 40px; background: #eef2ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #5c7cfa; font-size: 18px;">
+                            <div style="width: 45px; height: 45px; background: #eef2ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #5c7cfa; font-size: 20px;">
                                 <i class="ri-stethoscope-line"></i>
                             </div>
                             <div class="details">
                                 <h5>Cardiac Checkup</h5>
-                                <p>1 minute ago</p>
+                                <p>1 min ago</p>
                             </div>
                         </div>
-                        <div class="report-action">DETAILS <i class="ri-arrow-right-s-line"></i></div>
+                        <div class="report-action"><i class="ri-arrow-right-line"></i></div>
                     </div>
                     <div class="report-item">
                         <div class="report-meta">
-                            <div style="width: 40px; height: 40px; background: #fff5f5; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ff6b6b; font-size: 18px;">
+                            <div style="width: 45px; height: 45px; background: #fff5f5; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #ff6b6b; font-size: 20px;">
                                 <i class="ri-test-tube-line"></i>
                             </div>
                             <div class="details">
-                                <h5>Blood Test Result</h5>
-                                <p>5 minutes ago</p>
+                                <h5>Blood Test</h5>
+                                <p>5 mins ago</p>
                             </div>
                         </div>
-                        <div class="report-action">DETAILS <i class="ri-arrow-right-s-line"></i></div>
+                        <div class="report-action"><i class="ri-arrow-right-line"></i></div>
                     </div>
                     <div class="report-item">
                         <div class="report-meta">
-                            <div style="width: 40px; height: 40px; background: #f0fdf4; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #22c55e; font-size: 18px;">
+                            <div style="width: 45px; height: 45px; background: #f0fdf4; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #22c55e; font-size: 20px;">
                                 <i class="ri-lungs-line"></i>
                             </div>
                             <div class="details">
-                                <h5>Oxygen Saturation</h5>
-                                <p>12 minutes ago</p>
+                                <h5>Oxygen Stat</h5>
+                                <p>12 mins ago</p>
                             </div>
                         </div>
-                        <div class="report-action">DETAILS <i class="ri-arrow-right-s-line"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Balance/Income Widget -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h3>BALANCE</h3>
-                    <i class="ri-more-2-line" style="color: #a3aed0; cursor: pointer;"></i>
-                </div>
-                <div class="balance-item">
-                    <div class="balance-meta">
-                        <div class="balance-icon income">
-                            <i class="ri-arrow-down-line"></i>
-                        </div>
-                        <div class="balance-info">
-                            <h4>Income</h4>
-                            <p>Rs. 120,000</p>
-                        </div>
-                    </div>
-                    <div style="width: 80px; height: 40px;">
-                        <canvas id="incomeSpark"></canvas>
-                    </div>
-                </div>
-                <div class="balance-item">
-                    <div class="balance-meta">
-                        <div class="balance-icon outcome">
-                            <i class="ri-arrow-up-line"></i>
-                        </div>
-                        <div class="balance-info">
-                            <h4>Outcome</h4>
-                            <p>Rs. 80,000</p>
-                        </div>
-                    </div>
-                    <div style="width: 80px; height: 40px;">
-                        <canvas id="outcomeSpark"></canvas>
+                        <div class="report-action"><i class="ri-arrow-right-line"></i></div>
                     </div>
                 </div>
             </div>

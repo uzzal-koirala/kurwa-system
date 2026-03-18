@@ -9,24 +9,6 @@ $display_role = 'Premium Member';
 $dashboard_url = '../caretaker/dashboard.php';
 ?>
 
-<!-- Universal Mobile Top Bar (Caretaker Specific) -->
-<div class="mobile-top-bar caretaker-mode">
-    <button class="mobile-toggle-btn" id="openSidebarUniversal" aria-label="Open Sidebar">
-        <i class="ri-menu-4-line"></i>
-    </button>
-    
-    <div class="mobile-user-info">
-        <div class="info">
-            <h4><?php echo htmlspecialchars($display_name); ?></h4>
-            <div class="mobile-role-badge">
-                <i class="ri-checkbox-circle-fill"></i> Verified
-            </div>
-        </div>
-        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($display_name); ?>&background=6366f1&color=fff" alt="User">
-    </div>
-</div>
-
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <aside class="sidebar sidebar-caretaker" id="sidebar">
     <div class="sidebar-header">
@@ -40,6 +22,11 @@ $dashboard_url = '../caretaker/dashboard.php';
         <!-- Desktop Collapse Toggle - Floating Mockup Style -->
         <button class="desktop-toggle" id="desktopSidebarToggle" aria-label="Toggle Sidebar">
             <i class="ri-arrow-left-s-line"></i>
+        </button>
+
+        <!-- Mobile Close Toggle -->
+        <button class="mobile-close-toggle" id="closeSidebar" aria-label="Close Sidebar">
+            <i class="ri-close-line"></i>
         </button>
     </div>
 
