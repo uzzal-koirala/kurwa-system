@@ -88,7 +88,7 @@ $requests = $conn->query("
             </div>
             <div class="details">
                 <p>Total Patients</p>
-                <h3>2.040</h3>
+                <h3>204</h3>
             </div>
         </div>
         <div class="stat-card-clinic">
@@ -106,7 +106,7 @@ $requests = $conn->query("
             </div>
             <div class="details">
                 <p>Trust Level</p>
-                <h3><?= $avg_rating ?>/5.0</h3>
+                <h3><?= rtrim(rtrim(number_format((float)$avg_rating, 1), '0'), '.') ?></h3>
             </div>
         </div>
         <div class="stat-card-clinic">
