@@ -36,9 +36,8 @@ $display_role = 'Partner';
             <span>Orders & Delivery</span>
         </a>
         
-        <a href="menu.php" class="menu-item <?php echo($current_page === 'menu') ? 'active' : ''; ?>">
-            <i class="ri-file-list-3-line"></i>
-            <span>Menu Items</span>
+        <a href="menu.php" class="menu-item <?= $current_page === 'menu' ? 'active' : '' ?>">
+            <i class="ri-store-3-line"></i> <span>Products</span>
         </a>
 
         <a href="earnings.php" class="menu-item <?php echo($current_page === 'earnings') ? 'active' : ''; ?>">

@@ -26,7 +26,7 @@ $items = $conn->query($items_query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Management | Restaurant Partner</title>
+    <title>Product Management | Restaurant Partner</title>
     <link rel="stylesheet" href="../../assets/css/restaurant_sidebar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -150,12 +150,12 @@ $items = $conn->query($items_query);
         <div class="flex items-center gap-4">
             <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
             <div>
-                <h1 class="page-title">Menu Management</h1>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Manage your food items and categories.</p>
+                <h1 class="page-title">Product Management</h1>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Manage your products and categories.</p>
             </div>
         </div>
         <div>
-            <button class="btn-add" onclick="openItemModal()"><i class="ri-add-line"></i> Add New Item</button>
+            <button class="btn-add" onclick="openItemModal()"><i class="ri-add-line"></i> Add New Product</button>
         </div>
     </div>
 

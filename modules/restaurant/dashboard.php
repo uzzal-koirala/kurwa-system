@@ -51,7 +51,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         /* Dashboard Main Layout */
         .dashboard-layout {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 3.2fr 1fr;
             gap: 25px;
             align-items: start;
         }
@@ -111,18 +111,18 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         /* Widgets Grid */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2x2 aligns better within left column */
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr); /* 4 boxes in a row */
+            gap: 15px;
             margin-bottom: 25px;
         }
 
         .metric-card {
             background: var(--white);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.03);
             transition: 0.3s;
             border: 1px solid #f1f5f9;
@@ -131,8 +131,9 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         .metric-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); }
 
         .metric-icon {
-            width: 55px; height: 55px; border-radius: 16px;
-            display: flex; align-items: center; justify-content: center; font-size: 26px;
+            width: 50px; height: 50px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            flex-shrink: 0;
         }
 
         .icon-orange { background: #fff2ed; color: var(--rest-primary); }
@@ -140,8 +141,8 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         .icon-green { background: #f0fdf4; color: #22c55e; }
         .icon-purple { background: #faf5ff; color: #a855f7; }
 
-        .metric-info h3 { margin: 0; font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .metric-info p { margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: var(--rest-secondary-dark); }
+        .metric-info h3 { margin: 0; font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .metric-info p { margin: 2px 0 0 0; font-size: 18px; font-weight: 800; color: var(--rest-secondary-dark); white-space: nowrap; }
 
         .panel {
             background: var(--white);
@@ -252,9 +253,9 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                     </div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-icon icon-green"><i class="ri-restaurant-fill"></i></div>
+                    <div class="metric-icon icon-green"><i class="ri-store-3-fill"></i></div>
                     <div class="metric-info">
-                        <h3>Menu Items</h3>
+                        <h3>Total Products</h3>
                         <p><?= number_format($menu_items) ?></p>
                     </div>
                 </div>
@@ -271,7 +272,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                 <a href="menu.php" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
                     <div style="width: 40px; height: 40px; border-radius: 10px; background: #fff2ed; color: var(--rest-primary); display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-add-line"></i></div>
-                    <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">New Item</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Add to menu</p></div>
+                    <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">New Product</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Add to store</p></div>
                 </a>
                 <a href="#" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
                     <div style="width: 40px; height: 40px; border-radius: 10px; background: #eef2ff; color: var(--rest-secondary); display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-coupon-3-line"></i></div>
@@ -397,8 +398,8 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                 <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--rest-primary); color: white; display:flex; align-items:center; justify-content:center; font-size: 20px; margin-bottom: 15px;">
                     <i class="ri-megaphone-fill"></i>
                 </div>
-                <h4 style="margin: 0 0 5px 0; font-size: 15px; font-weight: 700; color: var(--rest-secondary-dark);">Update your Menu visually!</h4>
-                <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">Restaurants with images on their menu items receive up to <strong style="color: var(--rest-primary);">65% more orders</strong>. Go to your menu settings to add images.</p>
+                <h4 style="margin: 0 0 5px 0; font-size: 15px; font-weight: 700; color: var(--rest-secondary-dark);">Update your Products visually!</h4>
+                <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">Stores with images on their products receive up to <strong style="color: var(--rest-primary);">65% more orders</strong>. Go to your settings to upload images.</p>
             </div>
             
         </div>
