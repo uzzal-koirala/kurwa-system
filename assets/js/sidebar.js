@@ -17,10 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Change icon based on state
                 const icon = desktopToggleBtn.querySelector('i');
-                if (sidebar.classList.contains('collapsed')) {
-                    icon.className = 'ri-skip-forward-line';
+                if (document.body.classList.contains('sidebar-collapsed')) {
+                    icon.className = 'ri-menu-line';
                 } else {
-                    icon.className = 'ri-skip-back-line';
+                    icon.className = 'ri-menu-line';
                 }
             }
         });
@@ -29,18 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Open/Close functionality
     function openSidebar() {
         if (window.innerWidth <= 1024) {
-            if(sidebar) {
-                sidebar.classList.remove('collapsed'); // always enforce full mobile view
-                sidebar.classList.add('active');
-            }
-            if(overlay) overlay.classList.add('active');
+            document.body.classList.add('sidebar-open');
             document.body.style.overflow = 'hidden'; 
         }
     }
 
     function closeSidebar() {
-        if(sidebar) sidebar.classList.remove('active');
-        if(overlay) overlay.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
         document.body.style.overflow = '';
     }
 
@@ -80,16 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Resize Handle
     window.addEventListener('resize', function () {
         if (window.innerWidth > 1024) {
-             if(sidebar) sidebar.classList.remove('active');
-             if(overlay) overlay.classList.remove('active');
+             document.body.classList.remove('sidebar-open');
              document.body.style.overflow = '';
              
              // Check if it was previously collapsed
              const icon = desktopToggleBtn?.querySelector('i');
-             if(sidebar && sidebar.classList.contains('collapsed') && icon) {
-                 icon.className = 'ri-skip-forward-line';
+             if(document.body.classList.contains('sidebar-collapsed') && icon) {
+                 icon.className = 'ri-menu-line';
              } else if (icon) {
-                 icon.className = 'ri-skip-back-line';
+                 icon.className = 'ri-menu-line';
              }
         }
     });

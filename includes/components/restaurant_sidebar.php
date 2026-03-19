@@ -17,7 +17,7 @@ $display_role = 'Partner';
         </div>
         
         <button class="desktop-toggle" id="desktopSidebarToggle" aria-label="Toggle Sidebar">
-            <i class="ri-arrow-left-s-line"></i>
+            <i class="ri-menu-line"></i>
         </button>
 
         <button class="mobile-close-toggle" id="closeSidebar" aria-label="Close Sidebar">

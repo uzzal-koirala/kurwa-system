@@ -282,7 +282,7 @@ body.restaurant-body {
     }
 
     body.sidebar-collapsed .brand {
-        justify-content: center;
+        display: none;
     }
 
     body.sidebar-collapsed .brand-text {
@@ -292,7 +292,6 @@ body.restaurant-body {
     body.sidebar-collapsed .desktop-toggle {
         display: block;
         margin: 0 auto;
-        transform: rotate(180deg);
     }
 
     body.sidebar-collapsed .sidebar-header {
@@ -306,7 +305,7 @@ body.restaurant-body {
 
     body.sidebar-collapsed .menu-item {
         justify-content: center;
-        padding: 14px 0;
+        padding: 8px 0;
     }
 
     body.sidebar-collapsed .menu-item i {
@@ -380,4 +379,9 @@ body.sidebar-open .sidebar-overlay {
 
     .desktop-toggle { display: none; }
     .mobile-close-toggle { display: block; }
+
+    /* Ensure mobile menu icon is visible */
+    #openSidebarUniversal {
+        display: block !important;
+    }
 }
