@@ -70,11 +70,12 @@ $stmt->close();
         }
         .image-upload-area:hover { border-color: var(--rest-primary); color: var(--rest-primary); background: #fff2ed; }
 
+        @media (max-width: 1024px) {
+            .main-content { padding: 20px; margin-left: 0 !important; }
+            .mobile-toggle { display: block !important; }
+        }
         @media (max-width: 900px) {
             .settings-container { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 768px) {
-            .main-content { padding: 20px; margin-left: 0; }
         }
     </style>
 </head>
@@ -86,7 +87,7 @@ $stmt->close();
 <div class="main-content">
     <div class="page-header">
         <div class="flex items-center gap-4">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+            <i class="ri-menu-line mobile-toggle" id="openSidebarUniversal" style="font-size: 26px; color: var(--rest-secondary-dark); cursor: pointer; display: none;"></i>
             <div>
                 <h1 class="page-title">Settings</h1>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Manage your store profile and preferences.</p>

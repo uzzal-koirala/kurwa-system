@@ -85,10 +85,13 @@ $pending_clearance = $conn->query("SELECT SUM(total_amount) as total FROM restau
         .status-completed { background: #f0fdf4; color: #22c55e; }
         .status-pending { background: #fffbeb; color: #f59e0b; }
 
-        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) { 
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .main-content { padding: 20px; margin-left: 0; }
             .balance-banner { flex-direction: column; text-align: center; gap: 25px; }
+            .mobile-toggle { display: block !important; }
+        }
+        @media (max-width: 640px) {
             .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -101,7 +104,7 @@ $pending_clearance = $conn->query("SELECT SUM(total_amount) as total FROM restau
 <div class="main-content">
     <div class="page-header">
         <div class="flex items-center gap-4">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+            <i class="ri-menu-line mobile-toggle" id="openSidebarUniversal" style="font-size: 26px; color: var(--rest-secondary-dark); cursor: pointer; display: none;"></i>
             <div>
                 <h1 class="page-title">Earnings</h1>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Track your revenue and request payouts.</p>

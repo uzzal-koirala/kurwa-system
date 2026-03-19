@@ -133,10 +133,11 @@ $items = $conn->query($items_query);
 
         @keyframes fadeInModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .main-content { padding: 20px; margin-left: 0; }
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
             .items-grid { grid-template-columns: 1fr; }
+            .mobile-toggle { display: block !important; }
         }
     </style>
 </head>
@@ -148,7 +149,7 @@ $items = $conn->query($items_query);
 <div class="main-content">
     <div class="page-header">
         <div class="flex items-center gap-4">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+            <i class="ri-menu-line mobile-toggle" id="openSidebarUniversal" style="font-size: 26px; color: var(--rest-secondary-dark); cursor: pointer; display: none;"></i>
             <div>
                 <h1 class="page-title">Product Management</h1>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Manage your products and categories.</p>

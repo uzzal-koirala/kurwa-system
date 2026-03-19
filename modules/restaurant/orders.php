@@ -179,11 +179,9 @@ $orders = $conn->query($query);
         .empty-state h3 { font-size: 18px; color: var(--text-main); margin: 0 0 10px 0; font-weight: 700; }
 
         @media (max-width: 1024px) {
-            .orders-table { display: block; overflow-x: auto; white-space: nowrap; }
-        }
-
-        @media (max-width: 768px) {
             .main-content { padding: 20px; margin-left: 0; }
+            .orders-table { display: block; overflow-x: auto; white-space: nowrap; }
+            .mobile-toggle { display: block !important; }
         }
     </style>
 </head>
@@ -195,7 +193,7 @@ $orders = $conn->query($query);
 <div class="main-content">
     <div class="page-header">
         <div class="flex items-center gap-4">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+            <i class="ri-menu-line mobile-toggle" id="openSidebarUniversal" style="font-size: 26px; color: var(--rest-secondary-dark); cursor: pointer; display: none;"></i>
             <div>
                 <h1 class="page-title">Orders Management</h1>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">View and update the status of your customer orders.</p>

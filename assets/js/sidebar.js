@@ -28,10 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mobile Open/Close functionality
     function openSidebar() {
-        if (window.innerWidth <= 1024) {
-            document.body.classList.add('sidebar-open');
-            document.body.style.overflow = 'hidden'; 
-        }
+        document.body.classList.add('sidebar-open');
+        document.body.style.overflow = 'hidden'; 
     }
 
     function closeSidebar() {

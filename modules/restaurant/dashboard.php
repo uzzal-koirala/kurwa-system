@@ -197,11 +197,18 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
             .metrics-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 768px) {
-            .metrics-grid { grid-template-columns: 1fr; }
+        @media (max-width: 1024px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
             .main-content { padding: 20px; margin-left: 0; }
             .welcome-banner { flex-direction: column; text-align: center; gap: 20px; }
             .welcome-illustration { transform: none; }
+            .page-header { margin-bottom: 15px; }
+            .mobile-toggle { display: block !important; }
+        }
+
+        @media (max-width: 640px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .dashboard-layout { gap: 15px; }
         }
     </style>
 </head>
@@ -212,7 +219,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
 
 <div class="main-content">
     <div class="page-header">
-        <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+        <i class="ri-menu-line mobile-toggle" id="openSidebarUniversal" style="font-size: 26px; color: var(--rest-secondary-dark); cursor: pointer; display: none;"></i>
         <div style="flex-grow: 1;"></div>
         <button style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; color: var(--text-main); transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02)">
             <i class="ri-notification-3-line" style="font-size: 20px;"></i>
