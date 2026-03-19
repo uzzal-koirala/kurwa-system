@@ -51,7 +51,7 @@ $dashboard_url = '../caretaker/dashboard.php';
             <span>Messaging</span>
         </a>
         
-        <a href="support.php" class="menu-item <?php echo($current_page === 'support') ? 'active' : ''; ?>">
+        <a href="settings.php" class="menu-item <?php echo($current_page === 'settings') ? 'active' : ''; ?>">
             <i class="ri-settings-4-line"></i>
             <span>Settings</span>
         </a>
