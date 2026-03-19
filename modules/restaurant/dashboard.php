@@ -48,6 +48,14 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
             transition: all 0.3s ease;
         }
 
+        /* Dashboard Main Layout */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
         /* Welcome Banner */
         .welcome-banner {
             background: linear-gradient(135deg, #1b2559 0%, #2f3cff 100%);
@@ -60,7 +68,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
             box-shadow: 0 15px 35px rgba(47, 60, 255, 0.2);
             position: relative;
             overflow: hidden;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .welcome-banner::before {
@@ -87,15 +95,15 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         }
 
         .welcome-illustration {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
+            font-size: 50px;
             border: 1px solid rgba(255,255,255,0.2);
             transform: rotate(10deg);
         }
@@ -103,15 +111,15 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         /* Widgets Grid */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr); /* 2x2 aligns better within left column */
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .metric-card {
             background: var(--white);
             border-radius: 20px;
-            padding: 20px 25px;
+            padding: 20px;
             display: flex;
             align-items: center;
             gap: 20px;
@@ -134,13 +142,6 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
 
         .metric-info h3 { margin: 0; font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .metric-info p { margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: var(--rest-secondary-dark); }
-
-        /* Dashboard Main Layout */
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
 
         .panel {
             background: var(--white);
@@ -217,51 +218,55 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         </button>
     </div>
 
-    <!-- Welcome Banner -->
-    <div class="welcome-banner">
-        <div class="welcome-text">
-            <h1>Welcome back, <?= htmlspecialchars($restaurant['name']) ?>! 🎉</h1>
-            <p>Here is what's happening with your restaurant today.</p>
-        </div>
-        <div class="welcome-illustration">
-            <i class="ri-store-3-line" style="color: white; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));"></i>
-        </div>
-    </div>
-
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <div class="metric-icon icon-orange"><i class="ri-wallet-3-fill"></i></div>
-            <div class="metric-info">
-                <h3>Total Revenue</h3>
-                <p>Rs. <?= number_format($total_revenue, 2) ?></p>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon icon-blue"><i class="ri-shopping-bag-3-fill"></i></div>
-            <div class="metric-info">
-                <h3>Total Orders</h3>
-                <p><?= number_format($total_orders) ?></p>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon icon-green"><i class="ri-restaurant-fill"></i></div>
-            <div class="metric-info">
-                <h3>Menu Items</h3>
-                <p><?= number_format($menu_items) ?></p>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon icon-purple"><i class="ri-time-fill"></i></div>
-            <div class="metric-info">
-                <h3>Pending Orders</h3>
-                <p><?= number_format($pending_orders) ?></p>
-            </div>
-        </div>
-    </div>
-
+    <!-- Main 2-Column Dashboard Structure -->
     <div class="dashboard-layout">
+        
         <!-- Left Column -->
-        <div>
+        <div class="left-col">
+            
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h1>Welcome back, <?= htmlspecialchars($restaurant['name']) ?></h1>
+                    <p>Here is what is happening with your restaurant today.</p>
+                </div>
+                <div class="welcome-illustration">
+                    <i class="ri-store-3-line" style="color: white; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));"></i>
+                </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon icon-orange"><i class="ri-wallet-3-fill"></i></div>
+                    <div class="metric-info">
+                        <h3>Total Revenue</h3>
+                        <p>Rs. <?= number_format($total_revenue, 2) ?></p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon icon-blue"><i class="ri-shopping-bag-3-fill"></i></div>
+                    <div class="metric-info">
+                        <h3>Total Orders</h3>
+                        <p><?= number_format($total_orders) ?></p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon icon-green"><i class="ri-restaurant-fill"></i></div>
+                    <div class="metric-info">
+                        <h3>Menu Items</h3>
+                        <p><?= number_format($menu_items) ?></p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon icon-purple"><i class="ri-time-fill"></i></div>
+                    <div class="metric-info">
+                        <h3>Pending Orders</h3>
+                        <p><?= number_format($pending_orders) ?></p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Quick Actions Banner -->
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                 <a href="menu.php" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
@@ -322,10 +327,41 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                     <?php endif; ?>
                 </div>
             </div>
+            
         </div>
 
-        <!-- Right Column -->
-        <div>
+        <!-- Right Side Column -->
+        <div class="right-col">
+            
+            <!-- Customer Satisfaction -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Customer Satisfaction</h2>
+                    <i class="ri-more-2-fill" style="color: var(--text-muted); cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='var(--rest-primary)'" onmouseout="this.style.color='var(--text-muted)'"></i>
+                </div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="font-size: 48px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; line-height: 1;"><?= number_format($restaurant['rating'] > 0 ? $restaurant['rating'] : 4.8, 1) ?></h1>
+                    <div style="color: #f59e0b; font-size: 20px; margin: 10px 0;">
+                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0; font-weight: 500;">Based on overall reviews</p>
+                </div>
+                <div style="border-top: 1px dashed #e2e8f0; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+                        <span style="color: var(--text-main); font-weight: 600;">Food Quality</span>
+                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.9</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+                        <span style="color: var(--text-main); font-weight: 600;">Delivery Time</span>
+                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.6</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                        <span style="color: var(--text-main); font-weight: 600;">Packaging</span>
+                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.8</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Top Products -->
             <div class="panel">
                 <div class="panel-header">
@@ -364,35 +400,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                 <h4 style="margin: 0 0 5px 0; font-size: 15px; font-weight: 700; color: var(--rest-secondary-dark);">Update your Menu visually!</h4>
                 <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">Restaurants with images on their menu items receive up to <strong style="color: var(--rest-primary);">65% more orders</strong>. Go to your menu settings to add images.</p>
             </div>
-
-            <!-- Customer Satisfaction -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Customer Satisfaction</h2>
-                    <i class="ri-more-2-fill" style="color: var(--text-muted); cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='var(--rest-primary)'" onmouseout="this.style.color='var(--text-muted)'"></i>
-                </div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h1 style="font-size: 48px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; line-height: 1;"><?= number_format($restaurant['rating'] > 0 ? $restaurant['rating'] : 4.8, 1) ?></h1>
-                    <div style="color: #f59e0b; font-size: 20px; margin: 10px 0;">
-                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 13px; margin: 0; font-weight: 500;">Based on overall reviews</p>
-                </div>
-                <div style="border-top: 1px dashed #e2e8f0; padding-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
-                        <span style="color: var(--text-main); font-weight: 600;">Food Quality</span>
-                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.9</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
-                        <span style="color: var(--text-main); font-weight: 600;">Delivery Time</span>
-                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.6</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                        <span style="color: var(--text-main); font-weight: 600;">Packaging</span>
-                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.8</span>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
