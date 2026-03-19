@@ -229,12 +229,34 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         }
 
         @media (max-width: 640px) {
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+            .metric-card { 
+                padding: 15px; 
+                border-radius: 10px; 
+                display: flex; 
+                align-items: center; 
+                gap: 12px; 
+            }
+            .metric-icon { 
+                width: 38px; 
+                height: 38px; 
+                font-size: 18px; 
+                border-radius: 10px; 
+                flex-shrink: 0;
+            }
+            .metric-info h3 { 
+                font-size: 10px; 
+                text-transform: uppercase; 
+                font-weight: 600; 
+                letter-spacing: 0.5px;
+                margin-bottom: 2px;
+            }
+            .metric-info p { 
+                font-size: 18px !important; 
+                font-weight: 800; 
+                color: var(--rest-secondary-dark);
+            }
             .quick-actions-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .metric-card { padding: 8px 10px; gap: 8px; border-radius: 12px; }
-            .metric-icon { width: 30px; height: 30px; font-size: 14px; border-radius: 10px; }
-            .metric-info h3 { font-size: 8px; }
-            .metric-info p { font-size: 13px; }
             .quick-action-card { padding: 10px; gap: 8px; border-radius: 12px; }
             .quick-action-icon { width: 30px; height: 30px; font-size: 16px; border-radius: 10px; }
             .quick-action-card h4 { font-size: 11px !important; }
@@ -297,7 +319,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                     <div class="metric-icon icon-orange"><i class="ri-wallet-3-fill"></i></div>
                     <div class="metric-info">
                         <h3>Total Revenue</h3>
-                        <p>Rs. <?= number_format($total_revenue, 2) ?></p>
+                        <p>Rs. <?= number_format($total_revenue, 0) ?></p>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -308,14 +330,14 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                     </div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-icon icon-green"><i class="ri-store-3-fill"></i></div>
+                    <div class="metric-icon icon-green" style="background: #f0fdf4; color: #22c55e;"><i class="ri-store-3-fill"></i></div>
                     <div class="metric-info">
                         <h3>Total Products</h3>
                         <p><?= number_format($menu_items) ?></p>
                     </div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-icon icon-purple"><i class="ri-time-fill"></i></div>
+                    <div class="metric-icon icon-purple" style="background: #faf5ff; color: #a855f7;"><i class="ri-time-fill"></i></div>
                     <div class="metric-info">
                         <h3>Pending Orders</h3>
                         <p><?= number_format($pending_orders) ?></p>
