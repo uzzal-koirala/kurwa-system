@@ -60,7 +60,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         .welcome-banner {
             background: linear-gradient(135deg, #1b2559 0%, #2f3cff 100%);
             border-radius: 20px;
-            padding: 30px 40px;
+            padding: 25px 35px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -69,6 +69,9 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
             position: relative;
             overflow: hidden;
             margin-bottom: 25px;
+            width: fit-content;
+            min-width: 450px;
+            max-width: 100%;
         }
 
         .welcome-banner::before {
@@ -192,23 +195,86 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         .status-pending { background: #fffbeb; color: #f59e0b; }
         .status-completed { background: #f0fdf4; color: #22c55e; }
 
+        /* Quick Actions Grid */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .quick-action-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .quick-action-card:hover { transform: translateY(-2px); border-color: var(--rest-primary-light); box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
+
+        .quick-action-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+
         @media (max-width: 1200px) {
             .dashboard-layout { grid-template-columns: 1fr; }
             .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 1024px) {
             .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
             .main-content { padding: 20px; margin-left: 0; }
-            .welcome-banner { flex-direction: column; text-align: center; gap: 20px; }
-            .welcome-illustration { transform: none; }
+            .welcome-banner { padding: 20px; }
+            .welcome-text h1 { font-size: 22px; }
+            .welcome-text p { font-size: 13px; }
+            .welcome-illustration { display: none; }
             .page-header { margin-bottom: 15px; }
             .mobile-toggle { display: block !important; }
         }
 
         @media (max-width: 640px) {
-            .metrics-grid { grid-template-columns: 1fr; }
-            .dashboard-layout { gap: 15px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .metric-card { padding: 8px 10px; gap: 8px; border-radius: 12px; }
+            .metric-icon { width: 30px; height: 30px; font-size: 14px; border-radius: 10px; }
+            .metric-info h3 { font-size: 8px; }
+            .metric-info p { font-size: 13px; }
+            .quick-action-card { padding: 10px; gap: 8px; border-radius: 12px; }
+            .quick-action-icon { width: 30px; height: 30px; font-size: 16px; border-radius: 10px; }
+            .quick-action-card h4 { font-size: 11px !important; }
+            .quick-action-card p { font-size: 8px !important; }
+            .dashboard-layout { gap: 10px; }
+            .welcome-banner { 
+                padding: 15px; 
+                border-radius: 12px; 
+                text-align: left; 
+                align-items: flex-start; 
+                margin-bottom: 20px; 
+                width: 100%; 
+                min-width: 0; 
+                box-sizing: border-box;
+            }
+            .welcome-text h1 { font-size: 18px !important; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.3; }
+            .welcome-text p { font-size: 11px !important; word-wrap: break-word; line-height: 1.4; }
+            .welcome-banner::before { display: none; }
+            .panel { padding: 15px; border-radius: 16px; margin-bottom: 20px; }
+            .chart-container { height: 220px; }
+            .order-item { padding: 10px; border-radius: 12px; gap: 10px; }
+            .order-avatar { width: 35px; height: 35px; font-size: 14px; }
+            .order-amount { font-size: 13px; }
+            .panel-title { font-size: 15px; }
+            .main-content { padding: 15px; overflow-x: hidden; }
         }
     </style>
 </head>
@@ -275,19 +341,23 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
                 </div>
             </div>
 
-            <!-- Quick Actions Banner -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
-                <a href="menu.php" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
-                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #fff2ed; color: var(--rest-primary); display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-add-line"></i></div>
+            <!-- Quick Actions -->
+            <div class="quick-actions-grid">
+                <a href="menu.php" class="quick-action-card">
+                    <div class="quick-action-icon" style="background: #fff2ed; color: var(--rest-primary);"><i class="ri-add-line"></i></div>
                     <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">New Product</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Add to store</p></div>
                 </a>
-                <a href="#" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
-                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #eef2ff; color: var(--rest-secondary); display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-coupon-3-line"></i></div>
+                <a href="#" class="quick-action-card">
+                    <div class="quick-action-icon" style="background: #eef2ff; color: var(--rest-secondary);"><i class="ri-coupon-3-line"></i></div>
                     <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">Promotions</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Create offers</p></div>
                 </a>
-                <a href="settings.php" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
-                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #f0fdf4; color: #22c55e; display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-store-2-line"></i></div>
+                <a href="settings.php" class="quick-action-card">
+                    <div class="quick-action-icon" style="background: #f0fdf4; color: #22c55e;"><i class="ri-store-2-line"></i></div>
                     <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">Timing</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Store hours</p></div>
+                </a>
+                <a href="#" class="quick-action-card">
+                    <div class="quick-action-icon" style="background: #faf5ff; color: #a855f7;"><i class="ri-star-line"></i></div>
+                    <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">Reviews</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Check ratings</p></div>
                 </a>
             </div>
 
