@@ -24,76 +24,12 @@ $pending_clearance = $conn->query("SELECT SUM(total_amount) as total FROM restau
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Earnings | Restaurant Partner</title>
     <link rel="stylesheet" href="../../assets/css/restaurant_sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/restaurant_earnings.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-title { font-size: 26px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; letter-spacing: -0.5px; }
-        .main-content { margin-left: var(--sidebar-width); padding: 40px 50px; transition: all 0.3s ease; }
-
-        /* Balance Banner */
-        .balance-banner {
-            background: linear-gradient(135deg, #1b2559 0%, #2f3cff 100%);
-            border-radius: 20px;
-            padding: 40px;
-            color: white;
-            box-shadow: 0 15px 35px rgba(47, 60, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .balance-banner::before {
-            content: ''; position: absolute; top: -50%; right: -10%; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;
-        }
-
-        .balance-info h3 { margin: 0 0 10px 0; font-size: 16px; font-weight: 600; color: rgba(255,255,255,0.8); }
-        .balance-info h1 { margin: 0; font-size: 48px; font-weight: 800; letter-spacing: -1px; }
-        
-        .btn-withdraw {
-            background: white; color: var(--rest-secondary-dark); border: none; padding: 15px 30px; border-radius: 14px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .btn-withdraw:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-
-        /* Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card {
-            background: white; border-radius: 20px; padding: 25px; border: 1px solid #f1f5f9; box-shadow: 0 5px 20px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 20px;
-        }
-        .stat-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .icon-1 { background: #fff2ed; color: var(--rest-primary); }
-        .icon-2 { background: #eef2ff; color: var(--rest-secondary); }
-        .icon-3 { background: #f0fdf4; color: #22c55e; }
-        
-        .stat-info h4 { margin: 0 0 5px 0; font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        .stat-info h2 { margin: 0; font-size: 24px; font-weight: 800; color: var(--rest-secondary-dark); }
-
-        /* History Table */
-        .panel { background: white; border-radius: 20px; padding: 30px; border: 1px solid #f1f5f9; box-shadow: 0 5px 20px rgba(0,0,0,0.02); }
-        .panel-header { margin-bottom: 25px; }
-        .panel-title { font-size: 18px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; }
-
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        td { color: var(--text-main); font-weight: 500; }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .status-completed { background: #f0fdf4; color: #22c55e; }
-        .status-pending { background: #fffbeb; color: #f59e0b; }
-
-        @media (max-width: 1024px) { 
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .main-content { padding: 20px; margin-left: 0; }
-            .balance-banner { flex-direction: column; text-align: center; gap: 25px; }
-            .mobile-toggle { display: block !important; }
-        }
-        @media (max-width: 640px) {
-            .stats-grid { grid-template-columns: 1fr; }
-        }
+        /* Small local overrides if needed */
+        .mobile-toggle { display: block !important; }
     </style>
 </head>
 <body class="restaurant-body">
@@ -107,100 +43,179 @@ $pending_clearance = $conn->query("SELECT SUM(total_amount) as total FROM restau
             <i class="ri-menu-line mobile-toggle" id="openSidebarUniversal" style="font-size: 26px; color: var(--rest-secondary-dark); cursor: pointer; display: none;"></i>
             <div>
                 <h1 class="page-title">Earnings</h1>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Track your revenue and request payouts.</p>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Track your revenue and manage payouts.</p>
             </div>
         </div>
     </div>
 
-    <div class="balance-banner">
-        <div class="balance-info">
-            <h3>Available Balance</h3>
-            <h1>Rs. <?= number_format($available_balance, 2) ?></h1>
+    <!-- Earnings Hero Section -->
+    <div class="earnings-hero">
+        <!-- Left: Premium Balance Card -->
+        <div class="balance-card-large">
+            <div class="balance-header">
+                <div class="chip-icon"></div>
+                <div class="brand-logo">KURWA PARTNER</div>
+            </div>
+            <div class="balance-body">
+                <span class="label">Available Balance</span>
+                <h2 class="amount">Rs. <?= number_format($available_balance, 2) ?></h2>
+            </div>
+            <div class="balance-footer">
+                <div class="card-holder">
+                    <span class="label">Restaurant ID</span>
+                    <span class="name">#RST-<?= str_pad($restaurant_id, 5, '0', STR_PAD_LEFT) ?></span>
+                </div>
+                <div style="opacity: 0.8; font-weight: 800; font-size: 20px;">VISA</div>
+            </div>
         </div>
-        <div>
-            <button class="btn-withdraw"><i class="ri-bank-card-line" style="margin-right: 8px;"></i> Request Payout</button>
+
+        <!-- Right: Payout Form -->
+        <div class="payout-card">
+            <h2>Quick Payout</h2>
+            <div class="amount-selector">
+                <div class="amount-preset" onclick="setPayoutAmount(5000)">Rs. 5k</div>
+                <div class="amount-preset active" onclick="setPayoutAmount(10000)">Rs. 10k</div>
+                <div class="amount-preset" onclick="setPayoutAmount(25000)">Rs. 25k</div>
+                <div class="amount-preset" onclick="setPayoutAmount(50000)">Rs. 50k</div>
+            </div>
+
+            <div class="custom-amount">
+                <label>Or Enter Custom Amount</label>
+                <div class="input-wrapper">
+                    <span>Rs.</span>
+                    <input type="number" id="payoutAmount" value="10000" min="1000">
+                </div>
+            </div>
+
+            <button class="payout-submit-btn" onclick="requestPayout()">
+                <i class="ri-send-plane-fill"></i> Request Quick Payout
+            </button>
         </div>
     </div>
 
+    <!-- Refined Stats Grid -->
     <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon icon-1"><i class="ri-money-rupee-circle-fill"></i></div>
-            <div class="stat-info">
-                <h4>Net Earnings</h4>
-                <h2>Rs. <?= number_format($total_earnings, 2) ?></h2>
+        <div class="stat-card-refined">
+            <div class="icon-box" style="background: #fff2ed; color: #ff7e5f;"><i class="ri-money-rupee-circle-fill"></i></div>
+            <div style="flex-grow: 1;">
+                <div class="stat-label">Net Earnings</div>
+                <div class="stat-val">Rs. <?= number_format($total_earnings, 2) ?></div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon icon-2"><i class="ri-history-line"></i></div>
-            <div class="stat-info">
-                <h4>Pending Clearance</h4>
-                <h2>Rs. <?= number_format($pending_clearance, 2) ?></h2>
+        <div class="stat-card-refined">
+            <div class="icon-box" style="background: #eef2ff; color: #2f3cff;"><i class="ri-time-line"></i></div>
+            <div style="flex-grow: 1;">
+                <div class="stat-label">Pending Clearance</div>
+                <div class="stat-val">Rs. <?= number_format($pending_clearance, 2) ?></div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon icon-3"><i class="ri-check-double-line"></i></div>
-            <div class="stat-info">
-                <h4>Total Payouts</h4>
-                <h2>Rs. <?= number_format($total_withdrawals, 2) ?></h2>
+        <div class="stat-card-refined">
+            <div class="icon-box" style="background: #f0fdf4; color: #22c55e;"><i class="ri-hand-coin-fill"></i></div>
+            <div style="flex-grow: 1;">
+                <div class="stat-label">Total Payouts</div>
+                <div class="stat-val">Rs. <?= number_format($total_withdrawals, 2) ?></div>
             </div>
         </div>
     </div>
 
-    <div class="panel">
-        <div class="panel-header">
-            <h2 class="panel-title">Transaction History</h2>
-        </div>
+    <!-- History Panel -->
+    <div class="history-section">
+        <h2 class="history-header">Recent Transactions</h2>
         <div style="overflow-x: auto;">
-            <table>
+            <table class="transaction-table">
                 <thead>
                     <tr>
-                        <th>Transaction ID</th>
-                        <th>Date</th>
+                        <th>Transaction Detail</th>
+                        <th>Date & Time</th>
                         <th>Type</th>
-                        <th>Amount</th>
+                        <th style="text-align: right;">Amount</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    // Displaying mock recent transactions for aesthetics
                     $trans = $conn->query("SELECT id, total_amount, created_at, status FROM restaurant_orders WHERE restaurant_id = $restaurant_id ORDER BY created_at DESC LIMIT 5");
                     if($trans && $trans->num_rows > 0):
                         while($t = $trans->fetch_assoc()):
                     ?>
                     <tr>
-                        <td style="font-weight: 700;">#TXN-<?= str_pad($t['id'], 6, '0', STR_PAD_LEFT) ?></td>
-                        <td><?= date('M d, Y h:i A', strtotime($t['created_at'])) ?></td>
-                        <td>Order Revenue</td>
-                        <td style="font-weight: 800; color: var(--rest-secondary-dark);">+ Rs. <?= number_format($t['total_amount'], 2) ?></td>
                         <td>
-                            <span class="status-badge <?= $t['status'] === 'completed' ? 'status-completed' : 'status-pending' ?>">
+                            <div class="type-cell">
+                                <div class="type-icon earning"><i class="ri-arrow-left-down-line"></i></div>
+                                <div class="type-info">
+                                    <h4>Order Revenue</h4>
+                                    <p>Order #<?= str_pad($t['id'], 6, '0', STR_PAD_LEFT) ?></p>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size: 13px; font-weight: 500; color: var(--text-main);">
+                            <?= date('M d, Y', strtotime($t['created_at'])) ?><br>
+                            <span style="font-size: 11px; color: var(--text-muted);"><?= date('h:i A', strtotime($t['created_at'])) ?></span>
+                        </td>
+                        <td><span style="font-weight: 700; font-size: 12px; color: var(--rest-secondary); background: #eef2ff; padding: 4px 10px; border-radius: 6px;">EARNING</span></td>
+                        <td class="amount-cell positive">+ Rs. <?= number_format($t['total_amount'], 2) ?></td>
+                        <td>
+                            <span class="status-tag <?= $t['status'] === 'completed' ? 'success' : 'pending' ?>">
                                 <?= ucfirst($t['status'] === 'completed' ? 'Cleared' : 'Pending') ?>
                             </span>
                         </td>
                     </tr>
                     <?php endwhile; else: ?>
-                    <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">No transactions found.</td></tr>
+                    <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600;">No transactions found.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
-    <div class="panel" style="margin-top: 30px;">
-        <div class="panel-header">
-            <h2 class="panel-title">Revenue Trend</h2>
-        </div>
-        <div style="height: 300px; position: relative;">
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-panel">
+        <h2 class="history-header">Revenue Trend (Last 6 Months)</h2>
+        <div style="height: 350px;">
             <canvas id="earningsChart"></canvas>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../assets/js/sidebar.js"></script>
 <script>
+    function setPayoutAmount(amount) {
+        document.getElementById('payoutAmount').value = amount;
+        document.querySelectorAll('.amount-preset').forEach(p => {
+            if (p.innerText.includes(amount >= 1000 ? (amount/1000) + 'k' : amount)) {
+                p.classList.add('active');
+            } else {
+                p.classList.remove('active');
+            }
+        });
+    }
+
+    function requestPayout() {
+        const amount = document.getElementById('payoutAmount').value;
+        if(amount < 1000) {
+            Swal.fire('Oops!', 'Minimum payout amount is Rs. 1,000', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Request Payout?',
+            text: `You are about to request a payout of Rs. ${parseFloat(amount).toLocaleString()}`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#2f3cff',
+            confirmButtonText: 'Yes, Request Payout'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire('Request Sent!', 'Your payout request has been sent for processing.', 'success');
+            }
+        });
+    }
+
     const ctx = document.getElementById('earningsChart').getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(47, 60, 255, 0.2)');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+    gradient.addColorStop(0, 'rgba(47, 60, 255, 0.15)');
     gradient.addColorStop(1, 'rgba(47, 60, 255, 0)');
 
     new Chart(ctx, {
@@ -208,22 +223,44 @@ $pending_clearance = $conn->query("SELECT SUM(total_amount) as total FROM restau
         data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             datasets: [{
-                label: 'Monthly Revenue',
+                label: 'Revenue',
                 data: [45000, 52000, 48000, 61000, 55000, 67000],
                 borderColor: '#2f3cff',
                 backgroundColor: gradient,
                 borderWidth: 3,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#2f3cff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1b2559',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    padding: 12,
+                    cornerRadius: 10,
+                    displayColors: false
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#f1f5f9' } },
-                x: { grid: { display: false } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { borderDash: [5, 5], color: '#f1f5f9', drawBorder: false },
+                    ticks: { color: '#94a3b8', font: { size: 12, weight: '600' } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { size: 12, weight: '600' } }
+                }
             }
         }
     });
