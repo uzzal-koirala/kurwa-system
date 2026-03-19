@@ -36,17 +36,17 @@ $dashboard_url = '../caretaker/dashboard.php';
             <span>Dashboard</span>
         </a>
 
-        <a href="#" class="menu-item <?php echo($current_page === 'bookings') ? 'active' : ''; ?>">
+        <a href="bookings.php" class="menu-item <?php echo($current_page === 'bookings') ? 'active' : ''; ?>">
             <i class="ri-calendar-check-line"></i>
-            <span>My Schedule</span>
+            <span>My Bookings</span>
         </a>
         
-        <a href="#" class="menu-item <?php echo($current_page === 'earnings') ? 'active' : ''; ?>">
+        <a href="earnings.php" class="menu-item <?php echo($current_page === 'earnings') ? 'active' : ''; ?>">
             <i class="ri-funds-line"></i>
             <span>Earnings</span>
         </a>
 
-        <a href="../user/chat.php" class="menu-item <?php echo($current_page === 'chat') ? 'active' : ''; ?>">
+        <a href="chat.php" class="menu-item <?php echo($current_page === 'chat') ? 'active' : ''; ?>">
             <i class="ri-chat-3-line"></i>
             <span>Messaging</span>
         </a>

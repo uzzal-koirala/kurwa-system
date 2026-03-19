@@ -1,0 +1,310 @@
+:root {
+    --primary: #4361ee;
+    --primary-light: #eef2ff;
+    --secondary: #1b2559;
+    --bg-color: #f4f7fe;
+    --white: #ffffff;
+    --text-main: #1b2559;
+    --text-muted: #a3aed0;
+    --success: #2ed573;
+    --pending: #ff9f43;
+    --danger: #ff4757;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --border-radius: 20px;
+}
+
+body.caretaker-body {
+    background-color: var(--bg-color);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.main-content {
+    margin-left: 280px;
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-right {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 20px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--danger);
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Schedule Grid */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+}
+
+.content-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.card-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--secondary);
+}
+
+/* FullCalendar Customization */
+#calendar {
+    font-family: 'Poppins', sans-serif;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+.fc .fc-button-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    border-radius: 12px;
+    padding: 8px 15px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #3553ce;
+    border-color: #3553ce;
+}
+
+.fc .fc-daygrid-day-number {
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 8px;
+}
+
+.fc .fc-event {
+    border-radius: 8px;
+    padding: 3px 6px;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Upcoming List */
+.upcoming-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.upcoming-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8faff;
+    border-radius: 16px;
+    transition: transform 0.2s ease;
+}
+
+.upcoming-item:hover {
+    transform: translateX(5px);
+}
+
+.item-date {
+    width: 55px;
+    height: 55px;
+    background: var(--white);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(67, 97, 238, 0.1);
+}
+
+.item-date .day {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.item-date .month {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-info h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    color: var(--secondary);
+}
+
+.item-info p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.status-tag.pending { background: #fff8e6; color: var(--pending); }
+.status-tag.confirmed { background: #ecf2ff; color: var(--primary); }
+.status-tag.completed { background: #e6fffa; color: var(--success); }
+
+.view-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: none;
+    background: var(--white);
+    color: var(--text-muted);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Availability Card */
+.availability-card p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.update-availability-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.update-availability-btn:hover {
+    background: #3553ce;
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.2);
+}
+
+/* Switch Small */
+.switch-small {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.switch-small input { opacity: 0; width: 0; height: 0; }
+
+.slider-small {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e0e5f2;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider-small:before {
+    position: absolute;
+    content: "";
+    height: 16px; width: 16px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-small { background-color: var(--success); }
+input:checked + .slider-small:before { transform: translateX(18px); }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .schedule-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    
+    .dashboard-header .mobile-toggle {
+        display: block !important;
+    }
+    
+    .calendar-section {
+        order: 2;
+    }
+    
+    .upcoming-section {
+        order: 1;
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
