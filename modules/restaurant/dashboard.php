@@ -1,6 +1,5 @@
 <?php
 require_once '../../includes/core/config.php';
-session_start();
 
 if (!isset($_SESSION['restaurant_id'])) {
     header("Location: login.php");
@@ -34,62 +33,98 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
     <link rel="stylesheet" href="../../assets/css/restaurant_sidebar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--rest-secondary-dark);
-            margin: 0;
-            letter-spacing: -0.5px;
+            margin-bottom: 25px;
         }
 
         .main-content {
             margin-left: var(--sidebar-width);
-            padding: 40px 50px;
+            padding: 30px 40px;
             transition: all 0.3s ease;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #1b2559 0%, #2f3cff 100%);
+            border-radius: 20px;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 15px 35px rgba(47, 60, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+        }
+
+        .welcome-text p {
+            margin: 0;
+            font-size: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .welcome-illustration {
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transform: rotate(10deg);
         }
 
         /* Widgets Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
+            gap: 20px;
             margin-bottom: 30px;
         }
 
         .metric-card {
             background: var(--white);
-            border-radius: var(--border-radius);
-            padding: 25px;
+            border-radius: 20px;
+            padding: 20px 25px;
             display: flex;
             align-items: center;
             gap: 20px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
             transition: 0.3s;
-            border: 1px solid transparent;
+            border: 1px solid #f1f5f9;
         }
 
-        .metric-card:hover {
-            transform: translateY(-5px);
-            border-color: #f1f5f9;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        }
+        .metric-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.06); }
 
         .metric-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
+            width: 55px; height: 55px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
         }
 
         .icon-orange { background: #fff2ed; color: var(--rest-primary); }
@@ -97,24 +132,11 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         .icon-green { background: #f0fdf4; color: #22c55e; }
         .icon-purple { background: #faf5ff; color: #a855f7; }
 
-        .metric-info h3 {
-            margin: 0;
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .metric-info h3 { margin: 0; font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .metric-info p { margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: var(--rest-secondary-dark); }
 
-        .metric-info p {
-            margin: 5px 0 0 0;
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--rest-secondary-dark);
-        }
-
-        /* Chart & Orders Section */
-        .dashboard-content {
+        /* Dashboard Main Layout */
+        .dashboard-layout {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 25px;
@@ -122,136 +144,62 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
 
         .panel {
             background: var(--white);
-            border-radius: var(--border-radius);
+            border-radius: 20px;
             padding: 25px;
-            box-shadow: var(--shadow);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9;
             margin-bottom: 25px;
         }
 
-        .panel-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--rest-secondary-dark);
-            margin: 0;
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
         }
 
-        .view-all {
-            color: var(--rest-primary);
-            font-weight: 600;
-            font-size: 13px;
-            text-decoration: none;
-            transition: 0.2s;
+        .panel-title { font-size: 17px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
         }
 
-        .view-all:hover {
-            opacity: 0.8;
-            text-decoration: underline;
+        /* Top Products */
+        .top-products { display: flex; flex-direction: column; gap: 15px; }
+        .product-item {
+            display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 1px solid #f1f5f9;
         }
+        .product-item:last-child { border-bottom: none; }
+        .product-img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; background: #eef2ff; }
+        .product-info { flex-grow: 1; }
+        .product-info h4 { margin: 0; font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .product-info p { margin: 2px 0 0 0; font-size: 12px; color: var(--text-muted); }
+        .product-sales { font-weight: 800; color: var(--rest-primary); font-size: 14px; }
 
         /* Order List */
-        .order-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
+        .order-list { display: flex; flex-direction: column; gap: 15px; }
         .order-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-radius: 16px;
-            background: #f8fafc;
-            border: 1px solid #f1f5f9;
-            transition: 0.2s;
+            display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 16px; background: #f8fafc; border: 1px solid #f1f5f9; transition: 0.2s;
         }
-
-        .order-item:hover {
-            background: #fff;
-            border-color: var(--rest-primary-light);
-            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.05);
-        }
-
-        .order-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: var(--rest-secondary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
+        .order-item:hover { background: #fff; border-color: var(--rest-primary-light); }
+        .order-avatar { width: 45px; height: 45px; border-radius: 12px; background: var(--rest-secondary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
         .order-details { flex-grow: 1; overflow: hidden; }
-
-        .order-details h4 {
-            margin: 0 0 3px 0;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .order-details p {
-            margin: 0;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .order-amount {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--rest-secondary-dark);
-            text-align: right;
-        }
-
-        .order-status {
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 700;
-            display: inline-block;
-            margin-top: 5px;
-        }
-
+        .order-details h4 { margin: 0 0 3px 0; font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .order-details p { margin: 0; font-size: 12px; color: var(--text-muted); }
+        .order-amount { font-size: 15px; font-weight: 800; color: var(--rest-secondary-dark); text-align: right; }
+        .status-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; display: inline-block; margin-top: 5px; }
         .status-pending { background: #fffbeb; color: #f59e0b; }
         .status-completed { background: #f0fdf4; color: #22c55e; }
 
-        .chart-placeholder {
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(180deg, rgba(255,126,95,0.05) 0%, rgba(255,255,255,0) 100%);
-            border: 2px dashed #f1f5f9;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-        }
-
-        .chart-placeholder i {
-            font-size: 40px;
-            color: var(--rest-primary-light);
-            margin-bottom: 15px;
-        }
-
         @media (max-width: 1200px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
             .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            .dashboard-content { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
             .metrics-grid { grid-template-columns: 1fr; }
             .main-content { padding: 20px; margin-left: 0; }
+            .welcome-banner { flex-direction: column; text-align: center; gap: 20px; }
+            .welcome-illustration { transform: none; }
         }
     </style>
 </head>
@@ -262,17 +210,21 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
 
 <div class="main-content">
     <div class="page-header">
-        <div class="flex items-center gap-4">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
-            <div>
-                <h1 class="page-title">Dashboard Overview</h1>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Welcome back, <?= htmlspecialchars($restaurant['name']) ?></p>
-            </div>
+        <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
+        <div style="flex-grow: 1;"></div>
+        <button style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; color: var(--text-main); transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02)">
+            <i class="ri-notification-3-line" style="font-size: 20px;"></i>
+        </button>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <h1>Welcome back, <?= htmlspecialchars($restaurant['name']) ?>! 🎉</h1>
+            <p>Here is what's happening with your restaurant today.</p>
         </div>
-        <div class="header-actions">
-            <button style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; color: var(--text-main); transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02)">
-                <i class="ri-notification-3-line" style="font-size: 20px;"></i>
-            </button>
+        <div class="welcome-illustration">
+            <i class="ri-store-3-line" style="color: white; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));"></i>
         </div>
     </div>
 
@@ -307,62 +259,203 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         </div>
     </div>
 
-    <div class="dashboard-content">
-        <!-- Revenue Chart -->
-        <div class="panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Revenue Analytics</h2>
-                <select style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px 10px; font-family: inherit; color: var(--text-muted); outline: none;">
-                    <option>This Week</option>
-                    <option>This Month</option>
-                </select>
+    <div class="dashboard-layout">
+        <!-- Left Column -->
+        <div>
+            <!-- Quick Actions Banner -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                <a href="menu.php" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #fff2ed; color: var(--rest-primary); display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-add-line"></i></div>
+                    <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">New Item</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Add to menu</p></div>
+                </a>
+                <a href="#" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #eef2ff; color: var(--rest-secondary); display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-coupon-3-line"></i></div>
+                    <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">Promotions</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Create offers</p></div>
+                </a>
+                <a href="settings.php" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #f0fdf4; color: #22c55e; display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="ri-store-2-line"></i></div>
+                    <div><h4 style="margin:0; font-size: 14px; font-weight: 700;">Timing</h4><p style="margin:0; font-size:11px; color: var(--text-muted);">Store hours</p></div>
+                </a>
             </div>
-            <div class="chart-placeholder">
-                <i class="ri-bar-chart-grouprd-line" style="color: #ff7e5f; opacity: 0.5;"></i>
-                <p>Not enough data to display chart</p>
+
+            <!-- Revenue Chart -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Revenue Analytics</h2>
+                    <select style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px 10px; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text-main); outline: none;">
+                        <option>This Week</option>
+                        <option>This Month</option>
+                        <option>This Year</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Recent Orders</h2>
+                    <a href="orders.php" style="color: var(--rest-primary); font-weight: 600; font-size: 13px; text-decoration: none;">View All</a>
+                </div>
+                <div class="order-list">
+                    <?php
+                    $recent = $conn->query("SELECT ro.*, u.full_name as customer_name FROM restaurant_orders ro JOIN users u ON ro.user_id = u.id WHERE ro.restaurant_id = $restaurant_id ORDER BY ro.created_at DESC LIMIT 4");
+                    if ($recent && $recent->num_rows > 0):
+                        while ($o = $recent->fetch_assoc()):
+                    ?>
+                    <div class="order-item">
+                        <div class="order-avatar"><?= strtoupper(substr($o['customer_name'], 0, 1)) ?></div>
+                        <div class="order-details">
+                            <h4><?= htmlspecialchars($o['customer_name']) ?></h4>
+                            <p><?= date('M d, H:i', strtotime($o['created_at'])) ?> • <span style="color: var(--rest-primary);">#ORD-<?= str_pad($o['id'], 5, '0', STR_PAD_LEFT) ?></span></p>
+                            <span class="status-badge <?= $o['status'] === 'pending' ? 'status-pending' : 'status-completed' ?>"><?= ucfirst($o['status']) ?></span>
+                        </div>
+                        <div class="order-amount">Rs. <?= number_format($o['total_amount'], 2) ?></div>
+                    </div>
+                    <?php endwhile; else: ?>
+                    <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                        <i class="ri-shopping-basket-2-line" style="font-size: 30px; opacity: 0.5;"></i>
+                        <p style="margin-top: 10px; font-size: 14px;">No orders available.</p>
+                    </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
-        <!-- Recent Orders -->
-        <div class="panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Recent Orders</h2>
-                <a href="orders.php" class="view-all">View All</a>
+        <!-- Right Column -->
+        <div>
+            <!-- Top Products -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Top Selling Items</h2>
+                </div>
+                <div class="top-products">
+                    <?php
+                    $top_items = $conn->query("SELECT m.name, m.image_url, COUNT(roi.id) as sales FROM restaurant_order_items roi JOIN restaurant_menu m ON roi.menu_item_id = m.id WHERE m.restaurant_id = $restaurant_id GROUP BY m.id ORDER BY sales DESC LIMIT 5");
+                    
+                    if ($top_items && $top_items->num_rows > 0):
+                        while ($top = $top_items->fetch_assoc()):
+                    ?>
+                    <div class="product-item">
+                        <?php if(!empty($top['image_url'])): ?>
+                            <img src="<?= htmlspecialchars($top['image_url']) ?>" class="product-img">
+                        <?php else: ?>
+                            <div class="product-img" style="display:flex; align-items:center; justify-content:center; color: var(--rest-primary);"><i class="ri-restaurant-line" style="font-size: 20px;"></i></div>
+                        <?php endif; ?>
+                        <div class="product-info">
+                            <h4><?= htmlspecialchars($top['name']) ?></h4>
+                            <p>Popular choice</p>
+                        </div>
+                        <div class="product-sales"><?= $top['sales'] ?> Sales</div>
+                    </div>
+                    <?php endwhile; else: ?>
+                    <p style="text-align: center; font-size: 13px; color: var(--text-muted); padding: 10px 0;">Not enough data.</p>
+                    <?php endif; ?>
+                </div>
             </div>
-            
-            <div class="order-list">
-                <?php
-                $recent = $conn->query("SELECT ro.*, u.full_name as customer_name FROM restaurant_orders ro JOIN users u ON ro.user_id = u.id WHERE ro.restaurant_id = $restaurant_id ORDER BY ro.created_at DESC LIMIT 5");
-                if ($recent && $recent->num_rows > 0):
-                    while ($o = $recent->fetch_assoc()):
-                ?>
-                <div class="order-item">
-                    <div class="order-avatar">
-                        <?= strtoupper(substr($o['customer_name'], 0, 1)) ?>
+
+            <!-- Notice Panel -->
+            <div class="panel" style="background: linear-gradient(135deg, #fff2ed 0%, #ffffff 100%);">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--rest-primary); color: white; display:flex; align-items:center; justify-content:center; font-size: 20px; margin-bottom: 15px;">
+                    <i class="ri-megaphone-fill"></i>
+                </div>
+                <h4 style="margin: 0 0 5px 0; font-size: 15px; font-weight: 700; color: var(--rest-secondary-dark);">Update your Menu visually!</h4>
+                <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">Restaurants with images on their menu items receive up to <strong style="color: var(--rest-primary);">65% more orders</strong>. Go to your menu settings to add images.</p>
+            </div>
+
+            <!-- Customer Satisfaction -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Customer Satisfaction</h2>
+                    <i class="ri-more-2-fill" style="color: var(--text-muted); cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='var(--rest-primary)'" onmouseout="this.style.color='var(--text-muted)'"></i>
+                </div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="font-size: 48px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; line-height: 1;"><?= number_format($restaurant['rating'] > 0 ? $restaurant['rating'] : 4.8, 1) ?></h1>
+                    <div style="color: #f59e0b; font-size: 20px; margin: 10px 0;">
+                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
                     </div>
-                    <div class="order-details">
-                        <h4><?= htmlspecialchars($o['customer_name']) ?></h4>
-                        <p><?= date('M d, H:i', strtotime($o['created_at'])) ?></p>
-                        <span class="order-status <?= $o['status'] === 'pending' ? 'status-pending' : 'status-completed' ?>">
-                            <?= ucfirst($o['status']) ?>
-                        </span>
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0; font-weight: 500;">Based on overall reviews</p>
+                </div>
+                <div style="border-top: 1px dashed #e2e8f0; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+                        <span style="color: var(--text-main); font-weight: 600;">Food Quality</span>
+                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.9</span>
                     </div>
-                    <div class="order-amount">
-                        Rs. <?= number_format($o['total_amount'], 2) ?>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+                        <span style="color: var(--text-main); font-weight: 600;">Delivery Time</span>
+                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.6</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                        <span style="color: var(--text-main); font-weight: 600;">Packaging</span>
+                        <span style="color: var(--rest-secondary-dark); font-weight: 800;">4.8</span>
                     </div>
                 </div>
-                <?php endwhile; else: ?>
-                <div style="text-align: center; padding: 30px; color: var(--text-muted);">
-                    <i class="ri-shopping-basket-2-line" style="font-size: 30px; opacity: 0.5;"></i>
-                    <p style="margin-top: 10px; font-size: 14px;">No orders yet.</p>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
-
 </div>
 
 <script src="../../assets/js/sidebar.js"></script>
+<script>
+    // Initialize Chart.js
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(255, 126, 95, 0.5)');
+    gradient.addColorStop(1, 'rgba(255, 126, 95, 0.0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Revenue (Rs)',
+                data: [1200, 1900, 1400, 2100, 1800, 3200, 2800], // Mock Data
+                borderColor: '#ff7e5f',
+                backgroundColor: gradient,
+                borderWidth: 3,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#ff7e5f',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1b2559',
+                    titleFont: { family: 'Poppins', size: 13 },
+                    bodyFont: { family: 'Poppins', size: 14, weight: 'bold' },
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rs. ' + context.parsed.y;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { borderDash: [5, 5], color: '#f1f5f9', drawBorder: false },
+                    ticks: { font: { family: 'Poppins', size: 12 }, color: '#64748b' }
+                },
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { font: { family: 'Poppins', size: 12 }, color: '#64748b' }
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

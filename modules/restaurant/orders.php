@@ -1,6 +1,5 @@
 <?php
 require_once '../../includes/core/config.php';
-session_start();
 
 if (!isset($_SESSION['restaurant_id'])) {
     header("Location: login.php");

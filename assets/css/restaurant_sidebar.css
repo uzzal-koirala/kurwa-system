@@ -271,13 +271,81 @@ body.restaurant-body {
     cursor: pointer;
 }
 
-/* Sidebar Toggle Logic */
-body.sidebar-collapsed .sidebar.sidebar-restaurant {
-    transform: translateX(-100%);
-}
+/* Sidebar Toggle Logic (Desktop) */
+@media (min-width: 1025px) {
+    body.sidebar-collapsed .sidebar.sidebar-restaurant {
+        width: 80px;
+    }
 
-body.sidebar-collapsed .main-content {
-    margin-left: 0;
+    body.sidebar-collapsed .main-content {
+        margin-left: 80px;
+    }
+
+    body.sidebar-collapsed .brand {
+        justify-content: center;
+    }
+
+    body.sidebar-collapsed .brand-text {
+        display: none;
+    }
+
+    body.sidebar-collapsed .desktop-toggle {
+        display: block;
+        margin: 0 auto;
+        transform: rotate(180deg);
+    }
+
+    body.sidebar-collapsed .sidebar-header {
+        padding: 30px 10px;
+        justify-content: center;
+    }
+
+    body.sidebar-collapsed .menu-item span {
+        display: none;
+    }
+
+    body.sidebar-collapsed .menu-item {
+        justify-content: center;
+        padding: 14px 0;
+    }
+
+    body.sidebar-collapsed .menu-item i {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    body.sidebar-collapsed .premium-card {
+        display: none;
+    }
+
+    body.sidebar-collapsed .support-btn span {
+        display: none;
+    }
+
+    body.sidebar-collapsed .support-btn {
+        justify-content: center;
+        padding: 12px 0;
+    }
+
+    body.sidebar-collapsed .support-btn i {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    body.sidebar-collapsed .user-profile-info {
+        display: none;
+    }
+
+    body.sidebar-collapsed .user-profile-badge {
+        flex-direction: column;
+        padding: 5px;
+        align-items: center;
+        background: transparent;
+    }
+
+    body.sidebar-collapsed .logout-icon {
+        margin-top: 10px;
+    }
 }
 
 /* Overlay for Mobile */

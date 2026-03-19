@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../../includes/core/config.php';
 
 if (isset($_SESSION['restaurant_id'])) {
