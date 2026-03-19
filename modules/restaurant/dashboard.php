@@ -58,57 +58,42 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
 
         /* Welcome Banner */
         .welcome-banner {
-            background: linear-gradient(135deg, #1b2559 0%, #2f3cff 100%);
-            border-radius: 20px;
-            padding: 25px 35px;
+            background: transparent;
+            border-radius: 0;
+            padding: 0 0 20px 0;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            color: white;
-            box-shadow: 0 15px 35px rgba(47, 60, 255, 0.2);
+            color: var(--rest-secondary-dark);
+            box-shadow: none;
             position: relative;
-            overflow: hidden;
-            margin-bottom: 25px;
-            width: fit-content;
-            min-width: 450px;
-            max-width: 100%;
+            overflow: visible;
+            margin-bottom: 20px;
+            width: 100%;
+            border: none;
         }
 
         .welcome-banner::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
+            display: none;
         }
 
         .welcome-text h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
-            margin: 0 0 8px 0;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+            color: #1b2559;
         }
 
         .welcome-text p {
             margin: 0;
-            font-size: 15px;
-            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         .welcome-illustration {
-            width: 100px;
-            height: 100px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transform: rotate(10deg);
+            display: none; /* Hidden globally as requested */
         }
 
         /* Widgets Grid */
@@ -256,17 +241,14 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
             .quick-action-card p { font-size: 8px !important; }
             .dashboard-layout { gap: 10px; }
             .welcome-banner { 
-                padding: 15px; 
-                border-radius: 12px; 
-                text-align: left; 
-                align-items: flex-start; 
-                margin-bottom: 20px; 
+                padding: 0 0 15px 0; 
+                margin-bottom: 15px; 
                 width: 100%; 
-                min-width: 0; 
-                box-sizing: border-box;
+                background: transparent;
+                box-shadow: none;
             }
-            .welcome-text h1 { font-size: 18px !important; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.3; }
-            .welcome-text p { font-size: 11px !important; word-wrap: break-word; line-height: 1.4; }
+            .welcome-text h1 { font-size: 18px !important; color: #1b2559; }
+            .welcome-text p { font-size: 12px !important; color: var(--text-muted); }
             .welcome-banner::before { display: none; }
             .panel { padding: 15px; border-radius: 16px; margin-bottom: 20px; }
             .chart-container { height: 220px; }
