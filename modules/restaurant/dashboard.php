@@ -51,7 +51,7 @@ $menu_items = $conn->query("SELECT COUNT(*) as count FROM restaurant_menu WHERE 
         /* Dashboard Main Layout */
         .dashboard-layout {
             display: grid;
-            grid-template-columns: 3.2fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
             gap: 25px;
             align-items: start;
         }
