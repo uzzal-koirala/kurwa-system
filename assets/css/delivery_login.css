@@ -1,0 +1,56 @@
+:root {
+    --delivery-primary: #10b981;
+    --delivery-primary-dark: #059669;
+    --delivery-secondary: #3b82f6;
+    --delivery-bg: #f0fdf4;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--delivery-bg);
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
+.bg-delivery {
+    background: linear-gradient(135deg, var(--delivery-primary) 0%, var(--delivery-primary-dark) 100%);
+}
+
+.btn-delivery {
+    background: var(--delivery-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-delivery:hover {
+    background: var(--delivery-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+.input-field {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s;
+}
+
+.input-field:focus {
+    border-color: var(--delivery-primary);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    outline: none;
+}
+
+.delivery-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}

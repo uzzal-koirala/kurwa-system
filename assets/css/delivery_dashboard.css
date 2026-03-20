@@ -1,0 +1,151 @@
+:root {
+    --delivery-primary: #10b981;
+    --delivery-secondary: #0f172a;
+    --delivery-light-bg: #f8fafc;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-border: 1px solid #e2e8f0;
+}
+
+.main-content {
+    margin-left: 280px;
+    padding: 30px 40px;
+    background-color: var(--delivery-light-bg);
+    min-height: 100vh;
+    transition: margin-left 0.4s;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--delivery-secondary);
+}
+
+/* Status Toggle */
+.status-card {
+    background: white;
+    padding: 10px 20px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: var(--card-shadow);
+    border: var(--card-border);
+}
+
+.toggle-switch {
+    width: 60px; height: 32px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    position: relative;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 4px;
+    width: 24px; height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.status-card.online .toggle-switch { background: var(--delivery-primary); }
+.status-card.online .toggle-switch::after { left: 32px; }
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    border: var(--card-border);
+    transition: 0.3s;
+}
+
+.stat-card:hover { transform: translateY(-3px); }
+
+.stat-icon {
+    width: 45px; height: 45px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.icon-emerald { background: #ecfdf5; color: #10b981; }
+.icon-blue { background: #eff6ff; color: #3b82f6; }
+.icon-amber { background: #fffbeb; color: #f59e0b; }
+.icon-rose { background: #fff1f2; color: #f43f5e; }
+
+.stat-label { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 5px; }
+.stat-value { font-size: 22px; font-weight: 800; color: var(--delivery-secondary); }
+
+/* Active Order Card */
+.active-order-card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: var(--card-border);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.order-badge {
+    background: #fdf2f8; color: #db2777;
+    padding: 5px 12px; border-radius: 8px;
+    font-size: 11px; font-weight: 800;
+    margin-bottom: 15px; display: inline-block;
+}
+
+.route-info {
+    display: flex; align-items: flex-start; gap: 30px;
+}
+
+.stop-list { width: 100%; display: flex; flex-direction: column; gap: 20px; position: relative; }
+
+.stop-item { display: flex; align-items: center; gap: 15px; position: relative; z-index: 1; }
+
+.stop-dot { width: 14px; height: 14px; border-radius: 50%; background: #cbd5e1; border: 3px solid white; box-shadow: 0 0 0 4px #f1f5f9; }
+.stop-dot.pickup { background: var(--delivery-primary); }
+.stop-dot.dropoff { background: var(--delivery-primary); }
+
+.stop-details h4 { font-size: 15px; font-weight: 700; color: var(--delivery-secondary); margin: 0; }
+.stop-details p { font-size: 12px; color: #64748b; margin: 2px 0 0 0; }
+
+.btn-complete {
+    background: var(--delivery-primary); color: white;
+    padding: 14px 25px; border-radius: 12px;
+    font-weight: 700; border: none; cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-complete:hover { background: var(--delivery-primary-dark); }
+
+@media (max-width: 1024px) {
+    .main-content { margin-left: 0; padding: 20px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .route-info { flex-direction: column; }
+}
