@@ -30,9 +30,22 @@
     border-radius: 24px;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 10px 0 40px rgba(0,0,0,0.1);
+    overflow: hidden; /* Aside itself doesn't scroll anymore */
+}
+
+.sidebar-body {
+    flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
+    margin-bottom: 20px;
+    padding-right: 4px;
 }
+
+/* Custom scrollbar for sidebar body */
+.sidebar-body::-webkit-scrollbar { width: 4px; }
+.sidebar-body::-webkit-scrollbar-track { background: transparent; }
+.sidebar-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+.sidebar-body:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
 
 .delivery-sidebar.collapsed,
 .sidebar-collapsed-init .delivery-sidebar {
@@ -272,9 +285,22 @@
 }
 
 @media (max-width: 1024px) {
-    .delivery-sidebar { transform: translateX(-100%); width: 100%; max-width: 300px; }
+    .delivery-sidebar { 
+        transform: translateX(-110%); 
+        width: 280px; 
+        max-width: 85%; 
+        top: 0; left: 0; bottom: 0; 
+        height: 100vh;
+        border-radius: 0 24px 24px 0;
+    }
     .delivery-sidebar.open { transform: translateX(0); }
     .mobile-sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+    
+    .delivery-sidebar.collapsed,
+    .sidebar-collapsed-init .delivery-sidebar {
+        width: 280px; /* Don't collapse on mobile */
+        padding: 24px 20px;
+    }
 }
 
 /* Pulse Animation */

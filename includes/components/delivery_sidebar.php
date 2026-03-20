@@ -33,36 +33,38 @@ $current_page = $current_page ?? 'dashboard';
         </button>
     </div>
 
-    <div class="sidebar-menu">
-        <a href="dashboard.php" class="menu-item <?= $current_page == 'dashboard' ? 'active' : '' ?>">
-            <i class="ri-layout-grid-fill"></i>
-            <span>Dashboard</span>
-        </a>
+    <div class="sidebar-body">
+        <div class="sidebar-menu">
+            <a href="dashboard.php" class="menu-item <?= $current_page == 'dashboard' ? 'active' : '' ?>">
+                <i class="ri-layout-grid-fill"></i>
+                <span>Dashboard</span>
+            </a>
 
-        <a href="orders.php" class="menu-item <?= $current_page == 'orders' ? 'active' : '' ?>">
-            <i class="ri-route-fill"></i>
-            <span>Active Orders</span>
-        </a>
+            <a href="orders.php" class="menu-item <?= $current_page == 'orders' ? 'active' : '' ?>">
+                <i class="ri-route-fill"></i>
+                <span>Active Orders</span>
+            </a>
 
-        <a href="history.php" class="menu-item <?= $current_page == 'history' ? 'active' : '' ?>">
-            <i class="ri-history-fill"></i>
-            <span>Deliveries</span>
-        </a>
+            <a href="history.php" class="menu-item <?= $current_page == 'history' ? 'active' : '' ?>">
+                <i class="ri-history-fill"></i>
+                <span>Deliveries</span>
+            </a>
 
-        <a href="earnings.php" class="menu-item <?= $current_page == 'earnings' ? 'active' : '' ?>">
-            <i class="ri-wallet-3-fill"></i>
-            <span>Earnings</span>
-        </a>
-    </div>
+            <a href="earnings.php" class="menu-item <?= $current_page == 'earnings' ? 'active' : '' ?>">
+                <i class="ri-wallet-3-fill"></i>
+                <span>Earnings</span>
+            </a>
+        </div>
 
-    <div class="premium-card">
-        <h4>Boost your income with <span>Priority Delivery</span>!</h4>
-        <div class="premium-content">
-            <button class="upgrade-btn">
-                <i class="ri-arrow-right-line"></i>
-            </button>
-            <div class="premium-deco">
-                <i class="ri-flashlight-fill"></i>
+        <div class="premium-card">
+            <h4>Boost your income with <span>Priority Delivery</span>!</h4>
+            <div class="premium-content">
+                <button class="upgrade-btn">
+                    <i class="ri-arrow-right-line"></i>
+                </button>
+                <div class="premium-deco">
+                    <i class="ri-flashlight-fill"></i>
+                </div>
             </div>
         </div>
     </div>
