@@ -29,6 +29,54 @@ $canteens_res = $conn->query($canteens_sql);
             font-size: 24px;
             color: #3542f3;
         }
+
+        /* Checkout Modal CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 480px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(40px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 24px;
+            top: 24px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #ef4444;
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body>
@@ -261,15 +309,31 @@ $canteens_res = $conn->query($canteens_sql);
         
         const container = document.getElementById('checkoutItems');
         container.innerHTML = '';
-        cart.forEach(item => {
-            container.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px; color:#334155;">
-                <span>${item.name}</span>
-                <strong style="color:#0f172a;">Rs. ${item.price.toLocaleString()}</strong>
+        cart.forEach((item, index) => {
+            container.innerHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:14px; color:#334155; padding: 8px 12px; background: #f8fafc; border-radius: 8px;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <span style="font-weight:600; font-size:15px;">${item.name}</span>
+                    <strong style="color:#0f172a;">Rs. ${item.price.toLocaleString()}</strong>
+                </div>
+                <button type="button" onclick="removeFromCart(${index})" style="background: #fee2e2; color: #ef4444; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
             </div>`;
         });
         
         const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
         document.getElementById('checkoutTotal').innerText = `Rs. ${total.toLocaleString()}`;
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+        if (cart.length === 0) {
+            closeCheckout();
+        } else {
+            openCheckout(); // Re-render modal list
+        }
     }
 
     function closeCheckout() {
