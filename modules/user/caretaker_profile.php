@@ -260,21 +260,27 @@ $skills = [
             <div class="profile-right">
                 
                 <!-- Stats Row -->
-                <div class="stats-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
-                    <div class="stat-card glass-card" style="padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="stat-icon" style="color: #f59e0b;"><i class="ri-star-smile-fill"></i></div>
-                        <h4><?= htmlspecialchars($caretaker['rating']) ?></h4>
-                        <p>Rating</p>
+                <div class="stats-row" style="margin-bottom: 24px;">
+                    <div class="stat-card glass-card" style="padding: 16px 20px !important;">
+                        <div class="stat-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);"><i class="ri-star-smile-fill"></i></div>
+                        <div class="stat-data">
+                            <h4><?= htmlspecialchars($caretaker['rating']) ?></h4>
+                            <p>Rating</p>
+                        </div>
                     </div>
-                    <div class="stat-card glass-card" style="padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="stat-icon" style="color: #3b82f6;"><i class="ri-briefcase-4-fill"></i></div>
-                        <h4><?= htmlspecialchars($caretaker['experience_years']) ?> Yrs</h4>
-                        <p>Experience</p>
+                    <div class="stat-card glass-card" style="padding: 16px 20px !important;">
+                        <div class="stat-icon" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1);"><i class="ri-briefcase-4-fill"></i></div>
+                        <div class="stat-data">
+                            <h4><?= htmlspecialchars($caretaker['experience_years']) ?> Yrs</h4>
+                            <p>Experience</p>
+                        </div>
                     </div>
-                    <div class="stat-card glass-card" style="padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="stat-icon" style="color: #10b981;"><i class="ri-user-heart-fill"></i></div>
-                        <h4><?= htmlspecialchars($caretaker['patients_helped']) ?>+</h4>
-                        <p>Patients</p>
+                    <div class="stat-card glass-card" style="padding: 16px 20px !important;">
+                        <div class="stat-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.1);"><i class="ri-user-heart-fill"></i></div>
+                        <div class="stat-data">
+                            <h4><?= htmlspecialchars($caretaker['patients_helped']) ?>+</h4>
+                            <p>Patients</p>
+                        </div>
                     </div>
                 </div>
 
