@@ -111,11 +111,38 @@ $canteens_res = $conn->query($canteens_sql);
     <span id="cartTotal">Rs. 0</span>
 </div>
 
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeCheckout()">&times;</span>
+        <h2 style="margin-top:0; color:#0f172a;"><i class="ri-shopping-basket-fill" style="color:var(--primary);"></i> Checkout</h2>
+        <div id="checkoutItems" style="margin-bottom: 20px; max-height:200px; overflow-y:auto; border-bottom:1px solid #e2e8f0; padding-bottom:15px;"></div>
+        
+        <div class="price-summary" style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:18px; color:#1e293b;">
+                <span>Total Amount:</span>
+                <span id="checkoutTotal">Rs. 0</span>
+            </div>
+        </div>
+
+        <form id="checkoutForm" onsubmit="submitOrder(event)">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="font-weight:600; font-size:14px; color:#475569;">Delivery Address</label>
+                <input type="text" id="deliveryAddress" required placeholder="Apt 4B, 123 Main St..." style="padding:12px; border:1px solid #e2e8f0; border-radius:10px; font-family:inherit;">
+            </div>
+            <button type="submit" style="width:100%; margin-top:20px; background:#3542f3; color:#fff; border:none; padding:14px; border-radius:12px; font-weight:700; cursor:pointer; font-size:15px;">
+                <i class="ri-checkbox-circle-line"></i> Place Order
+            </button>
+        </form>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     let cart = [];
     let currentFoodItems = [];
     let currentView = 'canteens';
+    let currentCanteenId = 0;
 
     function handleSearch() {
         const query = document.getElementById('foodSearch').value.toLowerCase().trim();
@@ -141,6 +168,7 @@ $canteens_res = $conn->query($canteens_sql);
 
     function loadMenu(canteenId, name) {
         currentView = 'menu';
+        currentCanteenId = canteenId;
         document.getElementById('canteenSelection').style.display = 'none';
         document.getElementById('menuView').style.display = 'block';
         document.getElementById('currentCanteenName').innerText = name;
@@ -179,7 +207,7 @@ $canteens_res = $conn->query($canteens_sql);
                         <p class="food-desc">${food.description}</p>
                         <div class="food-price-cta">
                             <span class="price-tag">Rs. ${parseFloat(food.price).toLocaleString()}</span>
-                            <button class="add-btn" onclick="addToCart('${food.name}', ${food.price})">
+                            <button class="add-btn" onclick="addToCart(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.price})">
                                 <i class="ri-add-line"></i>
                             </button>
                         </div>
@@ -200,14 +228,15 @@ $canteens_res = $conn->query($canteens_sql);
         document.querySelectorAll('.canteen-card').forEach(card => card.style.display = 'flex');
     }
 
-    function addToCart(name, price) {
-        cart.push({name, price});
+    function addToCart(id, name, price) {
+        cart.push({id, name, price});
         updateCartUI();
         
         // Simple bounce effect
         const cartFloat = document.getElementById('cartIndicator');
         cartFloat.style.display = 'flex';
         cartFloat.style.transform = 'scale(1.1)';
+        cartFloat.onclick = openCheckout;
         setTimeout(() => cartFloat.style.transform = 'scale(1)', 200);
     }
 
@@ -217,6 +246,77 @@ $canteens_res = $conn->query($canteens_sql);
         
         document.getElementById('cartCount').innerText = `${count} ${count === 1 ? 'Item' : 'Items'}`;
         document.getElementById('cartTotal').innerText = `Rs. ${total.toLocaleString()}`;
+        
+        if(count === 0) {
+            document.getElementById('cartIndicator').style.display = 'none';
+        }
+    }
+
+    function openCheckout() {
+        if(cart.length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+        document.getElementById('checkoutModal').style.display = 'flex';
+        
+        const container = document.getElementById('checkoutItems');
+        container.innerHTML = '';
+        cart.forEach(item => {
+            container.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px; color:#334155;">
+                <span>${item.name}</span>
+                <strong style="color:#0f172a;">Rs. ${item.price.toLocaleString()}</strong>
+            </div>`;
+        });
+        
+        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        document.getElementById('checkoutTotal').innerText = `Rs. ${total.toLocaleString()}`;
+    }
+
+    function closeCheckout() {
+        document.getElementById('checkoutModal').style.display = 'none';
+        document.getElementById('deliveryAddress').value = '';
+    }
+
+    async function submitOrder(e) {
+        e.preventDefault();
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Processing...';
+        submitBtn.disabled = true;
+
+        const address = document.getElementById('deliveryAddress').value;
+        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        
+        const payload = {
+            restaurant_id: currentCanteenId,
+            delivery_address: address,
+            total_amount: total,
+            items: cart
+        };
+        
+        try {
+            const response = await fetch('handlers/place_food_order.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Order placed successfully! The restaurant has received your order.');
+                cart = [];
+                updateCartUI();
+                closeCheckout();
+            } else {
+                alert('Failed to place order: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Checkout error:', error);
+            alert('An unexpected error occurred during checkout.');
+        } finally {
+            submitBtn.innerHTML = '<i class="ri-checkbox-circle-line"></i> Place Order';
+            submitBtn.disabled = false;
+        }
     }
 </script>
 </body>
