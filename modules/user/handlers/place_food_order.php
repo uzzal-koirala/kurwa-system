@@ -31,6 +31,19 @@ if ($restaurant_id <= 0 || empty($address) || empty($items)) {
 $conn->begin_transaction();
 
 try {
+    // Check user balance
+    $user_res = $conn->query("SELECT balance FROM users WHERE id = $user_id FOR UPDATE");
+    $user_data = $user_res->fetch_assoc();
+    $current_balance = floatval($user_data['balance'] ?? 0);
+
+    if ($current_balance < $total_amount) {
+        throw new Exception("Insufficient wallet balance. Please top up your wallet.");
+    }
+
+    // Deduct balance
+    $new_balance = $current_balance - $total_amount;
+    $conn->query("UPDATE users SET balance = $new_balance WHERE id = $user_id");
+
     // 1. Insert into restaurant_orders
     $stmt = $conn->prepare("INSERT INTO restaurant_orders (restaurant_id, user_id, total_amount, status, delivery_address) VALUES (?, ?, ?, 'pending', ?)");
     $stmt->bind_param("iids", $restaurant_id, $user_id, $total_amount, $address);
@@ -39,27 +52,39 @@ try {
     $order_id = $conn->insert_id;
     
     // 2. Insert items into restaurant_order_items
-    $stmt_item = $conn->prepare("INSERT INTO restaurant_order_items (order_id, menu_item_id, quantity, price) VALUES (?, ?, 1, ?)");
+    $stmt_item = $conn->prepare("INSERT INTO restaurant_order_items (order_id, menu_item_id, quantity, price) VALUES (?, ?, ?, ?)");
     
     foreach ($items as $item) {
         $mi_id = intval($item['id']);
+        $mi_qty = intval($item['quantity'] ?? 1);
         $mi_price = floatval($item['price']);
         
-        // Basic validation
-        if ($mi_id <= 0) {
-            throw new Exception("Invalid menu item ID.");
+        if ($mi_id <= 0 || $mi_qty <= 0) {
+            throw new Exception("Invalid menu item or quantity.");
         }
         
-        $stmt_item->bind_param("iid", $order_id, $mi_id, $mi_price);
+        $stmt_item->bind_param("iiid", $order_id, $mi_id, $mi_qty, $mi_price);
         $stmt_item->execute();
     }
     
+    // 3. Record transaction in payment history (Negative amount for payment)
+    $desc = "Food Order: #ORD-" . str_pad($order_id, 5, '0', STR_PAD_LEFT);
+    $tx_amount = -$total_amount;
+    $txn_id = 'TXN_' . strtoupper(uniqid());
+    
+    $tx_stmt = $conn->prepare("INSERT INTO transactions (user_id, amount, type, status, transaction_id, description) VALUES (?, ?, 'payment', 'completed', ?, ?)");
+    $tx_stmt->bind_param("idss", $user_id, $tx_amount, $txn_id, $desc);
+    
+    if (!$tx_stmt->execute()) {
+        throw new Exception("Failed to record transaction history.");
+    }
+
     // Commit transaction
     $conn->commit();
-    echo json_encode(['success' => true, 'message' => 'Order placed successfully', 'order_id' => $order_id]);
+    echo json_encode(['success' => true, 'message' => 'Order placed successfully. Amount deducted from wallet.', 'order_id' => $order_id, 'new_balance' => $new_balance]);
 
 } catch (Exception $e) {
     $conn->rollback();
-    echo json_encode(['success' => false, 'message' => 'Transaction failed: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 ?>

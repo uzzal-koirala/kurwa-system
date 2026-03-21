@@ -293,7 +293,13 @@ $canteens_res = $conn->query($canteens_sql);
     }
 
     function addToCart(id, name, price) {
-        cart.push({id, name, price});
+        // Check if item already exists
+        const existingItem = cart.find(item => item.id === id);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({id, name, price, quantity: 1});
+        }
         updateCartUI();
         
         // Simple bounce effect
@@ -306,17 +312,16 @@ $canteens_res = $conn->query($canteens_sql);
 
     function updateCartUI() {
         localStorage.setItem('food_cart', JSON.stringify(cart));
-        const count = cart.length;
-        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
         
-        document.getElementById('cartCount').innerText = `${count} ${count === 1 ? 'Item' : 'Items'}`;
-        document.getElementById('cartTotal').innerText = `Rs. ${total.toLocaleString()}`;
-        
-        if(count === 0) {
-            document.getElementById('cartIndicator').style.display = 'none';
-        } else {
+        if (count > 0) {
+            document.getElementById('cartCount').innerText = `${count} ${count === 1 ? 'Item' : 'Items'}`;
+            document.getElementById('cartTotal').innerText = `Rs. ${total.toLocaleString()}`;
             document.getElementById('cartIndicator').style.display = 'flex';
             document.getElementById('cartIndicator').onclick = openCheckout;
+        } else {
+            document.getElementById('cartIndicator').style.display = 'none';
         }
     }
 
@@ -330,20 +335,42 @@ $canteens_res = $conn->query($canteens_sql);
         const container = document.getElementById('checkoutItems');
         container.innerHTML = '';
         cart.forEach((item, index) => {
+            const itemTotal = parseFloat(item.price) * item.quantity;
             container.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:14px; color:#334155; padding: 8px 12px; background: #f8fafc; border-radius: 8px;">
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <span style="font-weight:600; font-size:15px;">${item.name}</span>
-                    <strong style="color:#0f172a;">Rs. ${item.price.toLocaleString()}</strong>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:14px; color:#334155; padding: 12px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="flex: 1;">
+                    <span style="font-weight:600; font-size:15px; color:#0f172a; display:block;">${item.name}</span>
+                    <span style="color:#64748b; font-size:12px;">Rs. ${parseFloat(item.price).toLocaleString()} each</span>
                 </div>
-                <button type="button" onclick="removeFromCart(${index})" style="background: #fee2e2; color: #ef4444; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;">
-                    <i class="ri-delete-bin-line"></i>
-                </button>
+                
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <strong style="color:#3542f3; width: 70px; text-align:right;">Rs. ${itemTotal.toLocaleString()}</strong>
+                    
+                    <div style="display:flex; align-items:center; background:#fff; border:1px solid #cbd5e1; border-radius:8px; overflow:hidden;">
+                        <button type="button" onclick="updateQuantity(${index}, -1)" style="background:transparent; border:none; padding:4px 10px; cursor:pointer; font-weight:700; color:#475569; font-size:16px;">-</button>
+                        <span style="width:24px; text-align:center; font-weight:600; font-size:14px;">${item.quantity}</span>
+                        <button type="button" onclick="updateQuantity(${index}, 1)" style="background:transparent; border:none; padding:4px 10px; cursor:pointer; font-weight:700; color:#3542f3; font-size:16px;">+</button>
+                    </div>
+                    
+                    <button type="button" onclick="removeFromCart(${index})" style="background:#fee2e2; color:#ef4444; border:none; padding:6px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
             </div>`;
         });
         
-        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
         document.getElementById('checkoutTotal').innerText = `Rs. ${total.toLocaleString()}`;
+    }
+
+    function updateQuantity(index, change) {
+        if (cart[index].quantity + change > 0) {
+            cart[index].quantity += change;
+            updateCartUI();
+            openCheckout(); // Re-render modal
+        } else if (cart[index].quantity + change === 0) {
+            removeFromCart(index); // Remove if quantity hits 0
+        }
     }
 
     function removeFromCart(index) {
@@ -352,7 +379,7 @@ $canteens_res = $conn->query($canteens_sql);
         if (cart.length === 0) {
             closeCheckout();
         } else {
-            openCheckout(); // Re-render modal list
+            openCheckout(); // Re-render modal
         }
     }
 
