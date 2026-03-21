@@ -21,8 +21,31 @@ if ($action === 'add' || $action === 'edit') {
     $price = (float)($_POST['price_per_day'] ?? 0);
     $patients = (int)($_POST['patients_helped'] ?? 0);
     $about = $conn->real_escape_string($_POST['about_text']);
-    $image_url = $conn->real_escape_string($_POST['image_url']);
     $video_url = $conn->real_escape_string($_POST['video_url']);
+    
+    // Existing image URL (fallback)
+    $image_url = $_POST['image_url'] ?? '';
+
+    // Handle File Upload
+    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+        $file_tmp = $_FILES['image_file']['tmp_name'];
+        $file_name = time() . '_' . basename($_FILES['image_file']['name']);
+        $upload_dir = '../../../assets/images/caretakers/';
+        $target_file = $upload_dir . $file_name;
+        
+        // Ensure directory exists (redundant but safe)
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        if (move_uploaded_file($file_tmp, $target_file)) {
+            // Store relative path for frontend compatibility
+            $image_url = 'assets/images/caretakers/' . $file_name;
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file.']);
+            exit;
+        }
+    }
 
     if ($action === 'add') {
         $sql = "INSERT INTO caretakers (full_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, image_url, video_url) 
@@ -44,13 +67,23 @@ if ($action === 'add' || $action === 'edit') {
     }
 
     if ($conn->query($sql)) {
-        echo json_encode(['success' => true, 'message' => 'Caretaker saved successfully!']);
+        echo json_encode(['success' => true, 'message' => 'Caretaker saved successfully!', 'image_url' => $image_url]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
     }
 } 
 elseif ($action === 'delete') {
     $id = (int)$_POST['id'];
+    
+    // Optional: Delete physical file if it exists and is local
+    $result = $conn->query("SELECT image_url FROM caretakers WHERE id = $id");
+    if ($row = $result->fetch_assoc()) {
+        $old_img = '../../../' . $row['image_url'];
+        if (!str_starts_with($row['image_url'], 'http') && file_exists($old_img)) {
+            unlink($old_img);
+        }
+    }
+
     $sql = "DELETE FROM caretakers WHERE id = $id";
     if ($conn->query($sql)) {
         echo json_encode(['success' => true, 'message' => 'Caretaker deleted successfully.']);

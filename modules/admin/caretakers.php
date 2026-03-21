@@ -77,7 +77,13 @@ $caretakers = $conn->query("SELECT * FROM caretakers ORDER BY created_at DESC");
                 <tr id="row-<?= $ct['id'] ?>">
                     <td>
                         <div style="display:flex; align-items:center; gap:12px;">
-                            <img src="<?= htmlspecialchars($ct['image_url']) ?>" style="width:45px; height:45px; border-radius:14px; object-fit:cover;">
+                            <?php 
+                                $img = $ct['image_url'];
+                                if(!str_starts_with($img, 'http')) {
+                                    $img = '../../' . $img;
+                                }
+                            ?>
+                            <img src="<?= htmlspecialchars($img) ?>" style="width:45px; height:45px; border-radius:14px; object-fit:cover;">
                             <div>
                                 <div style="font-weight:700;"><?= htmlspecialchars($ct['full_name']) ?></div>
                                 <div style="font-size:12px; color:var(--admin-primary); font-weight:600;"><?= htmlspecialchars($ct['specialization']) ?></div>
@@ -102,9 +108,9 @@ $caretakers = $conn->query("SELECT * FROM caretakers ORDER BY created_at DESC");
 
 <!-- Add/Edit Modal -->
 <div id="manageModal" class="admin-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
-    <div style="background:#0f172a; border:1px solid var(--admin-border); width:600px; border-radius:24px; padding:30px; position:relative; max-height:90vh; overflow-y:auto;">
+    <div style="background:#0f172a; border:1px solid var(--admin-border); width:600px; border-radius:24px; padding:30px; position:relative; max-height:95vh; overflow-y:auto;">
         <h2 id="modalTitle" style="margin-top:0; margin-bottom:20px;">Add New Expert</h2>
-        <form id="caretakerForm">
+        <form id="caretakerForm" enctype="multipart/form-data">
             <input type="hidden" name="action" id="formAction" value="add">
             <input type="hidden" name="id" id="caretakerId">
             
@@ -142,8 +148,16 @@ $caretakers = $conn->query("SELECT * FROM caretakers ORDER BY created_at DESC");
             </div>
 
             <div class="form-group" style="margin-top:15px;">
-                <label style="display:block; color:var(--admin-text-muted); font-size:12px; margin-bottom:5px;">Image URL</label>
-                <input type="text" name="image_url" id="f_image_url" style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white;">
+                <label style="display:block; color:var(--admin-text-muted); font-size:12px; margin-bottom:5px;">Profile Photo</label>
+                <div id="dropzone" class="upload-dropzone">
+                    <i class="ri-upload-cloud-2-line"></i>
+                    <span>Drag and drop image here or click to browse</span>
+                    <input type="file" name="image_file" id="f_image_file" accept="image/*" style="display:none;">
+                </div>
+                <div id="previewContainer" class="image-preview-container">
+                    <img id="imgPreview" src="" alt="Preview">
+                </div>
+                <input type="hidden" name="image_url" id="f_image_url">
             </div>
 
             <div class="form-group" style="margin-top:15px;">
@@ -166,6 +180,47 @@ $caretakers = $conn->query("SELECT * FROM caretakers ORDER BY created_at DESC");
 
 <script src="../../assets/js/sidebar.js"></script>
 <script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('f_image_file');
+const preview = document.getElementById('imgPreview');
+const previewContainer = document.getElementById('previewContainer');
+
+// Drag & Drop Handlers
+dropzone.addEventListener('click', () => fileInput.click());
+
+dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+});
+
+dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+});
+
+dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        handlePreview(fileInput.files[0]);
+    }
+});
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+        handlePreview(fileInput.files[0]);
+    }
+});
+
+function handlePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        preview.src = e.target.result;
+        previewContainer.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
 function openModal(mode, data = null) {
     const modal = document.getElementById('manageModal');
     const form = document.getElementById('caretakerForm');
@@ -174,10 +229,12 @@ function openModal(mode, data = null) {
     
     form.reset();
     action.value = mode;
+    previewContainer.style.display = 'none';
     
     if (mode === 'add') {
         title.innerText = 'Add New Expert';
         document.getElementById('caretakerId').value = '';
+        document.getElementById('f_image_url').value = '';
     } else {
         title.innerText = 'Edit Expert Profile';
         document.getElementById('caretakerId').value = data.id;
@@ -190,6 +247,13 @@ function openModal(mode, data = null) {
         document.getElementById('f_image_url').value = data.image_url;
         document.getElementById('f_video_url').value = data.video_url || '';
         document.getElementById('f_about').value = data.about_text;
+        
+        if (data.image_url) {
+            let img = data.image_url;
+            if(!img.startsWith('http')) img = '../../' + img;
+            preview.src = img;
+            previewContainer.style.display = 'block';
+        }
     }
     
     modal.style.display = 'flex';
