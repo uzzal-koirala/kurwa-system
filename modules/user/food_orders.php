@@ -187,10 +187,15 @@ $canteens_res = $conn->query($canteens_sql);
 
 <script src="../../assets/js/sidebar.js"></script>
 <script>
-    let cart = [];
+    let cart = JSON.parse(localStorage.getItem('food_cart')) || [];
+    let currentCanteenId = parseInt(localStorage.getItem('food_canteen_id')) || 0;
     let currentFoodItems = [];
     let currentView = 'canteens';
-    let currentCanteenId = 0;
+
+    // Initialize UI on page load
+    window.onload = function() {
+        updateCartUI();
+    };
 
     function handleSearch() {
         const query = document.getElementById('foodSearch').value.toLowerCase().trim();
@@ -216,7 +221,18 @@ $canteens_res = $conn->query($canteens_sql);
 
     function loadMenu(canteenId, name) {
         currentView = 'menu';
+        
+        // If users switch canteens, ideally they get a prompt to clear cart. 
+        // For now, if canteenId changes, we hard-clear the cart.
+        if(currentCanteenId !== canteenId && cart.length > 0) {
+            if(!confirm("Changing restaurants will clear your current cart. Proceed?")) return;
+            cart = [];
+            updateCartUI();
+        }
+        
         currentCanteenId = canteenId;
+        localStorage.setItem('food_canteen_id', canteenId);
+        
         document.getElementById('canteenSelection').style.display = 'none';
         document.getElementById('menuView').style.display = 'block';
         document.getElementById('currentCanteenName').innerText = name;
@@ -289,6 +305,7 @@ $canteens_res = $conn->query($canteens_sql);
     }
 
     function updateCartUI() {
+        localStorage.setItem('food_cart', JSON.stringify(cart));
         const count = cart.length;
         const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
         
@@ -297,6 +314,9 @@ $canteens_res = $conn->query($canteens_sql);
         
         if(count === 0) {
             document.getElementById('cartIndicator').style.display = 'none';
+        } else {
+            document.getElementById('cartIndicator').style.display = 'flex';
+            document.getElementById('cartIndicator').onclick = openCheckout;
         }
     }
 
