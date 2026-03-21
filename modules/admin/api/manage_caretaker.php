@@ -77,10 +77,13 @@ elseif ($action === 'delete') {
     
     // Optional: Delete physical file if it exists and is local
     $result = $conn->query("SELECT image_url FROM caretakers WHERE id = $id");
-    if ($row = $result->fetch_assoc()) {
-        $old_img = '../../../' . $row['image_url'];
-        if (!str_starts_with($row['image_url'], 'http') && file_exists($old_img)) {
-            unlink($old_img);
+    if ($result && $row = $result->fetch_assoc()) {
+        $img_path = $row['image_url'];
+        if (!empty($img_path) && !str_starts_with($img_path, 'http')) {
+            $old_img = '../../../' . $img_path;
+            if (is_file($old_img) && file_exists($old_img)) {
+                @unlink($old_img);
+            }
         }
     }
 
