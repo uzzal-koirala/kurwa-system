@@ -87,6 +87,11 @@ elseif ($action === 'delete') {
         }
     }
 
+    // Delete dependent records to avoid foreign key constraint errors
+    $conn->query("DELETE FROM caretaker_favorites WHERE caretaker_id = $id");
+    $conn->query("DELETE FROM caretaker_reviews WHERE caretaker_id = $id");
+    $conn->query("DELETE FROM caretaker_bookings WHERE caretaker_id = $id");
+
     $sql = "DELETE FROM caretakers WHERE id = $id";
     if ($conn->query($sql)) {
         echo json_encode(['success' => true, 'message' => 'Caretaker deleted successfully.']);
