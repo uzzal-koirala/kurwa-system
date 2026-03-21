@@ -1,7 +1,9 @@
 <?php
 require_once '../../includes/core/config.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // If already logged in as admin, redirect
 if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
