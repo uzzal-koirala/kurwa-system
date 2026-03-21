@@ -40,126 +40,149 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Portal Login | Kurwa Food</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .bg-gradient-rest {
-            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
-        }
-        .text-rest-primary { color: #ff7e5f; }
-        .text-rest-secondary { color: #2f3cff; }
-        .btn-rest {
-            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
-            transition: all 0.3s transform;
-        }
-        .btn-rest:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 126, 95, 0.3);
-        }
-        .input-glass {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #edf2f7;
-            transition: all 0.3s;
-        }
-        .input-glass:focus {
-            border-color: #ff7e5f;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.1);
-            outline: none;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurant Partner Login - Kurwa System</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen relative overflow-hidden">
-    <!-- Decorative background elements -->
-    <div class="absolute bottom-0 right-0 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 translate-x-1/3 translate-y-1/3"></div>
 
-    <div class="max-w-4xl w-full mx-4 flex bg-white rounded-3xl overflow-hidden shadow-2xl relative z-10">
-        <!-- Left Side -->
-        <div class="hidden md:flex flex-col md:w-[35%] bg-gradient-rest p-6 text-white justify-center relative overflow-hidden">
-            <div class="absolute inset-0 bg-black opacity-10"></div>
-            <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-10">
-                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-rest-primary font-bold text-xl shadow-lg">
-                        <i class="ri-restaurant-fill"></i>
-                    </div>
-                    <span class="text-2xl font-bold tracking-tight">Kurwa Food</span>
-                </div>
-                
-                <h1 class="text-2xl font-bold mb-4 leading-tight">Manage your<br>restaurant with ease.</h1>
-                <p class="text-white text-opacity-90 text-sm">Join the fastest growing food network and reach thousands of hungry customers today.</p>
-            </div>
+<body class="flex items-center justify-center min-h-screen px-4 bg-[#fff7ed] font-[Poppins]">
+
+  <!-- Desktop Layout -->
+  <div class="hidden md:flex bg-white shadow-lg rounded-2xl overflow-hidden max-w-4xl w-full">
+    <!-- Left Section (Form) -->
+    <div class="p-8 md:p-10 w-[55%] flex flex-col justify-center">
+      <h2 class="text-3xl font-bold mb-1">Sign in to Restaurant</h2>
+      <p class="text-gray-600 text-sm mb-6">Welcome back! Manage your food menu and orders.</p>
+
+      <?php if (!empty($error)): ?>
+        <div class="text-red-500 text-sm mb-4 bg-red-50 p-3 flex rounded-lg items-center gap-2">
+            <i data-lucide="alert-circle" class="w-5 h-5"></i> <?php echo $error; ?>
+        </div>
+      <?php endif; ?>
+
+      <form method="POST" action="" class="flex flex-col gap-4">
+        <input type="email" name="email" placeholder="Email address"
+          class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#f97316]" required />
+
+        <div class="relative">
+          <input type="password" name="password" placeholder="Password"
+            class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#f97316] w-full pr-10" required />
+          <button type="button" onclick="togglePassword(this)" class="absolute right-3 top-3.5 text-gray-500">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </button>
         </div>
 
-        <!-- Right Side -->
-        <div class="w-full md:w-[65%] p-6 md:p-8 flex flex-col justify-center">
-            <div class="mb-6 text-center md:text-left">
-                <h2 class="text-2xl font-bold text-gray-900 mb-1">Welcome back</h2>
-                <p class="text-sm text-gray-500">Please enter your details to sign in.</p>
-            </div>
-
-            <?php if ($error): ?>
-                <div class="bg-red-50 text-red-500 p-4 rounded-xl mb-6 text-sm flex items-center gap-2 font-medium">
-                    <i class="ri-error-warning-line text-lg"></i> <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
-
-            <form action="login.php" method="POST" class="space-y-4">
-                <div class="relative">
-                    <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">Email Address</label>
-                    <div class="relative">
-                        <i class="ri-mail-line absolute left-4 top-3.5 text-gray-400 text-lg"></i>
-                        <input type="email" name="email" class="w-full pl-11 pr-4 py-3 rounded-xl input-glass" placeholder="restaurant@example.com" required>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">Password</label>
-                    <div class="relative">
-                        <i class="ri-lock-password-line absolute left-4 top-3.5 text-gray-400 text-lg"></i>
-                        <input type="password" name="password" id="password" class="w-full pl-11 pr-12 py-3 rounded-xl input-glass" placeholder="••••••••" required>
-                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-3.5 text-gray-400 hover:text-rest-primary transition-colors text-lg">
-                            <i class="ri-eye-off-line" id="eye-icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between mt-2 mb-6">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" class="w-4 h-4 rounded text-rest-primary focus:ring-rest-primary border-gray-300">
-                        <span class="text-sm text-gray-600 font-medium">Remember me</span>
-                    </label>
-                    <a href="#" class="text-sm font-bold text-rest-primary hover:text-orange-600 transition-colors">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="w-full py-3.5 text-white rounded-xl font-bold text-lg btn-rest flex justify-center items-center gap-2">
-                    Sign In <i class="ri-arrow-right-line font-bold"></i>
-                </button>
-            </form>
-
-            <p class="text-center text-gray-500 mt-6 font-medium text-sm">
-                Don't have a restaurant account? 
-                <a href="signup.php" class="text-rest-secondary font-bold hover:underline">Sign up now</a>
-            </p>
+        <div class="flex justify-between items-center text-sm">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="w-4 h-4 accent-[#f97316]" /> Remember me
+          </label>
+          <a href="#" class="text-[#f97316] font-medium hover:underline">Forgot password?</a>
         </div>
+
+        <button type="submit"
+          class="bg-[#f97316] hover:bg-[#ea580c] text-white py-3 rounded-lg font-medium text-lg w-full transition">
+          Sign In
+        </button>
+
+        <p class="text-center text-sm mt-3">
+          <a href="../../login.php" class="text-[#64748b] font-medium hover:underline flex items-center justify-center gap-1">
+             <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Main Portal
+          </a>
+        </p>
+      </form>
     </div>
 
-    <script>
-        function togglePassword() {
-            const input = document.getElementById('password');
-            const icon = document.getElementById('eye-icon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'ri-eye-line';
-            } else {
-                input.type = 'password';
-                icon.className = 'ri-eye-off-line';
-            }
-        }
-    </script>
+    <!-- Right Section (Image) -->
+    <div class="bg-[#f97316] text-white flex flex-col justify-center items-center p-10 w-[45%]">
+      <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=400&q=80" alt="Restaurant Operations" class="rounded-lg mb-6 shadow-md object-cover h-[250px] w-[300px]" />
+      <div class="text-center">
+        <h2 class="text-[20px] font-bold mb-2">Manage your restaurant with ease.</h2>
+        <p class="text-[13px] opacity-90 leading-relaxed">
+          Join the fastest growing food network and reach thousands of hungry customers today.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Layout -->
+  <div class="md:hidden w-full max-w-md bg-white shadow-lg rounded-2xl overflow-hidden relative">
+    <div class="bg-[#f97316] text-white text-center pt-8 pb-16 px-6 rounded-b-[60px]">
+      <h2 class="text-[20px] font-bold mb-2 leading-snug">Manage your restaurant with ease.</h2>
+      <p class="text-sm opacity-90 leading-relaxed">
+        Join the fastest growing food network and reach thousands of hungry customers today.
+      </p>
+    </div>
+
+    <div class="p-8 -mt-8 relative z-10 bg-white rounded-t-[30px] border-t border-gray-100 shadow-[0_-15px_20px_-15px_rgba(0,0,0,0.1)]">
+      <h2 class="text-2xl font-bold text-center mb-2">Sign in to Restaurant</h2>
+      <p class="text-gray-600 text-sm text-center mb-6">Welcome back! Manage your food menu.</p>
+
+      <?php if (!empty($error)): ?>
+        <div class="text-red-500 text-sm mb-4 text-center bg-red-50 p-3 rounded-lg flex items-center justify-center gap-2">
+            <i data-lucide="alert-circle" class="w-5 h-5"></i> <?php echo $error; ?>
+        </div>
+      <?php endif; ?>
+
+      <form method="POST" action="" class="flex flex-col gap-4">
+        <input type="email" name="email" placeholder="Email address"
+          class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#f97316]" required />
+
+        <div class="relative">
+          <input type="password" name="password" placeholder="Password"
+            class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#f97316] w-full pr-10" required />
+          <button type="button" onclick="togglePassword(this)" class="absolute right-3 top-3.5 text-gray-500">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="flex justify-between items-center text-sm">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="w-4 h-4 accent-[#f97316]" /> Remember me
+          </label>
+          <a href="#" class="text-[#f97316] font-medium hover:underline">Forgot?</a>
+        </div>
+
+        <button type="submit"
+          class="bg-[#f97316] hover:bg-[#ea580c] text-white py-3 rounded-lg font-medium text-lg w-full transition">
+          Sign In
+        </button>
+
+        <p class="text-center text-sm mt-3">
+          <a href="../../login.php" class="text-[#64748b] font-medium hover:underline flex items-center justify-center gap-1">
+             <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Main Portal
+          </a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function togglePassword(btn) {
+      const input = btn.previousElementSibling;
+      const icon = btn.querySelector("i");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.setAttribute("data-lucide", "eye-off");
+      } else {
+        input.type = "password";
+        icon.setAttribute("data-lucide", "eye");
+      }
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
