@@ -61,16 +61,30 @@
     margin-bottom: 30px;
     padding: 0 4px;
     white-space: nowrap;
+    min-height: 48px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-icon { font-size: 32px; color: var(--side-heading); display: flex; align-items: center; justify-content: center; }
-.brand-text { font-size: 22px; font-weight: 700; color: var(--side-heading); display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; transition: 0.3s; }
-.brand-text span { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 6px; }
-
-.delivery-sidebar.collapsed .brand-text { opacity: 0; display: none; }
-.delivery-sidebar.collapsed .sidebar-header { flex-direction: column; gap: 20px; }
-.delivery-sidebar.collapsed .brand { justify-content: center; }
+.delivery-sidebar.collapsed .brand-text { display: none; }
+.delivery-sidebar.collapsed .sidebar-header { 
+    flex-direction: column; 
+    gap: 15px; 
+    align-items: center; 
+    justify-content: center;
+    position: relative;
+    padding-top: 10px;
+}
+.delivery-sidebar.collapsed .brand { justify-content: center; margin-bottom: 0px; }
+.delivery-sidebar.collapsed .brand-icon { 
+    font-size: 32px; 
+    color: var(--side-primary);
+    filter: drop-shadow(0 0 10px var(--side-primary-glow));
+}
+.delivery-sidebar.collapsed .desktop-toggle-btn {
+    order: 2; /* Move toggle below brand icon */
+}
 
 .header-toggles { display: flex; align-items: center; gap: 10px; }
 
@@ -159,9 +173,13 @@
 
 .menu-item.active i { color: var(--side-active-text); }
 
-.delivery-sidebar.collapsed .menu-item { padding: 12px 0; justify-content: center; }
-.delivery-sidebar.collapsed .menu-item span { opacity: 0; display: none; }
-.delivery-sidebar.collapsed .menu-item i { margin: 0; font-size: 28px; }
+.delivery-sidebar.collapsed .menu-item { 
+    padding: 12px 0; 
+    justify-content: center;
+    width: 100%;
+}
+.delivery-sidebar.collapsed .menu-item span { display: none; }
+.delivery-sidebar.collapsed .menu-item i { margin: 0; font-size: 24px; }
 
 .badge-count {
     margin-left: auto;
@@ -229,25 +247,56 @@
     border-radius: 20px;
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.05);
-    transition: 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
     overflow: hidden;
+    position: relative;
 }
 
-.delivery-sidebar.collapsed .user-profile-badge { padding: 6px; justify-content: center; border-radius: 50%; width: 48px; height: 48px; margin: 0 auto; }
+.delivery-sidebar.collapsed .user-profile-badge { 
+    flex-direction: column;
+    padding: 10px 4px; 
+    justify-content: center; 
+    border-radius: 12px; 
+    width: 100%;
+    gap: 8px;
+}
 
-.user-profile-badge img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.user-profile-badge img { 
+    width: 38px; 
+    height: 38px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 2px solid rgba(255,255,255,0.2);
+}
 .delivery-sidebar.collapsed .user-profile-badge img { width: 34px; height: 34px; }
 
-.user-profile-info { flex: 1; overflow: hidden; transition: 0.3s; }
-.delivery-sidebar.collapsed .user-profile-info { opacity: 0; display: none; }
+.user-profile-info { flex: 1; overflow: hidden; transition: opacity 0.3s; }
+.delivery-sidebar.collapsed .user-profile-info { display: none; }
 
 .user-profile-info h4 { margin: 0; font-size: 14px; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .user-profile-info p { margin: 2px 0 0; font-size: 12px; color: var(--side-icon); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.logout-icon { color: rgba(255,255,255,0.4); font-size: 18px; transition: 0.3s; }
+.logout-icon { 
+    color: rgba(255,255,255,0.4); 
+    font-size: 18px; 
+    transition: 0.3s; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .logout-icon:hover { color: #f87171; }
-.delivery-sidebar.collapsed .logout-icon { opacity: 0; display: none; }
+.delivery-sidebar.collapsed .logout-icon { 
+    opacity: 1; 
+    display: flex; 
+    font-size: 18px;
+    padding: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+}
+.delivery-sidebar.collapsed .logout-icon:hover { background: rgba(248, 113, 113, 0.1); }
 
 /* Mobile Components */
 .mobile-sidebar-toggle {

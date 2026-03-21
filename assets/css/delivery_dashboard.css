@@ -19,7 +19,7 @@ body {
 }
 
 .main-content {
-    margin-left: 280px; /* Aligned with sidebar width */
+    margin-left: 320px; /* Aligned with sidebar: 20(L) + 280(W) + 20(gap) */
     padding: 30px 40px;
     background-color: var(--rider-bg);
     min-height: 100vh;
@@ -29,8 +29,9 @@ body {
 }
 
 .sidebar-collapsed .main-content,
+.sidebar-collapsed-init .main-content,
 .sidebar-collapsed-init .main-content {
-    margin-left: 80px; /* Aligned with collapsed sidebar */
+    margin-left: 120px; /* Aligned with collapsed: 20(L) + 80(W) + 20(gap) */
 }
 
 /* Header Section */

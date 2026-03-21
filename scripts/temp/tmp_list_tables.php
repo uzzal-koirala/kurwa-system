@@ -1,8 +1,11 @@
 <?php
-$conn = mysqli_connect('localhost', 'root', '', 'kurwa_db');
-if (!$conn) die('failed');
-$res = mysqli_query($conn, 'SHOW TABLES');
-while ($row = mysqli_fetch_row($res)) {
-    echo $row[0] . PHP_EOL;
+require_once '../includes/core/config.php';
+$result = $conn->query("SHOW TABLES");
+if ($result) {
+    while ($row = $result->fetch_array()) {
+        echo $row[0] . "\n";
+    }
+} else {
+    echo "Error: " . $conn->error;
 }
 ?>

@@ -28,11 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mobile Open/Close functionality
     function openSidebar() {
+        if (sidebar) sidebar.classList.add('active');
+        if (overlay) overlay.classList.add('active');
         document.body.classList.add('sidebar-open');
         document.body.style.overflow = 'hidden'; 
     }
 
     function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
         document.body.classList.remove('sidebar-open');
         document.body.style.overflow = '';
     }

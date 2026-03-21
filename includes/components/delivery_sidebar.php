@@ -3,6 +3,14 @@
     (function() {
         if (localStorage.getItem('riderSidebarCollapsed') === 'true') {
             document.documentElement.classList.add('sidebar-collapsed-init');
+            // Also try to add to body immediately if it exists, otherwise wait
+            if (document.body) {
+                document.body.classList.add('sidebar-collapsed-init');
+            } else {
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.body.classList.add('sidebar-collapsed-init');
+                });
+            }
         }
     })();
 </script>
