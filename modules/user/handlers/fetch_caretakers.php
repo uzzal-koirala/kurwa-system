@@ -11,7 +11,7 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 $category = isset($_GET['category']) ? $_GET['category'] : 'All';
 
 // Base Query with favorite + booking status check
-$sql = "SELECT id, full_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, availability, working_hours, image_url,
+$sql = "SELECT id, full_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, availability, working_hours, image_url, video_url,
         (SELECT COUNT(*) FROM caretaker_favorites cf WHERE cf.caretaker_id = caretakers.id AND cf.user_id = $user_id) as is_favorite,
         (SELECT COUNT(*) FROM caretaker_bookings cb WHERE cb.caretaker_id = caretakers.id AND cb.user_id = $user_id AND cb.status IN ('pending','confirmed')) as is_booked
         FROM caretakers";
@@ -28,11 +28,17 @@ if ($category !== 'All') {
 
 $stmt->execute();
 
-$id = $full_name = $cat = $spec = $rating = $exp = $price = $patients = $about = $avail = $hours = $img = $is_fav = $is_booked = null;
-$stmt->bind_result($id, $full_name, $cat, $spec, $rating, $exp, $price, $patients, $about, $avail, $hours, $img, $is_fav, $is_booked);
+$id = $full_name = $cat = $spec = $rating = $exp = $price = $patients = $about = $avail = $hours = $img = $video = $is_fav = $is_booked = null;
+$stmt->bind_result($id, $full_name, $cat, $spec, $rating, $exp, $price, $patients, $about, $avail, $hours, $img, $video, $is_fav, $is_booked);
 
 $caretakers = [];
 while ($stmt->fetch()) {
+    // Resolve Image Path: If local, add relative prefix for user module
+    $final_img = $img;
+    if ($img && !str_starts_with($img, 'http')) {
+        $final_img = '../../' . $img;
+    }
+
     $caretakers[] = [
         'id'               => $id,
         'full_name'        => $full_name,
@@ -45,7 +51,8 @@ while ($stmt->fetch()) {
         'about_text'       => $about,
         'availability'     => $avail,
         'working_hours'    => $hours,
-        'image_url'        => $img,
+        'image_url'        => $final_img,
+        'video_url'        => $video,
         'is_favorite'      => $is_fav > 0,
         'is_booked'        => $is_booked > 0,
     ];
