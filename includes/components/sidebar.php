@@ -79,9 +79,9 @@ $user_avatar = isset($user_avatar) ? $user_avatar : '../../assets/images/user-av
             <i class="ri-wallet-3-line"></i>
             <span>Payments & Topup</span>
         </a>
-        <a href="order_tracking.php" class="menu-item <?php echo($current_page === 'order_tracking') ? 'active' : ''; ?>">
-            <i class="ri-route-line"></i>
-            <span>Order Tracking</span>
+        <a href="settings.php" class="menu-item <?php echo($current_page === 'settings') ? 'active' : ''; ?>">
+            <i class="ri-settings-4-line"></i>
+            <span>Settings</span>
         </a>
     </div>
 
