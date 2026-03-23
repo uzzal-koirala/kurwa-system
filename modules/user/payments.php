@@ -122,7 +122,7 @@ if ($tx_stmt) {
         </div>
 
         <!-- Transaction History -->
-        <div class="history-section">
+        <div class="history-section" id="transaction-history">
             <div class="history-header">
                 <h2>Transaction History</h2>
                 <div class="filter-btn">

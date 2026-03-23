@@ -191,7 +191,7 @@ foreach ($chart_labels as $key => $label) {
                 <div class="card-title-row">
                     <h3>Recent Transactions</h3>
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <a href="payments.php" style="font-size: 12px; color: var(--primary-color, #3b82f6); text-decoration: none; font-weight: 500;">View More</a>
+                        <a href="payments.php#transaction-history" style="font-size: 12px; color: var(--primary-color, #3b82f6); text-decoration: none; font-weight: 500;">View More</a>
                         <i class="ri-more-2-line" style="color:var(--text-muted);"></i>
                     </div>
                 </div>
