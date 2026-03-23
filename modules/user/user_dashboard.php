@@ -247,7 +247,7 @@ foreach ($chart_labels as $key => $label) {
                 </div>
                 <div class="balance-actions">
                     <a href="payments.php" class="topup-btn"><i class="ri-add-line"></i> Top Up</a>
-                    <a href="payments.php" class="history-btn"><i class="ri-history-line"></i> History</a>
+                    <a href="payments.php#transaction-history" class="history-btn"><i class="ri-history-line"></i> History</a>
                 </div>
             </div>
 
