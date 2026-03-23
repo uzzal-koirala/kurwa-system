@@ -111,7 +111,7 @@ foreach ($chart_labels as $key => $label) {
                         </div>
                     </div>
                 </a>
-                <a href="medicine_orders.php" class="stat-link">
+                <a href="pharmacy.php" class="stat-link">
                     <div class="stat-card">
                         <div class="stat-icon blue"><i class="ri-capsule-line"></i></div>
                         <div class="stat-details">

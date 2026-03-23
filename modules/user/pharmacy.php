@@ -92,7 +92,10 @@ if ($res) {
 <div class="main-content" id="mainContent">
     <div class="page-header">
         <h1 style="font-size: 28px; font-weight: 700; color: #0f172a;">Online Pharmacy</h1>
-        <p style="color: #64748b;">Get medicines and healthcare supplies delivered to your door.</p>
+        <p style="color: #64748b; margin-bottom: 15px;">Get medicines and healthcare supplies delivered to your door.</p>
+        <a href="medicine_orders.php" style="background:#0d9488; color:white; padding: 10px 20px; border-radius: 8px; text-decoration:none; font-weight:600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="ri-file-upload-line"></i> Have a prescription? Upload and Order here.
+        </a>
     </div>
 
     <!-- View 1: Pharmacies List -->

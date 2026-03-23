@@ -70,10 +70,7 @@ $user_avatar = isset($user_avatar) ? $user_avatar : '../../assets/images/user-av
             <i class="ri-capsule-line"></i>
             <span>Pharmacy & Meds</span>
         </a>
-        <a href="medicine_orders.php" class="menu-item <?php echo($current_page === 'medicine_orders') ? 'active' : ''; ?>">
-            <i class="ri-capsule-line"></i>
-            <span>Medicine Orders</span>
-        </a>
+
         <a href="support.php" class="menu-item <?php echo($current_page === 'support') ? 'active' : ''; ?>">
             <i class="ri-customer-service-2-line"></i>
             <span>Support & Tickets</span>
