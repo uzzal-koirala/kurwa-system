@@ -21,27 +21,12 @@ $canteen_stats = $conn->query("SELECT COUNT(*) as count FROM canteens")->fetch_a
 // "Total Doctor" (Hardcoded as per request)
 $doctor_count = 10;
 
-// 2. Recent Activity (Unified Service History)
-$recent_activity_sql = "
-    (SELECT 'Caretaker' as category, b.created_at as date_in, c.full_name as name, b.status 
-     FROM caretaker_bookings b 
-     JOIN caretakers c ON b.caretaker_id = c.id 
-     WHERE b.user_id = $user_id)
-    UNION ALL
-    (SELECT 'Food' as category, o.order_date as date_in, c.name as name, o.status 
-     FROM food_orders o 
-     JOIN canteens c ON o.canteen_id = c.id 
-     WHERE o.user_id = $user_id)
-    UNION ALL
-    (SELECT 'Pharmacy' as category, m.created_at as date_in, p.name as name, m.status 
-     FROM medicine_orders m 
-     JOIN pharmacies p ON m.pharmacy_id = p.id 
-     WHERE m.user_id = $user_id)
-    ORDER BY date_in DESC LIMIT 5";
+// 2. Recent Payment Transactions
+$recent_activity_sql = "SELECT * FROM transactions WHERE user_id = $user_id ORDER BY created_at DESC LIMIT 5";
 $recent_activity = $conn->query($recent_activity_sql);
 if (!$recent_activity) {
     $recent_activity = null;
-    error_log("Dashboard recent_activity query failed: " . $conn->error);
+    error_log("Dashboard recent transactions query failed: " . $conn->error);
 }
 
 // 3. Dynamic Service Updates (Latest system additions)
@@ -205,15 +190,19 @@ foreach ($chart_labels as $key => $label) {
             <div class="table-card">
                 <div class="card-title-row">
                     <h3>Recent Transactions</h3>
-                    <i class="ri-more-2-line" style="color:var(--text-muted);"></i>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <a href="payments.php" style="font-size: 12px; color: var(--primary-color, #3b82f6); text-decoration: none; font-weight: 500;">View More</a>
+                        <i class="ri-more-2-line" style="color:var(--text-muted);"></i>
+                    </div>
                 </div>
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>No</th>
                             <th>Date</th>
-                            <th>Service Provider</th>
-                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -221,17 +210,27 @@ foreach ($chart_labels as $key => $label) {
                         <?php if ($recent_activity && $recent_activity->num_rows > 0): $i = 1; while($row = $recent_activity->fetch_assoc()): ?>
                         <tr>
                             <td><?= sprintf("%02d", $i++) ?></td>
-                            <td><?= date('m/d/y', strtotime($row['date_in'])) ?></td>
-                            <td style="font-weight:700;"><?= htmlspecialchars($row['name']) ?></td>
-                            <td><?= $row['category'] ?></td>
+                            <td><?= date('m/d/y', strtotime($row['created_at'])) ?></td>
+                            <td style="font-weight:700;"><?= htmlspecialchars($row['description'] ?? '') ?></td>
+                            <td><?= ucfirst($row['type'] ?? 'Transaction') ?></td>
+                            <td style="font-weight:600; color: <?= (isset($row['amount']) && $row['amount'] > 0) ? '#10b981' : '#ef4444' ?>;">
+                                <?= (isset($row['amount']) && $row['amount'] > 0) ? '+' : '' ?>Rs. <?= number_format(abs($row['amount'] ?? 0), 2) ?>
+                            </td>
                             <td>
-                                <span class="status-badge <?= (strtolower($row['status']) === 'confirmed' || strtolower($row['status']) === 'pending') ? 'status-'.strtolower($row['status']) : 'status-pending' ?>">
-                                    <?= ucfirst($row['status']) ?>
+                                <?php 
+                                    $status_class = 'status-pending';
+                                    if (isset($row['status'])) {
+                                        if ($row['status'] === 'completed') $status_class = 'status-confirmed';
+                                        if ($row['status'] === 'failed' || $row['status'] === 'canceled') $status_class = 'status-cancelled';
+                                    }
+                                ?>
+                                <span class="status-badge <?= $status_class ?>">
+                                    <?= ucfirst($row['status'] ?? 'Pending') ?>
                                 </span>
                             </td>
                         </tr>
                         <?php endwhile; else: ?>
-                        <tr><td colspan="5" style="text-align:center; color:#94a3b8; padding: 20px;">No recent activity yet.</td></tr>
+                        <tr><td colspan="6" style="text-align:center; color:#94a3b8; padding: 20px;">No recent transactions yet.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

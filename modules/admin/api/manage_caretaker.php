@@ -96,7 +96,9 @@ elseif ($action === 'delete') {
     if ($conn->query($sql)) {
         echo json_encode(['success' => true, 'message' => 'Caretaker deleted successfully.']);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
+        $error = $conn->error;
+        file_put_contents('delete_error_log.txt', date('[Y-m-d H:i:s] ') . "Delete ID $id failed: $error\n", FILE_APPEND);
+        echo json_encode(['success' => false, 'message' => 'Database error: ' . $error]);
     }
 } 
 else {
