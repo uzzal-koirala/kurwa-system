@@ -14,6 +14,10 @@ $user_data = $stmt->get_result()->fetch_assoc();
 
 require_once '../../includes/core/sms_helper.php';
 
+// Fetch locations and hospitals for settings
+$all_locations = $conn->query("SELECT * FROM locations ORDER BY name ASC")->fetch_all(MYSQLI_ASSOC);
+$all_hospitals = $conn->query("SELECT * FROM hospitals ORDER BY name ASC")->fetch_all(MYSQLI_ASSOC);
+
 $success_msg = '';
 $error_msg = '';
 
@@ -59,13 +63,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'] ?? '';
         $address = $_POST['address'] ?? '';
         $new_phone = $_POST['phone'] ?? '';
+        $new_location_id = $_POST['location_id'] ?? null;
+        $new_hospital_id = $_POST['hospital_id'] ?? null;
 
-        // 1. Handle Name, Email, Address
-        $update_query = "UPDATE users SET full_name = ?, email = ?, address = ? WHERE id = ?";
+        // 1. Handle Name, Email, Address, Location, Hospital
+        $update_query = "UPDATE users SET full_name = ?, email = ?, address = ?, location_id = ?, hospital_id = ? WHERE id = ?";
         $update_stmt = $conn->prepare($update_query);
-        $update_stmt->bind_param("sssi", $full_name, $email, $address, $user_id);
+        $update_stmt->bind_param("sssiii", $full_name, $email, $address, $new_location_id, $new_hospital_id, $user_id);
         $update_stmt->execute();
         $_SESSION['full_name'] = $full_name;
+        if ($new_hospital_id) $_SESSION['hospital_id'] = $new_hospital_id;
+        if ($new_location_id) $_SESSION['location_id'] = $new_location_id;
 
         // 2. Handle Profile Picture Upload
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
@@ -543,6 +551,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button class="settings-tab" onclick="switchTab('notifications', this)">
                 <i class="ri-notification-3-line"></i> Notifications
             </button>
+            <button class="settings-tab" onclick="switchTab('location-hospital', this)">
+                <i class="ri-map-pin-2-line"></i> Hospital & Location
+            </button>
             <button class="settings-tab" onclick="switchTab('appearance', this)">
                 <i class="ri-palette-line"></i> Appearance
             </button>
@@ -695,6 +706,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
+            <!-- Location & Hospital Tab -->
+            <div id="location-hospital" class="settings-pane">
+                <div class="pane-header">
+                    <h2>Preferred Hospital & Location</h2>
+                    <p>Select your primary hospital and location for faster bookings and localized services.</p>
+                </div>
+
+                <form method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Primary Location</label>
+                            <select name="location_id" id="location-select" class="form-control" onchange="filterHospitals(this.value)">
+                                <option value="">Select Location</option>
+                                <?php foreach ($all_locations as $loc): ?>
+                                <option value="<?= $loc['id'] ?>" <?= ($user_data['location_id'] == $loc['id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($loc['name']) ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Primary Hospital</label>
+                            <select name="hospital_id" id="hospital-select" class="form-control">
+                                <option value="">Select Hospital</option>
+                                <?php foreach ($all_hospitals as $hosp): ?>
+                                <option value="<?= $hosp['id'] ?>" data-location="<?= $hosp['location_id'] ?>" <?= ($user_data['hospital_id'] == $hosp['id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($hosp['name']) ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="text-align: right; margin-top: 10px;">
+                        <button type="submit" class="btn btn-primary">Save Hospital Preferences</button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 30px; padding: 20px; background: #eff6ff; border-radius: 16px; border: 1px solid #dbeafe;">
+                    <div style="display: flex; gap: 15px;">
+                        <i class="ri-information-line" style="font-size: 24px; color: var(--primary);"></i>
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">Why this matters?</h4>
+                            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Your preferred hospital helps us show you relevant canteen menus, caretaker availability, and medicine delivery options specific to that facility.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Appearance Tab -->
             <div id="appearance" class="settings-pane">
                 <div class="pane-header">
@@ -761,6 +821,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setTimeout(() => alertMsg.style.display = 'none', 500);
         }, 4000);
     }
+
+    function filterHospitals(locationId) {
+        const hospitalSelect = document.getElementById('hospital-select');
+        const options = hospitalSelect.querySelectorAll('option');
+        
+        let firstVisibleSet = false;
+        options.forEach(option => {
+            if (!option.value) return; // Skip placeholder
+            
+            const hospLocation = option.getAttribute('data-location');
+            if (!locationId || hospLocation === locationId) {
+                option.style.display = '';
+                if (!firstVisibleSet) {
+                    // option.selected = true; // Optional: auto-select first
+                    firstVisibleSet = true;
+                }
+            } else {
+                option.style.display = 'none';
+                if (option.selected) {
+                    hospitalSelect.value = ''; // Reset if selected is now hidden
+                }
+            }
+        });
+    }
+
+    // Initial filter if location is already selected
+    document.addEventListener('DOMContentLoaded', () => {
+        const locId = document.getElementById('location-select').value;
+        if (locId) {
+            filterHospitals(locId);
+        }
+    });
 </script>
 
 </body>
