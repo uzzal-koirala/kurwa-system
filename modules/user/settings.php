@@ -505,7 +505,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" class="otp-form" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
                 <input type="hidden" name="verify_otp" value="1">
                 <?php for ($i = 0; $i < 6; $i++): ?>
-                <input type="text" name="otp[]" maxlength="1" required style="width: 45px; height: 55px; font-size: 24px; text-align: center; border: 2px solid var(--border-light); border-radius: 12px; font-weight: 700;">
+                <input type="text" name="otp[]" maxlength="1" required style="width: 45px; height: 55px; font-size: 24px; text-align: center; border: 2px solid var(--border-light); border-radius: 12px; font-weight: 700; outline: none; transition: all 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 4px rgba(59, 130, 246, 0.1)'" onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none'">
                 <?php endfor; ?>
                 <button type="submit" id="submit-otp" style="display: none;"></button>
             </form>
@@ -569,7 +569,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label for="avatar-input" class="btn btn-primary" style="cursor: pointer;">
                                     <i class="ri-upload-cloud-line"></i> Upload New
                                 </label>
-                                <input type="file" name="avatar" id="avatar-input" style="display: none;" onchange="this.form.submit()">
+                                <input type="file" name="avatar" id="avatar-input" style="display: none;" onchange="this.form.submit()" accept="image/*">
                                 <button type="button" class="btn btn-outline" onclick="location.href='?remove_avatar=1'">Remove</button>
                             </div>
                             <p style="color: var(--text-muted); font-size: 13px; margin-top: 10px;">JPG, GIF or PNG. Max size of 2MB.</p>
