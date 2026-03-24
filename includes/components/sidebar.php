@@ -3,9 +3,13 @@ if (!isset($current_page)) {
     $current_page = 'dashboard';
 }
 
-$user_name = isset($user_name) ? $user_name : 'Ujwal Koirala';
-$user_role = isset($user_role) ? $user_role : 'Patient Account';
-$user_avatar = isset($user_avatar) ? $user_avatar : '../../assets/images/user-avatar.jpg';
+if (!isset($user_id) && isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+}
+
+$user_name = $_SESSION['full_name'] ?? 'User';
+$user_role = (isset($_SESSION['role']) ? ucfirst($_SESSION['role']) : 'Member') . ' Account';
+$user_avatar = !empty($_SESSION['profile_picture']) ? '/Kurwa/kurwa-system/' . $_SESSION['profile_picture'] : "https://ui-avatars.com/api/?name=" . urlencode($user_name) . "&background=3b82f6&color=fff";
 ?>
 
 <!-- Universal Mobile Top Bar -->

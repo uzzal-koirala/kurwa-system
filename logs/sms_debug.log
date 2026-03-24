@@ -1,0 +1,4 @@
+[2026-03-23 21:49:14] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}
+[2026-03-23 21:49:50] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}
+[2026-03-23 21:51:15] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}
+[2026-03-23 21:51:24] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}

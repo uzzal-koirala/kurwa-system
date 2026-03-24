@@ -28,6 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       } elseif (password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['full_name'] = $user['full_name'];
+        $_SESSION['hospital_id'] = $user['hospital_id'];
+        $_SESSION['profile_picture'] = $user['profile_picture'];
+        $_SESSION['role'] = $user['role'];
         header("Location: user_dashboard.php");
         exit;
       } else {

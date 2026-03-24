@@ -12,10 +12,98 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_data = $stmt->get_result()->fetch_assoc();
 
-// Handle form submission (Mock logic for UI demo, backend hookable later)
+require_once '../../includes/core/sms_helper.php';
+
 $success_msg = '';
+$error_msg = '';
+
+// Handle Avatar Removal
+if (isset($_GET['remove_avatar']) && $_GET['remove_avatar'] == 1) {
+    $conn->query("UPDATE users SET profile_picture = NULL WHERE id = $user_id");
+    $_SESSION['profile_picture'] = null;
+    $success_msg = 'Profile picture removed.';
+    // Refresh user data
+    $stmt->execute();
+    $user_data = $stmt->get_result()->fetch_assoc();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $success_msg = 'Settings updated successfully!';
+    if (isset($_POST['cancel_phone_change'])) {
+        unset($_SESSION['pending_otp']);
+        unset($_SESSION['pending_phone']);
+        $success_msg = 'Phone change cancelled.';
+    } elseif (isset($_POST['verify_otp'])) {
+        // Handle OTP Verification for Phone Change
+        $otp_input = implode('', $_POST['otp']);
+        if ($otp_input == $_SESSION['pending_otp']) {
+            $new_phone = $_SESSION['pending_phone'];
+            $update_query = "UPDATE users SET phone = ? WHERE id = ?";
+            $update_stmt = $conn->prepare($update_query);
+            $update_stmt->bind_param("si", $new_phone, $user_id);
+            if ($update_stmt->execute()) {
+                $success_msg = 'Phone number updated successfully!';
+                unset($_SESSION['pending_otp']);
+                unset($_SESSION['pending_phone']);
+                // Refresh user data
+                $stmt->execute();
+                $user_data = $stmt->get_result()->fetch_assoc();
+            } else {
+                $error_msg = 'Failed to update phone number.';
+            }
+        } else {
+            $error_msg = 'Invalid OTP. Please try again.';
+        }
+    } else {
+        // Handle General Profile Updates
+        $full_name = $_POST['full_name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $address = $_POST['address'] ?? '';
+        $new_phone = $_POST['phone'] ?? '';
+
+        // 1. Handle Name, Email, Address
+        $update_query = "UPDATE users SET full_name = ?, email = ?, address = ? WHERE id = ?";
+        $update_stmt = $conn->prepare($update_query);
+        $update_stmt->bind_param("sssi", $full_name, $email, $address, $user_id);
+        $update_stmt->execute();
+        $_SESSION['full_name'] = $full_name;
+
+        // 2. Handle Profile Picture Upload
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+            $file_tmp = $_FILES['avatar']['tmp_name'];
+            $file_name = $_FILES['avatar']['name'];
+            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
+
+            if (in_array($file_ext, $allowed_exts)) {
+                $new_file_name = "avatar_" . $user_id . "_" . time() . "." . $file_ext;
+                $upload_path = "../../assets/images/uploads/avatars/" . $new_file_name;
+                
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    // Update DB with relative path
+                    $db_path = "assets/images/uploads/avatars/" . $new_file_name;
+                    $conn->query("UPDATE users SET profile_picture = '$db_path' WHERE id = $user_id");
+                    $_SESSION['profile_picture'] = $db_path;
+                }
+            }
+        }
+
+        // 3. Handle Phone Number Change (Requires OTP)
+        if ($new_phone !== $user_data['phone']) {
+            $otp = rand(100000, 999999);
+            $_SESSION['pending_otp'] = $otp;
+            $_SESSION['pending_phone'] = $new_phone;
+            
+            $sms_message = "Your Kurwa System verification code is: $otp. Verify to update your phone number.";
+            send_sms($new_phone, $sms_message);
+            $success_msg = 'A verification code has been sent to your new phone number.';
+        } else {
+            if (empty($success_msg)) $success_msg = 'Settings updated successfully!';
+        }
+
+        // Refresh user data
+        $stmt->execute();
+        $user_data = $stmt->get_result()->fetch_assoc();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -401,6 +489,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <?php endif; ?>
 
+    <?php if ($error_msg): ?>
+    <div class="alert-success" style="background: #fef2f2; color: #991b1b; border-color: #fca5a5;">
+        <i class="ri-error-warning-fill" style="font-size: 20px;"></i>
+        <?= htmlspecialchars($error_msg) ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- OTP Verification Modal -->
+    <?php if (isset($_SESSION['pending_otp'])): ?>
+    <div id="otp-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 40px; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <h2 style="margin-bottom: 10px;">Verify New Number</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">Enter the 6-digit code sent to <?= htmlspecialchars($_SESSION['pending_phone']) ?></p>
+            <form method="POST" class="otp-form" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+                <input type="hidden" name="verify_otp" value="1">
+                <?php for ($i = 0; $i < 6; $i++): ?>
+                <input type="text" name="otp[]" maxlength="1" required style="width: 45px; height: 55px; font-size: 24px; text-align: center; border: 2px solid var(--border-light); border-radius: 12px; font-weight: 700;">
+                <?php endfor; ?>
+                <button type="submit" id="submit-otp" style="display: none;"></button>
+            </form>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="document.querySelector('.otp-form').submit()" class="btn btn-primary" style="flex: 1; justify-content: center;">Verify Code</button>
+                <form method="POST" style="flex: 1;">
+                    <input type="hidden" name="cancel_phone_change" value="1">
+                    <button type="submit" class="btn btn-outline" style="width: 100%; justify-content: center;">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.otp-form input').forEach((input, index) => {
+            input.addEventListener('keyup', (e) => {
+                if (e.key >= 0 && e.key <= 9) {
+                    if (index < 5) input.nextElementSibling.focus();
+                } else if (e.key === 'Backspace') {
+                    if (index > 0) input.previousElementSibling.focus();
+                }
+            });
+        });
+    </script>
+    <?php endif; ?>
+
     <div class="settings-layout">
         <!-- Sidebar Navigation -->
         <div class="settings-sidebar">
@@ -428,13 +558,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Update your personal information and how others see you on the platform.</p>
                 </div>
 
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <div class="avatar-upload">
-                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($user_data['full_name'] ?? 'User') ?>&background=3b82f6&color=fff&size=150" alt="Avatar" class="avatar-preview">
+                        <?php 
+                        $avatar_url = !empty($user_data['profile_picture']) ? '../../' . $user_data['profile_picture'] : "https://ui-avatars.com/api/?name=" . urlencode($user_data['full_name'] ?? 'User') . "&background=3b82f6&color=fff&size=150";
+                        ?>
+                        <img src="<?= $avatar_url ?>" alt="Avatar" class="avatar-preview">
                         <div>
                             <div class="avatar-btns">
-                                <button type="button" class="btn btn-primary"><i class="ri-upload-cloud-line"></i> Upload New</button>
-                                <button type="button" class="btn btn-outline">Remove</button>
+                                <label for="avatar-input" class="btn btn-primary" style="cursor: pointer;">
+                                    <i class="ri-upload-cloud-line"></i> Upload New
+                                </label>
+                                <input type="file" name="avatar" id="avatar-input" style="display: none;" onchange="this.form.submit()">
+                                <button type="button" class="btn btn-outline" onclick="location.href='?remove_avatar=1'">Remove</button>
                             </div>
                             <p style="color: var(--text-muted); font-size: 13px; margin-top: 10px;">JPG, GIF or PNG. Max size of 2MB.</p>
                         </div>

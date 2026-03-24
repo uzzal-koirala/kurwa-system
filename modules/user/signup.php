@@ -32,6 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("sssss", $fullname, $email, $phone, $hashed_password, $otp);
 
     if ($stmt->execute()) {
+      $sms_message = "Dear User, your Kurwa System verification code is: $otp. Please do not share this code with anyone for security reasons.";
+      send_sms($phone, $sms_message);
+
       header("Location: verify_otp.php?email=$email");
       exit;
     } else {

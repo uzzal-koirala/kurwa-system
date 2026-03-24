@@ -7,17 +7,19 @@ $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['full_name']; 
 
 // Fetch current user details including balance
-$user_data = $conn->query("SELECT * FROM users WHERE id = $user_id")->fetch_assoc();
+$user_data = $conn->query("SELECT u.*, h.name as hospital_name FROM users u LEFT JOIN hospitals h ON u.hospital_id = h.id WHERE u.id = $user_id")->fetch_assoc();
 $user_balance = $user_data['balance'] ?? 0.00;
 $user_name = $user_data['full_name'] ?? "User";
+$hospital_name = $user_data['hospital_name'] ?? "Hospital";
+$hospital_id = $user_data['hospital_id'];
 
-// 1. Fetch Stats as requested
-// "Total Kurwa" (Total Caretakers)
-$kurwa_stats = $conn->query("SELECT COUNT(*) as count FROM caretakers")->fetch_assoc();
+// 1. Fetch Stats filtered by hospital
+// "Total Kurwa" (Caretakers in this hospital)
+$kurwa_stats = $conn->query("SELECT COUNT(*) as count FROM caretakers WHERE hospital_id = $hospital_id")->fetch_assoc();
 // "Total Pharmacy" (Total Pharmacies)
 $pharmacy_stats = $conn->query("SELECT COUNT(*) as count FROM pharmacies")->fetch_assoc();
-// "Total Canteen" (Total Canteens)
-$canteen_stats = $conn->query("SELECT COUNT(*) as count FROM canteens")->fetch_assoc();
+// "Total Canteen" (Canteens in this hospital)
+$canteen_stats = $conn->query("SELECT COUNT(*) as count FROM canteens WHERE hospital_id = $hospital_id")->fetch_assoc();
 // "Total Doctor" (Hardcoded as per request)
 $doctor_count = 10;
 
@@ -29,12 +31,14 @@ if (!$recent_activity) {
     error_log("Dashboard recent transactions query failed: " . $conn->error);
 }
 
-// 3. Dynamic Service Updates (Latest system additions)
-$latest_pharmacy_res = $conn->query("SELECT name FROM pharmacies ORDER BY id DESC LIMIT 1");
+// 3. Dynamic Service Updates (Latest additions in this hospital)
+$latest_pharmacy_res = $conn->query("SELECT name FROM pharmacies ORDER BY id DESC LIMIT 1"); // Pharmacies are global usually, but keep for consistency
 $latest_pharmacy = $latest_pharmacy_res ? $latest_pharmacy_res->fetch_assoc() : ['name' => 'N/A'];
-$latest_caretaker_res = $conn->query("SELECT full_name FROM caretakers ORDER BY id DESC LIMIT 1");
+
+$latest_caretaker_res = $conn->query("SELECT full_name FROM caretakers WHERE hospital_id = $hospital_id ORDER BY id DESC LIMIT 1");
 $latest_caretaker = $latest_caretaker_res ? $latest_caretaker_res->fetch_assoc() : ['full_name' => 'N/A'];
-$latest_canteen_res = $conn->query("SELECT name FROM canteens ORDER BY id DESC LIMIT 1");
+
+$latest_canteen_res = $conn->query("SELECT name FROM canteens WHERE hospital_id = $hospital_id ORDER BY id DESC LIMIT 1");
 $latest_canteen = $latest_canteen_res ? $latest_canteen_res->fetch_assoc() : ['name' => 'N/A'];
 
 // 4. Upcoming Appointments
@@ -92,7 +96,7 @@ foreach ($chart_labels as $key => $label) {
     <!-- Global Header Section -->
     <?php 
     $page_title = "Hi " . explode(' ', $user_name)[0] . ",";
-    $page_subtitle = "How is your patient today?";
+    $page_subtitle = "How is your patient at " . htmlspecialchars($hospital_name) . " today?";
     include INC_PATH . "/components/user_header.php"; 
     ?>
 

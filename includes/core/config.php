@@ -23,4 +23,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Optional: Set default timezone (for timestamps, logs, etc.)
 date_default_timezone_set('Asia/Kathmandu');
+
+// Include SMS helper
+require_once INC_PATH . '/core/sms_helper.php';
+
+// Include System helper
+require_once INC_PATH . '/core/system_helper.php';
 ?>

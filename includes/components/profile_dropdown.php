@@ -4,7 +4,7 @@ if (!defined('INC_PATH')) {
 }
 require_once INC_PATH . '/core/auth_check.php';
 $user_name = $_SESSION['full_name'] ?? "User";
-$avatar_url = "https://ui-avatars.com/api/?name=" . urlencode($user_name) . "&background=3b82f6&color=fff";
+$avatar_url = !empty($_SESSION['profile_picture']) ? '/Kurwa/kurwa-system/' . $_SESSION['profile_picture'] : "https://ui-avatars.com/api/?name=" . urlencode($user_name) . "&background=3b82f6&color=fff";
 ?>
 <div class="user-dropdown-container">
     <div class="user-display" id="profileToggle">

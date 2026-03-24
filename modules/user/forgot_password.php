@@ -20,11 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
+      $user_data = $result->fetch_assoc();
+      $phone = $user_data['phone'];
+
       // Generate OTP for password reset
       $otp = rand(100000, 999999);
       $update = $conn->prepare("UPDATE users SET otp = ? WHERE email = ?");
       $update->bind_param("ss", $otp, $email);
       $update->execute();
+
+      // Send OTP via SMS
+      if (!empty($phone)) {
+          $sms_message = "Dear User, your Kurwa System verification code (Password Reset) is: $otp. Please do not share this code with anyone for security reasons.";
+          send_sms($phone, $sms_message);
+      }
 
       // Redirect to OTP verification page
       header("Location: verify_reset_otp.php?email=$email");
