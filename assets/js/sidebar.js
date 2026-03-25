@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (document.body.classList.contains('sidebar-collapsed')) {
                     icon.className = 'ri-menu-line';
                 } else {
-                    icon.className = 'ri-menu-line';
+                    icon.className = 'ri-skip-back-line';
                 }
             }
         });
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
              if(document.body.classList.contains('sidebar-collapsed') && icon) {
                  icon.className = 'ri-menu-line';
              } else if (icon) {
-                 icon.className = 'ri-menu-line';
+                 icon.className = 'ri-skip-back-line';
              }
         }
     });
