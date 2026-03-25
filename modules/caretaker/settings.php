@@ -16,6 +16,10 @@ $stmt->bind_param("i", $caretaker_id);
 $stmt->execute();
 $caretaker = $stmt->get_result()->fetch_assoc();
 $stmt->close();
+
+// Fetch all locations and hospitals
+$locations_res = $conn->query("SELECT * FROM locations ORDER BY name ASC");
+$hospitals_res = $conn->query("SELECT * FROM hospitals ORDER BY name ASC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -408,6 +412,26 @@ $stmt->close();
                                 <option value="Elderly Care" <?= ($caretaker['category'] ?? '') == 'Elderly Care' ? 'selected' : '' ?>>Elderly Care</option>
                                 <option value="Night Support" <?= ($caretaker['category'] ?? '') == 'Night Support' ? 'selected' : '' ?>>Night Support</option>
                                 <option value="Special Needs" <?= ($caretaker['category'] ?? '') == 'Special Needs' ? 'selected' : '' ?>>Special Needs</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Service Location</label>
+                            <select name="location_id" class="form-control" required>
+                                <option value="">Select Location</option>
+                                <?php while($loc = $locations_res->fetch_assoc()): ?>
+                                    <option value="<?= $loc['id'] ?>" <?= ($caretaker['location_id'] ?? 0) == $loc['id'] ? 'selected' : '' ?>><?= $loc['name'] ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Service Hospital</label>
+                            <select name="hospital_id" class="form-control" required>
+                                <option value="">Select Hospital</option>
+                                <?php 
+                                $hospitals_res->data_seek(0);
+                                while($hosp = $hospitals_res->fetch_assoc()): ?>
+                                    <option value="<?= $hosp['id'] ?>" <?= ($caretaker['hospital_id'] ?? 0) == $hosp['id'] ? 'selected' : '' ?>><?= $hosp['name'] ?></option>
+                                <?php endwhile; ?>
                             </select>
                         </div>
                         <div class="form-group full-width">

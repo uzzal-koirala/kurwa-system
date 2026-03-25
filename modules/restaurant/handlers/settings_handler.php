@@ -14,14 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $address = trim($_POST['address'] ?? '');
+    $location_id = intval($_POST['location_id'] ?? 0);
+    $hospital_id = intval($_POST['hospital_id'] ?? 0);
 
     if (empty($name) || empty($email)) {
         echo json_encode(['success' => false, 'message' => 'Store Name and Email are required.']);
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE restaurants SET name=?, owner_name=?, email=?, phone=?, address=? WHERE id=?");
-    $stmt->bind_param("sssssi", $name, $owner_name, $email, $phone, $address, $restaurant_id);
+    $stmt = $conn->prepare("UPDATE restaurants SET name=?, owner_name=?, email=?, phone=?, address=?, location_id=?, hospital_id=? WHERE id=?");
+    $stmt->bind_param("sssssiii", $name, $owner_name, $email, $phone, $address, $location_id, $hospital_id, $restaurant_id);
 
     if ($stmt->execute()) {
         // Update session name if changed

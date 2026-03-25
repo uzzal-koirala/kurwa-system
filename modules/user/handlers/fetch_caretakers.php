@@ -8,22 +8,30 @@ header('Content-Type: application/json');
 
 // Get actual session user_id
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
+$hospital_id = isset($_SESSION['hospital_id']) ? intval($_SESSION['hospital_id']) : 0;
 $category = isset($_GET['category']) ? $_GET['category'] : 'All';
+
+if (!$hospital_id) {
+    echo json_encode(['status' => 'error', 'message' => 'Hospital not selected.']);
+    exit;
+}
 
 // Base Query with favorite + booking status check
 $sql = "SELECT id, full_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, availability, working_hours, image_url, video_url,
         (SELECT COUNT(*) FROM caretaker_favorites cf WHERE cf.caretaker_id = caretakers.id AND cf.user_id = $user_id) as is_favorite,
         (SELECT COUNT(*) FROM caretaker_bookings cb WHERE cb.caretaker_id = caretakers.id AND cb.user_id = $user_id AND cb.status IN ('pending','confirmed')) as is_booked
-        FROM caretakers";
+        FROM caretakers WHERE hospital_id = ?";
 
 if ($category !== 'All') {
-    $sql .= " WHERE category = ?";
+    $sql .= " AND category = ?";
 }
 
 $stmt = $conn->prepare($sql);
 
 if ($category !== 'All') {
-    $stmt->bind_param("s", $category);
+    $stmt->bind_param("is", $hospital_id, $category);
+} else {
+    $stmt->bind_param("i", $hospital_id);
 }
 
 $stmt->execute();

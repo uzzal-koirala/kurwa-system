@@ -2,3 +2,9 @@
 [2026-03-23 21:49:50] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}
 [2026-03-23 21:51:15] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}
 [2026-03-23 21:51:24] SMS API Failure: {"success":false,"error":"Invalid sender ID","code":"INVALID_SENDER_ID","message":"Sender ID not found or not accessible for your organization"}
+[2026-03-24 09:36:31] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
+[2026-03-24 09:36:37] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
+[2026-03-25 00:12:08] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
+[2026-03-25 00:14:20] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
+[2026-03-25 00:14:24] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
+[2026-03-25 00:14:37] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}

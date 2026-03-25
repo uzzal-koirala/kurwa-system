@@ -14,6 +14,10 @@ $stmt->bind_param("i", $restaurant_id);
 $stmt->execute();
 $restaurant = $stmt->get_result()->fetch_assoc();
 $stmt->close();
+
+// Fetch all locations and hospitals
+$locations_res = $conn->query("SELECT * FROM locations ORDER BY name ASC");
+$hospitals_res = $conn->query("SELECT * FROM hospitals ORDER BY name ASC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -141,6 +145,26 @@ $stmt->close();
                     <div class="form-group">
                         <label class="form-label">Phone Number</label>
                         <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($restaurant['phone']) ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Service Location</label>
+                        <select name="location_id" class="form-control" required>
+                            <option value="">Select Location</option>
+                            <?php while($loc = $locations_res->fetch_assoc()): ?>
+                                <option value="<?= $loc['id'] ?>" <?= ($restaurant['location_id'] ?? 0) == $loc['id'] ? 'selected' : '' ?>><?= $loc['name'] ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Service Hospital</label>
+                        <select name="hospital_id" class="form-control" required>
+                            <option value="">Select Hospital</option>
+                            <?php 
+                            $hospitals_res->data_seek(0);
+                            while($hosp = $hospitals_res->fetch_assoc()): ?>
+                                <option value="<?= $hosp['id'] ?>" <?= ($restaurant['hospital_id'] ?? 0) == $hosp['id'] ? 'selected' : '' ?>><?= $hosp['name'] ?></option>
+                            <?php endwhile; ?>
+                        </select>
                     </div>
                 </div>
 

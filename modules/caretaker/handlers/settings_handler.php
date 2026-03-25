@@ -23,6 +23,8 @@ if ($action === 'update_profile') {
     $category = trim($_POST['category'] ?? '');
     $specialization = trim($_POST['specialization'] ?? '');
     $about_text = trim($_POST['about_text'] ?? '');
+    $location_id = intval($_POST['location_id'] ?? 0);
+    $hospital_id = intval($_POST['hospital_id'] ?? 0);
 
     if (empty($full_name) || empty($email) || empty($phone)) {
         echo json_encode(['success' => false, 'message' => 'Name, Email, and Phone are required.']);
@@ -31,8 +33,8 @@ if ($action === 'update_profile') {
 
     // Handle Profile Photo Upload
     $image_query = "";
-    $types = "sssdisss";
-    $params = [$full_name, $email, $phone, $price_per_day, $experience_years, $category, $specialization, $about_text];
+    $types = "sssdisssii";
+    $params = [$full_name, $email, $phone, $price_per_day, $experience_years, $category, $specialization, $about_text, $location_id, $hospital_id];
 
     if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = '../../../assets/uploads/caretakers/';
@@ -69,7 +71,7 @@ if ($action === 'update_profile') {
     $types .= "i";
 
     $stmt = $conn->prepare("UPDATE caretakers 
-                            SET full_name=?, email=?, phone=?, price_per_day=?, experience_years=?, category=?, specialization=?, about_text=?" . $image_query . "
+                            SET full_name=?, email=?, phone=?, price_per_day=?, experience_years=?, category=?, specialization=?, about_text=?, location_id=?, hospital_id=?" . $image_query . "
                             WHERE id=?");
     
     $stmt->bind_param($types, ...$params);

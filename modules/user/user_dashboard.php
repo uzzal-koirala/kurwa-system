@@ -16,10 +16,10 @@ $hospital_id = $user_data['hospital_id'];
 // 1. Fetch Stats filtered by hospital
 // "Total Kurwa" (Caretakers in this hospital)
 $kurwa_stats = $conn->query("SELECT COUNT(*) as count FROM caretakers WHERE hospital_id = $hospital_id")->fetch_assoc();
-// "Total Pharmacy" (Total Pharmacies)
-$pharmacy_stats = $conn->query("SELECT COUNT(*) as count FROM pharmacies")->fetch_assoc();
-// "Total Canteen" (Canteens in this hospital)
-$canteen_stats = $conn->query("SELECT COUNT(*) as count FROM canteens WHERE hospital_id = $hospital_id")->fetch_assoc();
+// "Total Pharmacy" (Pharmacies in this hospital)
+$pharmacy_stats = $conn->query("SELECT COUNT(*) as count FROM pharmacies WHERE hospital_id = $hospital_id")->fetch_assoc();
+// "Total Canteen/Restaurant" (Canteens or Restaurants in this hospital)
+$canteen_stats = $conn->query("SELECT (SELECT COUNT(*) FROM canteens WHERE hospital_id = $hospital_id) + (SELECT COUNT(*) FROM restaurants WHERE hospital_id = $hospital_id) as count")->fetch_assoc();
 // "Total Doctor" (Hardcoded as per request)
 $doctor_count = 10;
 
@@ -32,14 +32,17 @@ if (!$recent_activity) {
 }
 
 // 3. Dynamic Service Updates (Latest additions in this hospital)
-$latest_pharmacy_res = $conn->query("SELECT name FROM pharmacies ORDER BY id DESC LIMIT 1"); // Pharmacies are global usually, but keep for consistency
-$latest_pharmacy = $latest_pharmacy_res ? $latest_pharmacy_res->fetch_assoc() : ['name' => 'N/A'];
+$latest_pharmacy_res = $conn->query("SELECT name FROM pharmacies WHERE hospital_id = $hospital_id ORDER BY id DESC LIMIT 1");
+$latest_pharmacy = $latest_pharmacy_res ? $latest_pharmacy_res->fetch_assoc() : null;
 
 $latest_caretaker_res = $conn->query("SELECT full_name FROM caretakers WHERE hospital_id = $hospital_id ORDER BY id DESC LIMIT 1");
-$latest_caretaker = $latest_caretaker_res ? $latest_caretaker_res->fetch_assoc() : ['full_name' => 'N/A'];
+$latest_caretaker = $latest_caretaker_res ? $latest_caretaker_res->fetch_assoc() : null;
 
 $latest_canteen_res = $conn->query("SELECT name FROM canteens WHERE hospital_id = $hospital_id ORDER BY id DESC LIMIT 1");
-$latest_canteen = $latest_canteen_res ? $latest_canteen_res->fetch_assoc() : ['name' => 'N/A'];
+$latest_canteen = $latest_canteen_res ? $latest_canteen_res->fetch_assoc() : null;
+
+$latest_restaurant_res = $conn->query("SELECT name FROM restaurants WHERE hospital_id = $hospital_id ORDER BY id DESC LIMIT 1");
+$latest_restaurant = $latest_restaurant_res ? $latest_restaurant_res->fetch_assoc() : null;
 
 // 4. Upcoming Appointments
 $upcoming_appointments = $conn->query("
@@ -165,27 +168,45 @@ foreach ($chart_labels as $key => $label) {
                         <i class="ri-equalizer-line" style="color:var(--text-muted);"></i>
                     </div>
                     <div class="reports-list">
+                        <?php if ($latest_pharmacy): ?>
                         <div class="report-item info">
                             <div class="report-icon"><i class="ri-megaphone-line"></i></div>
                             <div class="report-text">
-                                <h5><?= $latest_pharmacy ? htmlspecialchars($latest_pharmacy['name']) : 'New Pharmacy' ?> added nearby</h5>
-                                <p>Latest Addition</p>
+                                <h5><?= htmlspecialchars($latest_pharmacy['name']) ?> pharmacy is now active</h5>
+                                <p>Latest addition in your hospital</p>
                             </div>
                         </div>
+                        <?php endif; ?>
+
+                        <?php if ($latest_caretaker): ?>
                         <div class="report-item warning">
                             <div class="report-icon"><i class="ri-shield-user-line"></i></div>
                             <div class="report-text">
-                                <h5>Staff verified: <?= $latest_caretaker ? htmlspecialchars($latest_caretaker['full_name']) : 'New Expert' ?></h5>
-                                <p>Background check complete</p>
+                                <h5>Expert verified: <?= htmlspecialchars($latest_caretaker['full_name']) ?></h5>
+                                <p>Caretaker background check complete</p>
                             </div>
                         </div>
+                        <?php endif; ?>
+
+                        <?php if ($latest_restaurant || $latest_canteen): ?>
                         <div class="report-item error">
-                            <div class="report-icon"><i class="ri-error-warning-line"></i></div>
+                            <div class="report-icon"><i class="ri-restaurant-line"></i></div>
                             <div class="report-text">
-                                <h5>Canteen Alert: <?= $latest_canteen ? htmlspecialchars($latest_canteen['name']) : 'System' ?></h5>
-                                <p>Maintenance scheduled</p>
+                                <h5>New dining available: <?= htmlspecialchars($latest_restaurant['name'] ?? $latest_canteen['name']) ?></h5>
+                                <p>Fresh meals at your service</p>
                             </div>
                         </div>
+                        <?php endif; ?>
+
+                        <?php if (!$latest_pharmacy && !$latest_caretaker && !$latest_restaurant && !$latest_canteen): ?>
+                        <div class="report-item info">
+                            <div class="report-icon"><i class="ri-information-line"></i></div>
+                            <div class="report-text">
+                                <h5>All systems normal</h5>
+                                <p>No new updates for this hospital</p>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

@@ -5,8 +5,12 @@ require_once '../../includes/core/auth_check.php';
 $current_page = 'settings';
 $user_id = $_SESSION['user_id'];
 
-// Fetch latest user data
-$query = "SELECT * FROM users WHERE id = ?";
+// Fetch latest user data with hospital and location names
+$query = "SELECT u.*, h.name as hospital_name, l.name as location_name 
+          FROM users u 
+          LEFT JOIN hospitals h ON u.hospital_id = h.id 
+          LEFT JOIN locations l ON u.location_id = l.id 
+          WHERE u.id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -123,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -478,6 +482,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 font-size: 26px;
             }
         }
+        /* Row-Based Facility Styles */
+        .facility-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .facility-box {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .facility-box:hover {
+            border-color: #2F3CFF;
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(47, 60, 255, 0.05);
+        }
+        .facility-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .bg-loc { background: #eff6ff; color: #2563eb; }
+        .bg-hosp { background: #f5f3ff; color: #7c3aed; }
+        
+        .facility-info label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .facility-info span {
+            display: block;
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .btn-change-hospital {
+            background: linear-gradient(135deg, #4361ee 0%, #2f3cff 100%);
+            color: white;
+            padding: 16px 36px;
+            border-radius: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.25);
+            letter-spacing: 0.2px;
+        }
+        .btn-change-hospital:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(67, 97, 238, 0.35);
+            background: linear-gradient(135deg, #2f3cff 0%, #4361ee 100%);
+        }
+        .btn-change-hospital i {
+            font-size: 20px;
+            animation: rotateOnce 0.6s ease-in-out;
+        }
+        @keyframes rotateOnce {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -570,6 +655,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="location_id" value="<?= $user_data['location_id'] ?>">
+                    <input type="hidden" name="hospital_id" value="<?= $user_data['hospital_id'] ?>">
                     <div class="avatar-upload">
                         <?php 
                         $avatar_url = !empty($user_data['profile_picture']) ? '../../' . $user_data['profile_picture'] : "https://ui-avatars.com/api/?name=" . urlencode($user_data['full_name'] ?? 'User') . "&background=3b82f6&color=fff&size=150";
@@ -713,36 +800,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Select your primary hospital and location for faster bookings and localized services.</p>
                 </div>
 
-                <form method="POST">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Primary Location</label>
-                            <select name="location_id" id="location-select" class="form-control" onchange="filterHospitals(this.value)">
-                                <option value="">Select Location</option>
-                                <?php foreach ($all_locations as $loc): ?>
-                                <option value="<?= $loc['id'] ?>" <?= ($user_data['location_id'] == $loc['id']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($loc['name']) ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
+                <div class="facility-container">
+                    <!-- Current Facility Row -->
+                    <div class="facility-row">
+                        <!-- Location Box -->
+                        <div class="facility-box">
+                            <div class="facility-icon bg-loc">
+                                <i class="ri-map-pin-2-fill"></i>
+                            </div>
+                            <div class="facility-info">
+                                <label>Current Location</label>
+                                <span><?= htmlspecialchars($user_data['location_name'] ?? 'Not Selected') ?></span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Primary Hospital</label>
-                            <select name="hospital_id" id="hospital-select" class="form-control">
-                                <option value="">Select Hospital</option>
-                                <?php foreach ($all_hospitals as $hosp): ?>
-                                <option value="<?= $hosp['id'] ?>" data-location="<?= $hosp['location_id'] ?>" <?= ($user_data['hospital_id'] == $hosp['id']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($hosp['name']) ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
+
+                        <!-- Hospital Box -->
+                        <div class="facility-box">
+                            <div class="facility-icon bg-hosp">
+                                <i class="ri-hospital-fill"></i>
+                            </div>
+                            <div class="facility-info">
+                                <label>Preferred Hospital</label>
+                                <span><?= htmlspecialchars($user_data['hospital_name'] ?? 'Not Selected') ?></span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group" style="text-align: right; margin-top: 10px;">
-                        <button type="submit" class="btn btn-primary">Save Hospital Preferences</button>
+                    <!-- Beautiful Change Button -->
+                    <div style="margin-top: 10px;">
+                        <button type="button" onclick="location.href='onboarding.php'" class="btn-change-hospital">
+                            <i class="ri-refresh-line"></i> Change Hospital & Location
+                        </button>
                     </div>
-                </form>
+                </div>
 
                 <div style="margin-top: 30px; padding: 20px; background: #eff6ff; border-radius: 16px; border: 1px solid #dbeafe;">
                     <div style="display: flex; gap: 15px;">

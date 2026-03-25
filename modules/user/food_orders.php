@@ -6,8 +6,9 @@ $current_page = 'food_orders';
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['full_name'];
 
-// Fetch canteens for the initial view
-$canteens_sql = "SELECT * FROM canteens WHERE status = 'open' ORDER BY rating DESC";
+// Fetch canteens linked to user's hospital
+$hospital_id = $_SESSION['hospital_id'];
+$canteens_sql = "SELECT * FROM canteens WHERE status = 'open' AND hospital_id = $hospital_id ORDER BY rating DESC";
 $canteens_res = $conn->query($canteens_sql);
 ?>
 <!DOCTYPE html>

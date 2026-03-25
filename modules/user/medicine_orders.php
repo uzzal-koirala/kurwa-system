@@ -6,8 +6,9 @@ $current_page = 'medicine_orders';
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['full_name'];
 
-// Fetch pharmacies
-$pharmacies_sql = "SELECT * FROM pharmacies WHERE status = 'open' ORDER BY rating DESC";
+// Fetch pharmacies linked to user's hospital
+$hospital_id = $_SESSION['hospital_id'];
+$pharmacies_sql = "SELECT * FROM pharmacies WHERE status = 'open' AND hospital_id = $hospital_id ORDER BY rating DESC";
 $pharmacies_res = $conn->query($pharmacies_sql);
 ?>
 <!DOCTYPE html>
