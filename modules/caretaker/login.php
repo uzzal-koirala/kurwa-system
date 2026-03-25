@@ -22,6 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result->num_rows > 0) {
       $caretaker = $result->fetch_assoc();
       if (password_verify($password, $caretaker['password'])) {
+        // Check if verified
+        if ($caretaker['verified'] == 0) {
+            header("Location: verify_otp.php?email=" . urlencode($email));
+            exit;
+        }
+
         $_SESSION['caretaker_id'] = $caretaker['id'];
         $_SESSION['caretaker_name'] = $caretaker['full_name'];
         header("Location: dashboard.php");

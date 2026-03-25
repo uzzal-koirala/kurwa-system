@@ -6,6 +6,13 @@ if (!isset($_SESSION['caretaker_id'])) {
     exit;
 }
 
+// Security: Check if verified
+$check_verified = $conn->query("SELECT verified FROM caretakers WHERE id = " . $_SESSION['caretaker_id'])->fetch_assoc();
+if (!$check_verified || $check_verified['verified'] == 0) {
+    header("Location: login.php");
+    exit;
+}
+
 $caretaker_id = $_SESSION['caretaker_id'];
 $caretaker_name = $_SESSION['caretaker_name'];
 $current_page = 'dashboard';

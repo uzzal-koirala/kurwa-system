@@ -26,15 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   else {
     // Hash password and insert caretaker
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    
+    // Generate 6-digit OTP
+    $otp = rand(100000, 999999);
 
-    $stmt = $conn->prepare("INSERT INTO caretakers (full_name, email, phone, category, specialization, password) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssss", $full_name, $email, $phone, $category, $specialization, $hashed_password);
+    $stmt = $conn->prepare("INSERT INTO caretakers (full_name, email, phone, category, specialization, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
+    $stmt->bind_param("sssssss", $full_name, $email, $phone, $category, $specialization, $hashed_password, $otp);
 
     if ($stmt->execute()) {
-      $_SESSION['caretaker_id'] = $stmt->insert_id;
-      $_SESSION['caretaker_name'] = $full_name;
-      header("Location: dashboard.php");
-      exit;
+        // Send OTP via SMS
+        $sms_message = "Dear " . explode(' ', $full_name)[0] . ", your Kurwa System caretaker verification code is: $otp. Please do not share this code.";
+        send_sms($phone, $sms_message);
+        
+        // Don't start session yet, wait for verification
+        header("Location: verify_otp.php?email=" . urlencode($email));
+        exit;
     } else {
       $error = "Email already exists or invalid data.";
     }
