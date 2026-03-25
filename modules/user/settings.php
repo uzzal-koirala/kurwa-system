@@ -481,6 +481,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .page-header h1 {
                 font-size: 26px;
             }
+            /* Hospital & Location mobile fixes */
+            .facility-row {
+                flex-direction: column;
+                gap: 14px;
+            }
+            .facility-box {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .btn-change-hospital {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 20px;
+                font-size: 15px;
+                border-radius: 16px;
+            }
+            .facility-info-box {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .danger-zone-row {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start !important;
+            }
+            .danger-zone-row button {
+                width: 100%;
+                justify-content: center;
+            }
         }
         /* Row-Based Facility Styles */
         .facility-row {
@@ -835,7 +865,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div style="margin-top: 30px; padding: 20px; background: #eff6ff; border-radius: 16px; border: 1px solid #dbeafe;">
-                    <div style="display: flex; gap: 15px;">
+                    <div class="facility-info-box" style="display: flex; gap: 15px;">
                         <i class="ri-information-line" style="font-size: 24px; color: var(--primary);"></i>
                         <div>
                             <h4 style="margin: 0 0 5px 0;">Why this matters?</h4>
@@ -875,7 +905,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Permanent actions for your account.</p>
                 </div>
                 
-                <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 24px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="danger-zone-row" style="background: #fef2f2; border: 1px solid #fca5a5; padding: 24px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h4 style="margin: 0 0 5px 0; color: #991b1b; font-size: 16px;">Delete Account</h4>
                         <p style="margin: 0; font-size: 13px; color: #b91c1c;">Once you delete your account, there is no going back. Please be certain.</p>
