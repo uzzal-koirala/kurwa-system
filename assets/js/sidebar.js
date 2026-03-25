@@ -15,13 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 sidebar.classList.toggle('collapsed');
                 document.body.classList.toggle('sidebar-collapsed');
                 
-                // Change icon based on state
+                // Always show burger icon
                 const icon = desktopToggleBtn.querySelector('i');
-                if (document.body.classList.contains('sidebar-collapsed')) {
-                    icon.className = 'ri-menu-line';
-                } else {
-                    icon.className = 'ri-skip-back-line';
-                }
+                icon.className = 'ri-menu-line';
             }
         });
     }
@@ -80,13 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
              document.body.classList.remove('sidebar-open');
              document.body.style.overflow = '';
              
-             // Check if it was previously collapsed
+             // Always show burger icon
              const icon = desktopToggleBtn?.querySelector('i');
-             if(document.body.classList.contains('sidebar-collapsed') && icon) {
-                 icon.className = 'ri-menu-line';
-             } else if (icon) {
-                 icon.className = 'ri-skip-back-line';
-             }
+             if (icon) icon.className = 'ri-menu-line';
         }
     });
 });

@@ -40,7 +40,7 @@ $user_avatar = !empty($_SESSION['profile_picture']) ? '/Kurwa/kurwa-system/' . $
         
         <!-- Desktop Collapse Toggle -->
         <button class="desktop-toggle" id="desktopSidebarToggle" aria-label="Toggle Sidebar">
-            <i class="ri-skip-back-line"></i>
+            <i class="ri-menu-line"></i>
         </button>
         
         <!-- Mobile Close Toggle -->
