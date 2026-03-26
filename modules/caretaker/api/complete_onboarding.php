@@ -46,9 +46,10 @@ $full_name = trim($_POST['full_name']);
 $phone = trim($_POST['phone']);
 $skills = trim($_POST['skills']);
 $expertise = trim($_POST['expertise']);
+$video_url = trim($_POST['video_url'] ?? '');
 
-$stmt = $conn->prepare("UPDATE caretakers SET full_name = ?, phone = ?, skills = ?, expertise = ?, photo = ?, document = ?, onboarding_completed = 1, status = 'pending' WHERE id = ?");
-$stmt->bind_param("ssssssi", $full_name, $phone, $skills, $expertise, $photo_path, $doc_path, $user_id);
+$stmt = $conn->prepare("UPDATE caretakers SET full_name = ?, phone = ?, skills = ?, expertise = ?, video_url = ?, photo = ?, document = ?, onboarding_completed = 1, status = 'pending' WHERE id = ?");
+$stmt->bind_param("sssssssi", $full_name, $phone, $skills, $expertise, $video_url, $photo_path, $doc_path, $user_id);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Onboarding successful!']);

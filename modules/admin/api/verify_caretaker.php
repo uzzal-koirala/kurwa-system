@@ -35,11 +35,19 @@ if ($action === 'approve') {
     }
 } 
 elseif ($action === 'disapprove') {
+    $reason = $_POST['reason'] ?? 'तथ्याङ्क मिलेन';
+    $phone = $_POST['phone'] ?? '';
+    $first_name = $_POST['name'] ?? 'Expert';
+
     $stmt = $conn->prepare("UPDATE caretakers SET status = 'disapproved' WHERE id = ?");
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'message' => 'Expert disapproved.']);
+        if (!empty($phone)) {
+            $rejection_msg = "नमस्ते $first_name, तपाइँको कुर्वा सिस्टम आवेदन अस्वीकृत भएको छ। कारण: $reason";
+            send_sms($phone, $rejection_msg);
+        }
+        echo json_encode(['success' => true, 'message' => 'Expert disapproved and notified.']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Update failed.']);
     }

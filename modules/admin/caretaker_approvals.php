@@ -52,26 +52,38 @@ $pending = $conn->query("SELECT * FROM caretakers WHERE onboarding_completed = 1
                 <tr id="row-<?= $ct['id'] ?>">
                     <td>
                         <div style="display:flex; align-items:center; gap:15px;">
-                            <img src="../../<?= htmlspecialchars($ct['photo']) ?>" style="width:60px; height:60px; border-radius:15px; object-fit:cover; border:2px solid var(--admin-border);">
+                            <img src="../../<?= htmlspecialchars($ct['photo']) ?>" style="width:70px; height:70px; border-radius:20px; object-fit:cover; border:2px solid var(--admin-border); shadow: 0 4px 10px rgba(0,0,0,0.05);">
                             <div>
-                                <div style="font-weight:700; font-size:16px;"><?= htmlspecialchars($ct['full_name']) ?></div>
-                                <div style="font-size:12px; color:var(--admin-text-muted);"><?= htmlspecialchars($ct['phone']) ?></div>
+                                <div style="font-weight:700; font-size:16px; color:var(--admin-text);"><?= htmlspecialchars($ct['full_name']) ?></div>
+                                <div style="font-size:12px; color:var(--admin-primary); font-weight:600;"><?= htmlspecialchars($ct['phone']) ?></div>
+                                <div style="font-size:11px; color:var(--admin-text-muted);"><?= htmlspecialchars($ct['email']) ?></div>
                             </div>
                         </div>
                     </td>
-                    <td><span class="admin-badge"><?= htmlspecialchars($ct['category']) ?></span></td>
-                    <td style="max-width:200px; font-size:13px; line-height:1.4; color:var(--admin-text-muted);">
-                        <?= htmlspecialchars($ct['skills']) ?>
+                    <td>
+                        <div class="admin-badge" style="background:rgba(99, 102, 241, 0.1); color:var(--admin-primary); margin-bottom:5px; text-transform:uppercase; font-size:10px;"><?= htmlspecialchars($ct['category']) ?></div>
+                        <div style="font-size:11px; color:var(--admin-text-muted);">Exp: <?= $ct['experience_years'] ?> Years</div>
+                    </td>
+                    <td style="max-width:300px;">
+                        <div style="font-size:12px; color:var(--admin-text); font-weight:700; margin-bottom:5px;">Skills: <?= htmlspecialchars($ct['skills']) ?></div>
+                        <div style="font-size:11px; color:var(--admin-text-muted); line-height:1.4; max-height:45px; overflow:hidden; text-overflow:ellipsis;"><?= htmlspecialchars($ct['expertise']) ?></div>
                     </td>
                     <td>
-                        <a href="../../<?= htmlspecialchars($ct['document']) ?>" target="_blank" style="color:var(--admin-primary); text-decoration:none; font-weight:600; display:flex; align-items:center; gap:5px;">
-                            <i class="ri-file-search-line"></i> View Org. Doc
-                        </a>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <a href="../../<?= htmlspecialchars($ct['document']) ?>" target="_blank" style="color:var(--admin-primary); text-decoration:none; font-weight:700; font-size:12px; display:flex; align-items:center; gap:6px; background:rgba(99, 102, 241, 0.05); padding:6px 10px; border-radius:8px;">
+                                <i class="ri-file-text-line"></i> Citizenship/Identity
+                            </a>
+                            <?php if(!empty($ct['video_url'])): ?>
+                            <a href="<?= htmlspecialchars($ct['video_url']) ?>" target="_blank" style="color:#ef4444; text-decoration:none; font-weight:700; font-size:12px; display:flex; align-items:center; gap:6px; background:rgba(239, 68, 68, 0.05); padding:6px 10px; border-radius:8px;">
+                                <i class="ri-youtube-line"></i> Intro Video
+                            </a>
+                            <?php endif; ?>
+                        </div>
                     </td>
                     <td>
                         <div style="display:flex; gap:10px;">
                             <button onclick="approveExpert(<?= $ct['id'] ?>, '<?= htmlspecialchars($ct['full_name']) ?>', '<?= htmlspecialchars($ct['phone']) ?>')" style="background:var(--admin-primary); border:none; color:white; padding:8px 15px; border-radius:10px; font-weight:700; cursor:pointer;">Approve</button>
-                            <button onclick="disapproveExpert(<?= $ct['id'] ?>)" style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.2); color:#ef4444; padding:8px 15px; border-radius:10px; font-weight:700; cursor:pointer;">Reject</button>
+                            <button onclick="disapproveExpert(<?= $ct['id'] ?>, '<?= htmlspecialchars($ct['full_name']) ?>', '<?= htmlspecialchars($ct['phone']) ?>')" style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.2); color:#ef4444; padding:8px 15px; border-radius:10px; font-weight:700; cursor:pointer;">Reject</button>
                         </div>
                     </td>
                 </tr>
@@ -102,7 +114,7 @@ async function approveExpert(id, name, phone) {
     } catch (e) { console.error(e); }
 }
 
-async function disapproveExpert(id) {
+async function disapproveExpert(id, name, phone) {
     let reason = prompt('Reason for rejection?');
     if(!reason) return;
     
@@ -110,12 +122,12 @@ async function disapproveExpert(id) {
         const response = await fetch('api/verify_caretaker.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `id=${id}&action=disapprove&reason=${encodeURIComponent(reason)}`
+            body: `id=${id}&action=disapprove&reason=${encodeURIComponent(reason)}&name=${encodeURIComponent(name.split(' ')[0])}&phone=${phone}`
         });
         const result = await response.json();
         if(result.success) {
             document.getElementById('row-' + id).remove();
-            alert('Expert Rejected.');
+            alert('Expert Rejected and notified.');
         }
     } catch (e) { console.error(e); }
 }

@@ -63,11 +63,24 @@ if ($is_completed) {
 
         <div class="p-8 md:p-16">
             <header class="mb-12 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 text-[#2F3CFF] rounded-2xl mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 text-[#2F3CFF] rounded-2xl mb-6">
                     <i class="ri-user-star-line text-3xl"></i>
                 </div>
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Complete Your Expert Profile</h1>
-                <p class="text-gray-500 mt-2">Help us verify your expertise to start receiving bookings.</p>
+                <p class="text-gray-500 mt-2 mb-10">Help us verify your expertise to start receiving bookings.</p>
+
+                <!-- Step Indicators -->
+                <div class="flex justify-center items-center gap-4 max-w-xs mx-auto mb-4">
+                    <div id="ind1" class="w-10 h-10 rounded-xl bg-[#2F3CFF] text-white flex items-center justify-center font-bold shadow-lg shadow-blue-100 transition-all duration-500">1</div>
+                    <div class="h-0.5 w-8 bg-gray-100 rounded-full overflow-hidden">
+                        <div id="bar1" class="h-full bg-[#2F3CFF] w-0 transition-all duration-500"></div>
+                    </div>
+                    <div id="ind2" class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center font-bold border border-gray-100 transition-all duration-500">2</div>
+                    <div class="h-0.5 w-8 bg-gray-100 rounded-full overflow-hidden">
+                        <div id="bar2" class="h-full bg-[#2F3CFF] w-0 transition-all duration-500"></div>
+                    </div>
+                    <div id="ind3" class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center font-bold border border-gray-100 transition-all duration-500">3</div>
+                </div>
             </header>
 
             <form id="onboardingForm" enctype="multipart/form-data">
@@ -102,15 +115,28 @@ if ($is_completed) {
 
                 <!-- Step 2: Skills & Expertise -->
                 <div id="step2" class="step-inactive">
-                    <div class="space-y-6">
+                    <div class="space-y-8">
                         <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-2">Skills & Specializations</label>
-                            <input type="text" name="skills" placeholder="e.g. Wound Care, Elderly Massage, Post-Op Support" class="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all" required>
-                            <p class="text-xs text-gray-400 mt-2 italic">Separate skills with commas.</p>
+                            <label class="text-sm font-bold text-gray-700 block mb-3 flex items-center gap-2">
+                                <i class="ri-medal-line text-[#2F3CFF]"></i> Skills & Specializations
+                            </label>
+                            <input type="text" name="skills" placeholder="e.g. Wound Care, Elderly Massage, Post-Op Support" class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4.5 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all shadow-sm" required>
+                            <p class="text-[11px] text-gray-400 mt-2 ml-1 font-medium italic opacity-75">Separate distinct skills with commas.</p>
                         </div>
+                        
                         <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-2">Detailed Expertise & Bio</label>
-                            <textarea name="expertise" rows="4" placeholder="Tell us about your experience and how you support patients..." class="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all" required></textarea>
+                            <label class="text-sm font-bold text-gray-700 block mb-3 flex items-center gap-2">
+                                <i class="ri-video-chat-line text-[#2F3CFF]"></i> Intro Video (YouTube Link)
+                            </label>
+                            <input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4.5 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all shadow-sm">
+                            <p class="text-[11px] text-gray-400 mt-2 ml-1 font-medium italic opacity-75">A short video explaining your experience builds trust with patients.</p>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-bold text-gray-700 block mb-3 flex items-center gap-2">
+                                <i class="ri-article-line text-[#2F3CFF]"></i> Detailed Expertise & Bio
+                            </label>
+                            <textarea name="expertise" rows="5" placeholder="Share your professional journey and how you provide compassionate care..." class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4.5 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all shadow-sm" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -185,6 +211,26 @@ if ($is_completed) {
             // Bar
             document.getElementById('progressBar').style.width = (currentStep / totalSteps * 100) + '%';
             
+            // Step Indicators
+            for(let i=1; i<=totalSteps; i++) {
+                const ind = document.getElementById(`ind${i}`);
+                const bar = document.getElementById(`bar${i-1}`);
+                
+                if(i < currentStep) {
+                    ind.className = "w-10 h-10 rounded-xl bg-blue-100 text-[#2F3CFF] flex items-center justify-center font-bold shadow-none transition-all duration-500";
+                    ind.innerHTML = '<i class="ri-check-line"></i>';
+                    if(bar) bar.style.width = '100%';
+                } else if(i === currentStep) {
+                    ind.className = "w-10 h-10 rounded-xl bg-[#2F3CFF] text-white flex items-center justify-center font-bold shadow-lg shadow-blue-100 transition-all duration-500 scale-110";
+                    ind.innerHTML = i;
+                    if(bar) bar.style.width = '0%';
+                } else {
+                    ind.className = "w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center font-bold border border-gray-100 transition-all duration-500";
+                    ind.innerHTML = i;
+                    if(bar) bar.style.width = '0%';
+                }
+            }
+
             // Buttons
             document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
             document.getElementById('nextBtn').classList.toggle('hidden', currentStep === totalSteps);
