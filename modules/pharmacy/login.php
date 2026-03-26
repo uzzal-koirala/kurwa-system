@@ -21,6 +21,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pharmacy = $result->fetch_assoc();
         
         if (password_verify($password, $pharmacy['password'])) {
+            if ($pharmacy['verified'] == 0) {
+                header("Location: verify_otp.php?email=" . urlencode($email));
+                exit();
+            }
             if ($pharmacy['status'] !== 'open') {
                 $error = "Your pharmacy account is currently " . htmlspecialchars($pharmacy['status']) . ". Please contact admin.";
             } else {

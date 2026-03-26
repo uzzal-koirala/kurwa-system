@@ -22,8 +22,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match.";
     } else {
-        // In a real app, we would insert into the database here
-        $success = "Application submitted! We will contact you soon.";
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $otp = rand(100000, 999999);
+        
+        $stmt = $conn->prepare("INSERT INTO delivery_riders (full_name, email, phone, vehicle_type, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
+        $stmt->bind_param("ssssss", $full_name, $email, $phone, $vehicle, $hashed, $otp);
+        
+        if ($stmt->execute()) {
+            // Send OTP via SMS
+            $sms_message = "Dear " . $full_name . ", your rider verification code for Kurwa is: $otp.";
+            send_sms($phone, $sms_message);
+            
+            header("Location: verify_otp.php?email=" . urlencode($email));
+            exit;
+        } else {
+            $error = "Registration failed. Email might already exist.";
+        }
     }
 }
 ?>

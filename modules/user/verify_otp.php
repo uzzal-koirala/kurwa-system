@@ -46,6 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verify'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['user_email'] = $user['email'];
+        $_SESSION['role'] = 'user';
+        $_SESSION['profile_picture'] = null;
+        $_SESSION['hospital_id'] = null;
+        $_SESSION['location_id'] = null;
       }
 
       $message = "<p class='text-green-600 text-sm font-medium text-center mb-3'>

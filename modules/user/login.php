@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $user = $result->fetch_assoc();
 
       if ($user['verified'] == 0) {
-        $error = "Your account is not verified. Please verify your email first.";
+        header("Location: verify_otp.php?email=" . urlencode($email));
+        exit;
       } elseif (password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['full_name'] = $user['full_name'];

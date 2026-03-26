@@ -40,12 +40,10 @@ $bookings_result = $bookings_query->get_result();
 <body class="caretaker-body">
 
 <?php include '../../includes/components/caretaker_sidebar.php'; ?>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="main-content">
     <div class="dashboard-header">
         <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
             <h1 class="page-main-title">My Bookings</h1>
         </div>
         <div class="header-right">

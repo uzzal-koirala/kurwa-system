@@ -23,28 +23,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $error = "Passwords do not match. Please try again.";
   } 
   else {
-    // Hash password and insert user (set verified = 1 by default)
+    // Hash password and insert user (set verified = 0 by default)
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     $fullname = $fname . " " . $lname;
+    
+    // Generate 6-digit OTP
+    $otp = rand(100000, 999999);
 
-    $stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, password, verified) VALUES (?, ?, ?, ?, 1)");
-    $stmt->bind_param("ssss", $fullname, $email, $phone, $hashed_password);
+    $stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, password, otp, verified) VALUES (?, ?, ?, ?, ?, 0)");
+    $stmt->bind_param("sssss", $fullname, $email, $phone, $hashed_password, $otp);
 
     if ($stmt->execute()) {
-      $user_id = $conn->insert_id;
+      // Send OTP via SMS
+      $sms_message = "Dear " . $fname . ", your Kurwa System verification code is: $otp. Please do not share this code.";
+      send_sms($phone, $sms_message);
       
-      // Start session immediately
-      if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-      }
-      $_SESSION['user_id'] = $user_id;
-      $_SESSION['full_name'] = $fullname;
-      $_SESSION['profile_picture'] = null;
-      $_SESSION['role'] = 'user';
-      $_SESSION['hospital_id'] = null;
-      $_SESSION['location_id'] = null;
-
-      header("Location: onboarding.php");
+      header("Location: verify_otp.php?email=" . urlencode($email));
       exit;
     } else {
       $error = "Email already exists or invalid data.";

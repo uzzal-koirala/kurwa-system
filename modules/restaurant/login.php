@@ -22,6 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows === 1) {
             $restaurant = $result->fetch_assoc();
             if (password_verify($password, $restaurant['password'])) {
+                if ($restaurant['verified'] == 0) {
+                    header("Location: verify_otp.php?email=" . urlencode($email));
+                    exit;
+                }
                 $_SESSION['restaurant_id'] = $restaurant['id'];
                 $_SESSION['restaurant_name'] = $restaurant['name'];
                 $_SESSION['restaurant_image'] = $restaurant['image_url'] ?? null;

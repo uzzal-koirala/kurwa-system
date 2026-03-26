@@ -20,7 +20,7 @@
 /* Collapsed State Variable Override */
 body.sidebar-collapsed,
 body:has(.sidebar-caretaker.collapsed) {
-    --sb-width: 140px; /* Collapsed (100px) + Left Space (20px) + Gap (20px) */
+    --sb-width: 110px; /* Collapsed (70px) + Left Space (20px) + Gap (20px) */
 }
 
 body.caretaker-body {

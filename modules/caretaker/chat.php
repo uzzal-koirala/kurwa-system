@@ -406,11 +406,9 @@ if ($target_user_id > 0) {
 <body class="caretaker-body">
 
 <?php include '../../includes/components/caretaker_sidebar.php'; ?>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="main-content" id="mainContent">
     <div class="page-header">
-        <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
         <h1 class="page-main-title">Messages</h1>
     </div>
 

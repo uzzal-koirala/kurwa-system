@@ -14,15 +14,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($email) || empty($password)) {
         $error = "Please fill in all fields.";
     } else {
-        if (($email === 'delivery@kurwa.com' && $password === 'password') || ($email === 'rider@kurwa.com' && $password === 'rider123')) {
-            $_SESSION['delivery_id'] = 1;
-            $_SESSION['delivery_name'] = "Suraj Thapa";
-            $_SESSION['delivery_status'] = "offline";
-            header("Location: dashboard.php");
-            exit;
+        $stmt = $conn->prepare("SELECT * FROM delivery_riders WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $rider = $result->fetch_assoc();
+            if (password_verify($password, $rider['password'])) {
+                if ($rider['verified'] == 0) {
+                    header("Location: verify_otp.php?email=" . urlencode($email));
+                    exit;
+                }
+                $_SESSION['delivery_id'] = $rider['id'];
+                $_SESSION['delivery_name'] = $rider['full_name'];
+                $_SESSION['delivery_status'] = "offline";
+                header("Location: dashboard.php");
+                exit;
+            } else {
+                $error = "Invalid email or password.";
+            }
         } else {
             $error = "Invalid email or password.";
         }
+        $stmt->close();
     }
 }
 ?>

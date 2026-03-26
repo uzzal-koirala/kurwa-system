@@ -57,12 +57,10 @@ $requests = $conn->query("
 <body class="caretaker-body">
 
 <?php include '../../includes/components/caretaker_sidebar.php'; ?>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="main-content">
     <div class="dashboard-header">
         <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
-            <i class="ri-menu-2-line mobile-toggle" id="openSidebarUniversal" style="font-size: 24px; color: #1b2559; cursor: pointer; display: none;"></i>
             <h1 style="font-size: 16px; font-weight: 800; color: #1b2559; opacity: 0.8; margin: 0; text-transform: uppercase;">Overview</h1>
         </div>
         <div class="header-right">

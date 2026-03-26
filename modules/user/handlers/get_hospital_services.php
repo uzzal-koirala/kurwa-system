@@ -35,7 +35,8 @@ echo json_encode([
     'counts' => [
         'caretakers' => $caretaker_count,
         'pharmacies' => $pharmacy_count,
-        'food' => $combined_food_count
+        'food' => $combined_food_count,
+        'emergency' => 2 // Placeholder for 24/7 Helpline & Emergency Support
     ]
 ]);
 ?>
