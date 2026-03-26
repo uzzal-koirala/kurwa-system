@@ -59,7 +59,15 @@ $admin_role = 'System Control';
         </a>
         <a href="caretakers.php" class="menu-item <?php echo($current_page === 'caretakers') ? 'active' : ''; ?>">
             <i class="ri-heart-pulse-line"></i>
-            <span>Caretaker Verify</span>
+            <span>Expert Directory</span>
+        </a>
+        <a href="caretaker_approvals.php" class="menu-item <?php echo($current_page === 'caretaker_approvals') ? 'active' : ''; ?>">
+            <i class="ri-checkbox-circle-line"></i>
+            <span>Approval Queue</span>
+        </a>
+        <a href="caretaker_categories.php" class="menu-item <?php echo($current_page === 'caretaker_categories') ? 'active' : ''; ?>">
+            <i class="ri-bookmark-3-line"></i>
+            <span>Expert Categories</span>
         </a>
         <a href="partners.php" class="menu-item <?php echo($current_page === 'partners') ? 'active' : ''; ?>">
             <i class="ri-store-2-line"></i>

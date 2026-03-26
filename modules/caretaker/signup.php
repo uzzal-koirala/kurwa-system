@@ -36,7 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($stmt->execute()) {
         // Send OTP via SMS
         $sms_message = "Dear " . explode(' ', $full_name)[0] . ", your Kurwa System caretaker verification code is: $otp. Please do not share this code.";
-        send_sms($phone, $sms_message);
+        $sms_res = send_sms($phone, $sms_message);
+        
+        // Log to system log for debugging
+        $log_file = dirname(__DIR__, 2) . '/logs/sms_debug.log';
+        $log_entry = date('[Y-m-d H:i:s] ') . "Signup SMS Attempt for $phone | Success: " . ($sms_res['success'] ?? '0') . "\n";
+        file_put_contents($log_file, $log_entry, FILE_APPEND);
         
         // Don't start session yet, wait for verification
         header("Location: verify_otp.php?email=" . urlencode($email));
@@ -130,10 +135,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <i class="ri-briefcase-line absolute left-4 top-3.5 text-gray-400"></i>
                 <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pl-11 focus:ring-1 focus:ring-[#2F3CFF] focus:bg-white transition-all outline-none appearance-none" required>
                     <option value="" disabled selected>Select Category</option>
-                    <option value="General Care">General Care</option>
-                    <option value="Post-Surgery">Post-Surgery</option>
-                    <option value="Elderly Care">Elderly Care</option>
-                    <option value="Special Needs">Special Needs</option>
+                    <?php 
+                    $cat_query = $conn->query("SELECT name FROM caretaker_categories ORDER BY name ASC");
+                    while($cat = $cat_query->fetch_assoc()): ?>
+                        <option value="<?php echo $cat['name']; ?>" <?php echo ($category == $cat['name']) ? 'selected' : ''; ?>>
+                            <?php echo $cat['name']; ?>
+                        </option>
+                    <?php endwhile; ?>
                 </select>
             </div>
         </div>
@@ -141,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div>
             <div class="relative">
                 <i class="ri-medal-line absolute left-4 top-3.5 text-gray-400"></i>
-                <input type="text" name="specialization" placeholder="e.g. Bedridden Care" value="<?php echo htmlspecialchars($specialization); ?>"
+                <input type="text" name="specialization" placeholder="Your Specialization" value="<?php echo htmlspecialchars($specialization); ?>"
                   class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pl-11 focus:ring-1 focus:ring-[#2F3CFF] focus:bg-white transition-all outline-none" required />
             </div>
         </div>

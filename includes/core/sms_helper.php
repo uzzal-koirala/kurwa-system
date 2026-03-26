@@ -16,8 +16,10 @@ function send_sms($to, $message) {
     $sender_id = null; // Set to null to use the account's default Sender ID
     $url = "https://auth.nestsms.com/api/v1/sms/send";
 
-    // Normalize phone number (Remove '+', ensure '977' prefix if 10 digits)
-    $to = str_replace('+', '', $to);
+    // Normalize phone number (Remove all non-numeric characters)
+    $to = preg_replace('/[^0-9]/', '', $to);
+    
+    // Add 977 prefix if it's a 10-digit number starting with 9
     if (strlen($to) === 10 && strpos($to, '9') === 0) {
         $to = "977" . $to;
     }
@@ -30,6 +32,11 @@ function send_sms($to, $message) {
     ];
 
     $payload = json_encode($data);
+
+    // Logging for debugging (Can be removed after fix)
+    $log_path = dirname(__DIR__, 2) . '/logs/sms_debug.log';
+    $debug_msg = date('[Y-m-d H:i:s] ') . "Starting SMS to $to | Msg: " . substr($message, 0, 20) . "...\n";
+    file_put_contents($log_path, $debug_msg, FILE_APPEND);
 
     // Init cURL
     $ch = curl_init($url);
@@ -51,22 +58,21 @@ function send_sms($to, $message) {
     curl_close($ch);
 
     if ($error) {
-        error_log("SMS Send Error: " . $error);
-        return [
-            "success" => false,
-            "error" => $error
-        ];
+        $err_msg = date('[Y-m-d H:i:s] ') . "CURL Error: $error | URL: $url\n";
+        file_put_contents($log_path, $err_msg, FILE_APPEND);
+        return ["success" => false, "error" => $error];
     }
 
     $result = json_decode($response, true);
     
-    // Check for API errors or HTTP errors
+    // Log response
+    $resp_msg = date('[Y-m-d H:i:s] ') . "HTTP $http_code | Response: $response\n";
+    file_put_contents($log_path, $resp_msg, FILE_APPEND);
+
     if ($http_code >= 400 || (isset($result['success']) && $result['success'] === false)) {
-       $error_msg = date('[Y-m-d H:i:s] ') . "SMS API Failure: " . $response . "\n";
-       file_put_contents(dirname(__DIR__, 2) . '/logs/sms_debug.log', $error_msg, FILE_APPEND);
        return [
             "success" => false,
-            "error" => "API Error $http_code. Response: $response",
+            "error" => "API Error $http_code",
             "details" => $result
        ]; 
     }

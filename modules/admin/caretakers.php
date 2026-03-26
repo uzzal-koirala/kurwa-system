@@ -120,7 +120,14 @@ $caretakers = $conn->query("SELECT * FROM caretakers ORDER BY created_at DESC");
                 </div>
                 <div class="form-group">
                     <label style="display:block; color:var(--admin-text-muted); font-size:12px; margin-bottom:5px;">Category</label>
-                    <input type="text" name="category" id="f_category" required style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white;">
+                    <select name="category" id="f_category" required style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white; outline:none;">
+                        <option value="">Select Category</option>
+                        <?php 
+                        $cat_list = $conn->query("SELECT name FROM caretaker_categories ORDER BY name ASC");
+                        while($cl = $cat_list->fetch_assoc()): ?>
+                            <option value="<?= $cl['name'] ?>"><?= $cl['name'] ?></option>
+                        <?php endwhile; ?>
+                    </select>
                 </div>
             </div>
 
