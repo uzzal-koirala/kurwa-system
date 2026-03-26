@@ -38,16 +38,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verify'])) {
             session_unset();
             
             // Start caretaker session
-            $_SESSION['caretaker_id'] = $caretaker['id'];
-            $_SESSION['caretaker_name'] = $caretaker['full_name'];
+            $_SESSION['user_id'] = $caretaker['id'];
+            $_SESSION['full_name'] = $caretaker['full_name'];
             $_SESSION['role'] = 'caretaker';
+            $_SESSION['phone'] = $caretaker['phone'];
 
             $message = "<p class='text-green-600 text-sm font-medium text-center mb-3'>
-                            OTP verified successfully! Redirecting to dashboard...
+                            OTP verified successfully! Starting onboarding...
                         </p>";
 
             echo "<script>
-                    setTimeout(() => { window.location.href = 'dashboard.php'; }, 1500);
+                    setTimeout(() => { window.location.href = 'onboarding.php'; }, 1500);
                   </script>";
         } else {
             $message = "<p class='text-red-600 text-sm font-medium text-center mb-3'>

@@ -8,3 +8,15 @@
 [2026-03-25 00:14:20] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
 [2026-03-25 00:14:24] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
 [2026-03-25 00:14:37] SMS API Failure: {"success":false,"error":"Recipient number(s) required","code":"MISSING_TO","message":"Please provide recipient number(s) in \"to\" field"}
+[2026-03-27 00:18:49] Starting SMS to 9779765970774 | Msg: Dear Bimal, your Kur...
+[2026-03-27 00:18:49] HTTP 200 | Response: {"success":true,"message":"SMS queued successfully","data":{"job_id":"45477","cost":1,"remaining_balance":183,"recipient":"9765970774","billing":{"character_count":100,"encoding":"gsm7","credits_per_message":1,"rate_per_credit":1,"cost_per_message":1}}}
+[2026-03-27 00:18:49] Signup SMS Attempt for 9765970774 | Success: 1
+[2026-03-27 00:20:15] Starting SMS to 9779829399342 | Msg: Dear Bimal, your Kur...
+[2026-03-27 00:20:15] HTTP 200 | Response: {"success":true,"message":"SMS queued successfully","data":{"job_id":"45481","cost":1,"remaining_balance":182,"recipient":"9829399342","billing":{"character_count":100,"encoding":"gsm7","credits_per_message":1,"rate_per_credit":1,"cost_per_message":1}}}
+[2026-03-27 00:20:15] Signup SMS Attempt for 9829399342 | Success: 1
+[2026-03-27 00:23:51] Starting SMS to 9779829393942 | Msg: Dear Bimal, your Kur...
+[2026-03-27 00:23:51] HTTP 200 | Response: {"success":true,"message":"SMS queued successfully","data":{"job_id":"45486","cost":1,"remaining_balance":181,"recipient":"9829393942","billing":{"character_count":100,"encoding":"gsm7","credits_per_message":1,"rate_per_credit":1,"cost_per_message":1}}}
+[2026-03-27 00:23:51] Signup SMS Attempt for 9829393942 | Success: 1
+[2026-03-27 00:26:05] Starting SMS to 9779708545589 | Msg: Dear Bimal, your Kur...
+[2026-03-27 00:26:05] HTTP 200 | Response: {"success":true,"message":"SMS queued successfully","data":{"job_id":"45491","cost":1,"remaining_balance":180,"recipient":"9708545589","billing":{"character_count":100,"encoding":"gsm7","credits_per_message":1,"rate_per_credit":1,"cost_per_message":1}}}
+[2026-03-27 00:26:05] Signup SMS Attempt for 9708545589 | Success: 1
