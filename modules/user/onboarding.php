@@ -321,9 +321,9 @@ endwhile; ?>
                     preview.innerHTML = `
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                             <!-- Caretakers -->
-                            <div class="p-6 bg-white border border-slate-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
+                            <div class="p-6 bg-rose-50/40 border border-rose-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
                                 <div class="absolute top-0 left-0 w-1 bg-rose-500 h-full rounded-l-2xl"></div>
-                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-500">
+                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-white text-rose-500 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-500 shadow-sm">
                                     <i class="ri-heart-pulse-line text-3xl"></i>
                                 </div>
                                 <div class="text-left">
@@ -333,9 +333,9 @@ endwhile; ?>
                             </div>
 
                             <!-- Pharmacies -->
-                            <div class="p-6 bg-white border border-slate-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
+                            <div class="p-6 bg-indigo-50/40 border border-indigo-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
                                 <div class="absolute top-0 left-0 w-1 bg-indigo-500 h-full rounded-l-2xl"></div>
-                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-500">
+                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-white text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-500 shadow-sm">
                                     <i class="ri-capsule-line text-3xl"></i>
                                 </div>
                                 <div class="text-left">
@@ -345,9 +345,9 @@ endwhile; ?>
                             </div>
 
                             <!-- Canteens -->
-                            <div class="p-6 bg-white border border-slate-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
+                            <div class="p-6 bg-amber-50/40 border border-amber-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
                                 <div class="absolute top-0 left-0 w-1 bg-amber-500 h-full rounded-l-2xl"></div>
-                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-500">
+                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-white text-amber-500 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-500 shadow-sm">
                                     <i class="ri-restaurant-line text-3xl"></i>
                                 </div>
                                 <div class="text-left">
@@ -357,9 +357,9 @@ endwhile; ?>
                             </div>
 
                             <!-- Emergency -->
-                            <div class="p-6 bg-white border border-slate-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
+                            <div class="p-6 bg-emerald-50/40 border border-emerald-100 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group relative">
                                 <div class="absolute top-0 left-0 w-1 bg-emerald-500 h-full rounded-l-2xl"></div>
-                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-500">
+                                <div class="w-16 h-16 shrink-0 rounded-2xl bg-white text-emerald-500 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-500 shadow-sm">
                                     <i class="ri-shield-cross-line text-3xl"></i>
                                 </div>
                                 <div class="text-left">
