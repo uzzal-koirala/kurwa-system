@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <label class="flex items-center gap-2">
             <input type="checkbox" class="w-4 h-4" /> Remember me
           </label>
-          <a href="#" class="text-[#2F3CFF] font-medium hover:underline">Forgot password?</a>
+          <a href="forgot_password.php" class="text-[#2F3CFF] font-medium hover:underline">Forgot password?</a>
         </div>
 
         <button type="submit"
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <label class="flex items-center gap-2">
             <input type="checkbox" class="w-4 h-4" /> Remember me
           </label>
-          <a href="#" class="text-[#2F3CFF] font-medium hover:underline">Forgot password?</a>
+          <a href="forgot_password.php" class="text-[#2F3CFF] font-medium hover:underline">Forgot password?</a>
         </div>
 
         <button type="submit"
