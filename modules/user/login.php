@@ -9,14 +9,14 @@ $error = "";
 
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $email = trim($_POST['email']);
+  $identifier = trim($_POST['identifier']);
   $password = trim($_POST['password']);
 
-  if (empty($email) || empty($password)) {
+  if (empty($identifier) || empty($password)) {
     $error = "Please fill in all fields.";
   } else {
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? OR phone = ?");
+    $stmt->bind_param("ss", $identifier, $identifier);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $user = $result->fetch_assoc();
 
       if ($user['verified'] == 0) {
-        header("Location: verify_otp.php?email=" . urlencode($email));
+        header("Location: verify_otp.php?email=" . urlencode($user['email']));
         exit;
       } elseif (password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
@@ -36,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: user_dashboard.php");
         exit;
       } else {
-        $error = "Invalid email or password.";
+        $error = "Invalid email/phone or password.";
       }
     } else {
-      $error = "No account found with this email.";
+      $error = "No account found with this email or phone number.";
     }
   }
 }
@@ -79,8 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <?php endif; ?>
 
       <form method="POST" class="flex flex-col gap-4">
-        <input type="email" name="email" placeholder="Email address"
-          class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#4C5BFF]" required />
+        <input type="text" name="identifier" placeholder="Email address or Phone Number"
+          class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#4C5BFF] placeholder:text-gray-400" required />
 
         <div class="relative">
           <input type="password" name="password" placeholder="Password"
@@ -139,8 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <?php endif; ?>
 
       <form method="POST" class="flex flex-col gap-4">
-        <input type="email" name="email" placeholder="Email address"
-          class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#4C5BFF]" required />
+        <input type="text" name="identifier" placeholder="Email or Phone Number"
+          class="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#4C5BFF] placeholder:text-gray-400" required />
 
         <div class="relative">
           <input type="password" name="password" placeholder="Password"

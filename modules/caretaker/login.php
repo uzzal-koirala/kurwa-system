@@ -8,14 +8,14 @@ if (session_status() === PHP_SESSION_NONE) {
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $email = trim($_POST['email']);
+  $identifier = trim($_POST['identifier']);
   $password = trim($_POST['password']);
 
-  if (empty($email) || empty($password)) {
+  if (empty($identifier) || empty($password)) {
     $error = "Please fill in all fields.";
   } else {
-    $stmt = $conn->prepare("SELECT * FROM caretakers WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    $stmt = $conn->prepare("SELECT * FROM caretakers WHERE email = ? OR phone = ?");
+    $stmt->bind_param("ss", $identifier, $identifier);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -54,10 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: dashboard.php");
         exit;
       } else {
-        $error = "Invalid email or password.";
+        $error = "Invalid email/phone or password.";
       }
     } else {
-      $error = "No account found with this email.";
+      $error = "No account found with this email or phone number.";
     }
   }
 }
@@ -99,9 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <form method="POST" class="flex flex-col gap-4">
         <div>
             <div class="relative">
-                <i class="ri-mail-line absolute left-4 top-3 text-gray-400"></i>
-                <input type="email" name="email" placeholder="email@address.com"
-                  class="w-full bg-gray-50 border border-gray-100 rounded-xl py-3 px-4 pl-12 focus:ring-1 focus:ring-[#2F3CFF] focus:bg-white transition-all outline-none" required />
+                <i class="ri-user-line absolute left-4 top-3 text-gray-400"></i>
+                <input type="text" name="identifier" placeholder="Email or Phone Number"
+                  class="w-full bg-gray-50 border border-gray-100 rounded-xl py-3 px-4 pl-12 focus:ring-1 focus:ring-[#2F3CFF] focus:bg-white transition-all outline-none placeholder:text-gray-400" required />
             </div>
         </div>
 

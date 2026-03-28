@@ -8,14 +8,14 @@ if (isset($_SESSION['delivery_id'])) {
 
 $error = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
+    $identifier = trim($_POST['identifier']);
     $password = trim($_POST['password']);
     
-    if (empty($email) || empty($password)) {
+    if (empty($identifier) || empty($password)) {
         $error = "Please fill in all fields.";
     } else {
-        $stmt = $conn->prepare("SELECT * FROM delivery_riders WHERE email = ?");
-        $stmt->bind_param("s", $email);
+        $stmt = $conn->prepare("SELECT * FROM delivery_riders WHERE email = ? OR phone = ?");
+        $stmt->bind_param("ss", $identifier, $identifier);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $rider = $result->fetch_assoc();
             if (password_verify($password, $rider['password'])) {
                 if ($rider['verified'] == 0) {
-                    header("Location: verify_otp.php?email=" . urlencode($email));
+                    header("Location: verify_otp.php?email=" . urlencode($rider['email']));
                     exit;
                 }
                 $_SESSION['delivery_id'] = $rider['id'];
@@ -32,10 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: dashboard.php");
                 exit;
             } else {
-                $error = "Invalid email or password.";
+                $error = "Invalid email/phone or password.";
             }
         } else {
-            $error = "Invalid email or password.";
+            $error = "No account found with this email or phone number.";
         }
         $stmt->close();
     }
@@ -88,10 +88,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <form action="login.php" method="POST" class="space-y-4">
                 <div class="relative">
-                    <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">Email Address</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">Email or Phone Number</label>
                     <div class="relative">
-                        <i class="ri-mail-line absolute left-4 top-3.5 text-gray-400 text-lg"></i>
-                        <input type="email" name="email" class="w-full pl-11 pr-4 py-3 rounded-xl input-glass" placeholder="rider@kurwa.com" required>
+                        <i class="ri-user-line absolute left-4 top-3.5 text-gray-400 text-lg"></i>
+                        <input type="text" name="identifier" class="w-full pl-11 pr-4 py-3 rounded-xl input-glass" placeholder="Email or Phone Number" required>
                     </div>
                 </div>
 
