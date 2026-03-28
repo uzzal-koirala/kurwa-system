@@ -22,21 +22,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match.";
     } else {
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
-        $otp = rand(100000, 999999);
-        
-        $stmt = $conn->prepare("INSERT INTO delivery_riders (full_name, email, phone, vehicle_type, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
-        $stmt->bind_param("ssssss", $full_name, $email, $phone, $vehicle, $hashed, $otp);
-        
-        if ($stmt->execute()) {
-            // Send OTP via SMS
-            $sms_message = "Dear " . $full_name . ", your rider verification code for Kurwa is: $otp.";
-            send_sms($phone, $sms_message);
-            
-            header("Location: verify_otp.php?email=" . urlencode($email));
-            exit;
+        // Check if phone number is already registered in any table
+        $phone_check_user = $conn->prepare("SELECT id FROM users WHERE phone = ?");
+        $phone_check_user->bind_param("s", $phone);
+        $phone_check_user->execute();
+        $res_user = $phone_check_user->get_result();
+
+        $phone_check_caretaker = $conn->prepare("SELECT id FROM caretakers WHERE phone = ?");
+        $phone_check_caretaker->bind_param("s", $phone);
+        $phone_check_caretaker->execute();
+        $res_caretaker = $phone_check_caretaker->get_result();
+
+        $phone_check_rider = $conn->prepare("SELECT id FROM delivery_riders WHERE phone = ?");
+        $phone_check_rider->bind_param("s", $phone);
+        $phone_check_rider->execute();
+        $res_rider = $phone_check_rider->get_result();
+
+        if ($res_user->num_rows > 0 || $res_caretaker->num_rows > 0 || $res_rider->num_rows > 0) {
+            $error = "This phone number is already associated with an account.";
         } else {
-            $error = "Registration failed. Email might already exist.";
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+            $otp = rand(100000, 999999);
+            
+            $stmt = $conn->prepare("INSERT INTO delivery_riders (full_name, email, phone, vehicle_type, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
+            $stmt->bind_param("ssssss", $full_name, $email, $phone, $vehicle, $hashed, $otp);
+            
+            if ($stmt->execute()) {
+                // Send OTP via SMS
+                $sms_message = "Dear " . $full_name . ", your rider verification code for Kurwa is: $otp.";
+                send_sms($phone, $sms_message);
+                
+                header("Location: verify_otp.php?email=" . urlencode($email));
+                exit;
+            } else {
+                $error = "Registration failed. Email might already exist.";
+            }
         }
     }
 }

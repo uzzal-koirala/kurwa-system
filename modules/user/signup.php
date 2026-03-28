@@ -23,25 +23,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $error = "Passwords do not match. Please try again.";
   } 
   else {
-    // Hash password and insert user (set verified = 0 by default)
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $fullname = $fname . " " . $lname;
-    
-    // Generate 6-digit OTP
-    $otp = rand(100000, 999999);
+    // Check if phone number is already registered in any table
+    $phone_check_user = $conn->prepare("SELECT id FROM users WHERE phone = ?");
+    $phone_check_user->bind_param("s", $phone);
+    $phone_check_user->execute();
+    $res_user = $phone_check_user->get_result();
 
-    $stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, password, otp, verified) VALUES (?, ?, ?, ?, ?, 0)");
-    $stmt->bind_param("sssss", $fullname, $email, $phone, $hashed_password, $otp);
+    $phone_check_caretaker = $conn->prepare("SELECT id FROM caretakers WHERE phone = ?");
+    $phone_check_caretaker->bind_param("s", $phone);
+    $phone_check_caretaker->execute();
+    $res_caretaker = $phone_check_caretaker->get_result();
 
-    if ($stmt->execute()) {
-      // Send OTP via SMS
-      $sms_message = "Dear " . $fname . ", your Kurwa System verification code is: $otp. Please do not share this code.";
-      send_sms($phone, $sms_message);
-      
-      header("Location: verify_otp.php?email=" . urlencode($email));
-      exit;
+    $phone_check_rider = $conn->prepare("SELECT id FROM delivery_riders WHERE phone = ?");
+    $phone_check_rider->bind_param("s", $phone);
+    $phone_check_rider->execute();
+    $res_rider = $phone_check_rider->get_result();
+
+    if ($res_user->num_rows > 0 || $res_caretaker->num_rows > 0 || $res_rider->num_rows > 0) {
+        $error = "This phone number is already associated with an account.";
     } else {
-      $error = "Email already exists or invalid data.";
+        // Hash password and insert user (set verified = 0 by default)
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $fullname = $fname . " " . $lname;
+        
+        // Generate 6-digit OTP
+        $otp = rand(100000, 999999);
+
+        $stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, password, otp, verified) VALUES (?, ?, ?, ?, ?, 0)");
+        $stmt->bind_param("sssss", $fullname, $email, $phone, $hashed_password, $otp);
+
+        if ($stmt->execute()) {
+            // Send OTP via SMS
+            $sms_message = "Dear " . $fname . ", your Kurwa System verification code is: $otp. Please do not share this code.";
+            send_sms($phone, $sms_message);
+            
+            header("Location: verify_otp.php?email=" . urlencode($email));
+            exit;
+        } else {
+            $error = "Email already exists or invalid data.";
+        }
     }
   }
 }

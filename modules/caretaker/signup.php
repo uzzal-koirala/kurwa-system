@@ -24,30 +24,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $error = "Passwords do not match.";
   } 
   else {
-    // Hash password and insert caretaker
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    
-    // Generate 6-digit OTP
-    $otp = rand(100000, 999999);
+    // Check if phone number is already registered in any table
+    $phone_check_user = $conn->prepare("SELECT id FROM users WHERE phone = ?");
+    $phone_check_user->bind_param("s", $phone);
+    $phone_check_user->execute();
+    $res_user = $phone_check_user->get_result();
 
-    $stmt = $conn->prepare("INSERT INTO caretakers (full_name, email, phone, category, specialization, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
-    $stmt->bind_param("sssssss", $full_name, $email, $phone, $category, $specialization, $hashed_password, $otp);
+    $phone_check_caretaker = $conn->prepare("SELECT id FROM caretakers WHERE phone = ?");
+    $phone_check_caretaker->bind_param("s", $phone);
+    $phone_check_caretaker->execute();
+    $res_caretaker = $phone_check_caretaker->get_result();
 
-    if ($stmt->execute()) {
-        // Send OTP via SMS
-        $sms_message = "Dear " . explode(' ', $full_name)[0] . ", your Kurwa System caretaker verification code is: $otp. Please do not share this code.";
-        $sms_res = send_sms($phone, $sms_message);
-        
-        // Log to system log for debugging
-        $log_file = dirname(__DIR__, 2) . '/logs/sms_debug.log';
-        $log_entry = date('[Y-m-d H:i:s] ') . "Signup SMS Attempt for $phone | Success: " . ($sms_res['success'] ?? '0') . "\n";
-        file_put_contents($log_file, $log_entry, FILE_APPEND);
-        
-        // Don't start session yet, wait for verification
-        header("Location: verify_otp.php?email=" . urlencode($email));
-        exit;
+    $phone_check_rider = $conn->prepare("SELECT id FROM delivery_riders WHERE phone = ?");
+    $phone_check_rider->bind_param("s", $phone);
+    $phone_check_rider->execute();
+    $res_rider = $phone_check_rider->get_result();
+
+    if ($res_user->num_rows > 0 || $res_caretaker->num_rows > 0 || $res_rider->num_rows > 0) {
+        $error = "This phone number is already associated with an account.";
     } else {
-      $error = "Email already exists or invalid data.";
+        // Hash password and insert caretaker
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Generate 6-digit OTP
+        $otp = rand(100000, 999999);
+
+        $stmt = $conn->prepare("INSERT INTO caretakers (full_name, email, phone, category, specialization, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
+        $stmt->bind_param("sssssss", $full_name, $email, $phone, $category, $specialization, $hashed_password, $otp);
+
+        if ($stmt->execute()) {
+            // Send OTP via SMS
+            $sms_message = "Dear " . explode(' ', $full_name)[0] . ", your Kurwa System caretaker verification code is: $otp. Please do not share this code.";
+            $sms_res = send_sms($phone, $sms_message);
+            
+            // Log to system log for debugging
+            $log_file = dirname(__DIR__, 2) . '/logs/sms_debug.log';
+            $log_entry = date('[Y-m-d H:i:s] ') . "Signup SMS Attempt for $phone | Success: " . ($sms_res['success'] ?? '0') . "\n";
+            file_put_contents($log_file, $log_entry, FILE_APPEND);
+            
+            header("Location: verify_otp.php?email=" . urlencode($email));
+            exit;
+        } else {
+            $error = "Email already exists or invalid data.";
+        }
     }
   }
 }

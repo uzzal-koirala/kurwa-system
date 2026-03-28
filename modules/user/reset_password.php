@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- Password Input -->
           <div class="relative group input-focus border-2 border-gray-100 rounded-xl bg-gray-50/30 transition-all">
               <input type="password" name="new_password" id="new_password_desktop" placeholder="New Password"
-                  class="w-full bg-transparent py-4 focus:outline-none px-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400 text-center" required minlength="6" />
+                  class="w-full bg-transparent py-2.5 focus:outline-none pl-12 pr-12 text-gray-800 text-[14px] font-medium placeholder:text-gray-400 text-left" required minlength="6" />
               <i data-lucide="key" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
               <button type="button" onclick="togglePass('new_password_desktop', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   <i data-lucide="eye" class="w-5 h-5"></i>
@@ -141,12 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- Confirm Password -->
           <div class="relative group input-focus border-2 border-gray-100 rounded-xl bg-gray-50/30 transition-all">
               <input type="password" name="confirm_password" placeholder="Confirm Password"
-                  class="w-full bg-transparent py-4 focus:outline-none px-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400 text-center" required minlength="6" />
+                  class="w-full bg-transparent py-2.5 focus:outline-none pl-12 pr-4 text-gray-800 text-[14px] font-medium placeholder:text-gray-400 text-left" required minlength="6" />
               <i data-lucide="lock" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
           </div>
 
           <button type="submit"
-              class="w-full bg-[#2F3CFF] hover:bg-[#2430D8] text-white font-extrabold py-4 rounded-xl shadow-lg shadow-blue-100 transition-all flex items-center justify-center gap-2 mt-2 transform active:scale-[0.98] text-lg tracking-wide">
+              class="w-full bg-[#2F3CFF] hover:bg-[#2430D8] text-white font-extrabold py-3 rounded-xl shadow-lg shadow-blue-100 transition-all flex items-center justify-center gap-2 mt-2 transform active:scale-[0.98] text-base tracking-wide">
               Confirm Reset
           </button>
 
