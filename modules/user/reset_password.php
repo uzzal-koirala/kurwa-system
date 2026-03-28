@@ -100,24 +100,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <div class="hidden md:flex bg-white shadow-2xl rounded-[1.5rem] overflow-hidden max-w-3xl w-full border border-gray-100 compact-container">
     
     <!-- Left Section (Form) -->
-    <div class="p-8 w-[55%] flex flex-col justify-center relative bg-white">
+    <div class="p-8 w-[55%] flex flex-col justify-center relative bg-white text-center">
       <div class="mb-5">
-          <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-3">
-              <i data-lucide="shield-check" class="w-5 h-5"></i>
-          </div>
           <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Set New Password</h2>
           <p class="text-gray-500 mt-2 text-[15px] font-medium tracking-tight leading-relaxed">Choose a strong password for your account.</p>
       </div>
 
       <?php if ($success): ?>
-        <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-xs mb-4 flex items-center gap-3">
+        <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-xs mb-4 flex items-center gap-3 justify-center text-center">
             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
             <p class="font-bold">Success! Redirecting...</p>
         </div>
       <?php endif; ?>
 
       <?php if ($error): ?>
-        <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-xl text-xs mb-4 flex items-center gap-3">
+        <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-xl text-xs mb-4 flex items-center gap-3 justify-center text-center">
             <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
             <p><?php echo $message; ?></p>
         </div>
@@ -127,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- Password Input -->
           <div class="relative group input-focus border-2 border-gray-100 rounded-xl bg-gray-50/30 transition-all">
               <input type="password" name="new_password" id="new_password_desktop" placeholder="New Password"
-                  class="w-full bg-transparent py-4 focus:outline-none pl-12 pr-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400" required minlength="6" />
+                  class="w-full bg-transparent py-4 focus:outline-none px-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400 text-center" required minlength="6" />
               <i data-lucide="key" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
               <button type="button" onclick="togglePass('new_password_desktop', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   <i data-lucide="eye" class="w-5 h-5"></i>
@@ -135,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           </div>
           
           <!-- Strength Bar -->
-          <div class="px-1 -mt-2">
+          <div class="px-3 -mt-2">
               <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div id="strength-bar-desktop" class="strength-bar h-full w-0 bg-gray-200"></div>
               </div>
@@ -144,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- Confirm Password -->
           <div class="relative group input-focus border-2 border-gray-100 rounded-xl bg-gray-50/30 transition-all">
               <input type="password" name="confirm_password" placeholder="Confirm Password"
-                  class="w-full bg-transparent py-4 focus:outline-none pl-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400" required minlength="6" />
+                  class="w-full bg-transparent py-4 focus:outline-none px-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400 text-center" required minlength="6" />
               <i data-lucide="lock" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
           </div>
 
