@@ -36,47 +36,51 @@ if ($is_completed) {
             min-height: 100vh;
         }
         .glass-container {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
         }
-        .step-inactive { opacity: 0; display: none; transform: translateY(10px); }
-        .step-active { opacity: 1; display: block; animation: slideIn 0.5s ease forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .step-inactive { opacity: 0; display: none; transform: translateY(15px); }
+        .step-active { opacity: 1; display: block; animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .progress-bar { transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1); }
+        .progress-bar { transition: width 0.8s cubic-bezier(0.65, 0, 1, 1); }
         .upload-card {
             border: 2px dashed #e2e8f0;
-            transition: all 0.3s ease;
+            background: #ffffff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .upload-card:hover { border-color: #2F3CFF; background: #f0f3ff; }
+        .upload-card:hover { border-color: #2F3CFF; background: #fdfdff; transform: translateY(-4px); box-shadow: 0 15px 30px rgba(47, 60, 255, 0.08); }
+        
+        input::placeholder, textarea::placeholder { color: #aaaaaa; font-weight: 400; font-size: 0.95rem; }
+        .input-focus { border-color: #2F3CFF !important; box-shadow: 0 0 0 4px rgba(47, 60, 255, 0.08) !important; background: #ffffff !important; }
     </style>
 </head>
 <body class="flex items-center justify-center p-4 py-12 md:p-10">
 
-    <div class="max-w-4xl w-full glass-container rounded-[2.5rem] overflow-hidden">
+    <div class="max-w-lg w-full glass-container rounded-[2rem] overflow-hidden">
         <!-- Progress -->
         <div class="h-2 bg-gray-100 w-full relative">
             <div id="progressBar" class="progress-bar h-full bg-[#2F3CFF] w-1/3"></div>
         </div>
 
-        <div class="p-8 md:p-16">
-            <header class="mb-12 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 text-[#2F3CFF] rounded-2xl mb-6">
-                    <i class="ri-user-star-line text-3xl"></i>
+        <div class="p-6 md:px-8 md:py-4">
+            <header class="mb-4 text-center">
+                <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-[#2F3CFF] rounded-lg mb-2 shadow-inner ring-1 ring-blue-100">
+                    <i class="ri-user-star-line text-lg"></i>
                 </div>
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Complete Your Expert Profile</h1>
-                <p class="text-gray-500 mt-2 mb-10">Help us verify your expertise to start receiving bookings.</p>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight leading-tight">Complete Your Expert Profile</h1>
+                <p class="text-[13px] text-gray-400 mt-1 font-medium italic">Verify your expertise to start receiving bookings.</p>
 
                 <!-- Step Indicators -->
-                <div class="flex justify-center items-center gap-4 max-w-xs mx-auto mb-4">
+                <div class="flex justify-center items-center gap-2 md:gap-4 max-w-sm mx-auto mb-4 mt-6">
                     <div id="ind1" class="w-10 h-10 rounded-xl bg-[#2F3CFF] text-white flex items-center justify-center font-bold shadow-lg shadow-blue-100 transition-all duration-500">1</div>
-                    <div class="h-0.5 w-8 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-1 w-6 md:w-8 bg-gray-100 rounded-full overflow-hidden">
                         <div id="bar1" class="h-full bg-[#2F3CFF] w-0 transition-all duration-500"></div>
                     </div>
                     <div id="ind2" class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center font-bold border border-gray-100 transition-all duration-500">2</div>
-                    <div class="h-0.5 w-8 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-1 w-6 md:w-8 bg-gray-100 rounded-full overflow-hidden">
                         <div id="bar2" class="h-full bg-[#2F3CFF] w-0 transition-all duration-500"></div>
                     </div>
                     <div id="ind3" class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center font-bold border border-gray-100 transition-all duration-500">3</div>
@@ -86,57 +90,55 @@ if ($is_completed) {
             <form id="onboardingForm" enctype="multipart/form-data">
                 <!-- Step 1: Personal Profile -->
                 <div id="step1" class="step-active">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div class="flex flex-col items-center">
-                            <div class="relative group cursor-pointer" onclick="document.getElementById('photoInput').click()">
-                                <div id="photoPreview" class="w-40 h-40 rounded-[2rem] bg-gray-50 border-2 border-gray-100 flex items-center justify-center overflow-hidden transition-all group-hover:border-[#2F3CFF]">
-                                    <i class="ri-image-add-line text-4xl text-gray-300 group-hover:text-[#2F3CFF]"></i>
+                    <div class="space-y-4">
+                        <!-- Profile Photo Full Width -->
+                        <div class="upload-card rounded-xl p-4 md:p-6 cursor-pointer text-center relative group" id="photoDrop" onclick="document.getElementById('photoInput').click()">
+                            <div id="photoPreview" class="hidden flex flex-col items-center">
+                                <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg mb-2">
+                                    <img id="photoImg" src="" class="w-full h-full object-cover">
                                 </div>
-                                <div class="absolute -bottom-2 -right-2 bg-[#2F3CFF] text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
-                                    <i class="ri-camera-line"></i>
-                                </div>
-                                <input type="file" id="photoInput" name="photo" accept="image/*" class="hidden" onchange="previewFile(this, 'photoPreview')" required>
+                                <span class="text-[10px] font-bold text-[#2F3CFF] bg-blue-50 px-2 py-1 rounded-full uppercase tracking-wider">Photo Selected</span>
                             </div>
-                            <span class="text-xs font-semibold text-gray-400 mt-4 uppercase tracking-widest">Profile Photo</span>
+                            <div id="photoPlaceholder" class="flex flex-col items-center py-1">
+                                <div class="w-12 h-12 bg-blue-50 text-[#2F3CFF] rounded-xl flex items-center justify-center mb-2 group-hover:scale-105 transition-transform duration-500">
+                                    <i class="ri-user-add-line text-2xl"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-gray-800 mb-0.5">Upload Profile Photo</h3>
+                                <p class="text-[11px] font-medium text-gray-400">Drag and drop or click to browse</p>
+                            </div>
+                            <input type="file" id="photoInput" name="photo" accept="image/*" class="hidden" onchange="previewProfilePhoto(this)" required>
                         </div>
-                        
-                        <div class="space-y-5">
-                            <div>
-                                <label class="text-sm font-bold text-gray-700 block mb-2">Display Name</label>
-                                <input type="text" name="full_name" value="<?= htmlspecialchars($full_name) ?>" class="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all" required>
+
+                        <!-- Info Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                            <div class="relative group">
+                                <i class="ri-user-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg group-focus-within:text-[#2F3CFF] transition-colors"></i>
+                                <input type="text" name="full_name" value="<?= htmlspecialchars($full_name) ?>" placeholder="Your Full Name" class="w-full bg-white border border-gray-300 rounded-lg py-3 pl-12 pr-4 outline-none focus:border-[#2F3CFF] focus:ring-2 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm text-sm" required>
                             </div>
-                            <div>
-                                <label class="text-sm font-bold text-gray-700 block mb-2">Contact Number</label>
-                                <input type="text" name="phone" value="<?= htmlspecialchars($phone) ?>" class="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all" required>
+                            <div class="relative group">
+                                <i class="ri-phone-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg group-focus-within:text-[#2F3CFF] transition-colors"></i>
+                                <input type="text" name="phone" value="<?= htmlspecialchars($phone) ?>" placeholder="Contact Number" class="w-full bg-white border border-gray-300 rounded-lg py-3 pl-12 pr-4 outline-none focus:border-[#2F3CFF] focus:ring-2 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm text-sm" required>
                             </div>
+                        </div>
+
+                        <div class="relative group">
+                            <i class="ri-video-chat-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg group-focus-within:text-[#2F3CFF] transition-colors"></i>
+                            <input type="url" name="video_url" placeholder="Intro Video Link (YouTube)" class="w-full bg-white border border-gray-300 rounded-lg py-3 pl-12 pr-4 outline-none focus:border-[#2F3CFF] focus:ring-2 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm text-sm">
                         </div>
                     </div>
                 </div>
 
                 <!-- Step 2: Skills & Expertise -->
                 <div id="step2" class="step-inactive">
-                    <div class="space-y-8">
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-3 flex items-center gap-2">
-                                <i class="ri-medal-line text-[#2F3CFF]"></i> Skills & Specializations
-                            </label>
-                            <input type="text" name="skills" placeholder="e.g. Wound Care, Elderly Massage, Post-Op Support" class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4.5 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all shadow-sm" required>
-                            <p class="text-[11px] text-gray-400 mt-2 ml-1 font-medium italic opacity-75">Separate distinct skills with commas.</p>
-                        </div>
-                        
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-3 flex items-center gap-2">
-                                <i class="ri-video-chat-line text-[#2F3CFF]"></i> Intro Video (YouTube Link)
-                            </label>
-                            <input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4.5 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all shadow-sm">
-                            <p class="text-[11px] text-gray-400 mt-2 ml-1 font-medium italic opacity-75">A short video explaining your experience builds trust with patients.</p>
+                    <div class="space-y-4">
+                        <div class="relative group">
+                            <i class="ri-medal-line absolute left-4 top-4 text-gray-500 text-lg group-focus-within:text-[#2F3CFF] transition-colors"></i>
+                            <input type="text" name="skills" placeholder="Skills (e.g. Wound Care, Massage)" class="w-full bg-white border border-gray-300 rounded-lg py-3.5 pl-12 pr-4 outline-none focus:border-[#2F3CFF] focus:ring-2 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm text-sm" required>
                         </div>
 
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-3 flex items-center gap-2">
-                                <i class="ri-article-line text-[#2F3CFF]"></i> Detailed Expertise & Bio
-                            </label>
-                            <textarea name="expertise" rows="5" placeholder="Share your professional journey and how you provide compassionate care..." class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4.5 outline-none focus:ring-2 focus:ring-[#2F3CFF]/10 focus:bg-white transition-all shadow-sm" required></textarea>
+                        <div class="relative group">
+                            <i class="ri-article-line absolute left-4 top-4 text-gray-500 text-lg group-focus-within:text-[#2F3CFF] transition-colors"></i>
+                            <textarea name="expertise" rows="3" placeholder="Detailed Bio..." class="w-full bg-white border border-gray-300 rounded-lg py-3.5 pl-12 pr-4 outline-none focus:border-[#2F3CFF] focus:ring-2 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm text-sm" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -164,16 +166,16 @@ if ($is_completed) {
                 </div>
 
                 <!-- Navigation -->
-                <div class="mt-16 flex justify-between items-center bg-gray-50/50 -m-8 md:-m-16 p-8 md:p-12 border-t border-gray-100">
-                    <button type="button" id="prevBtn" onclick="moveStep(-1)" class="hidden text-gray-500 font-bold hover:text-black transition-all flex items-center gap-2">
-                        <i class="ri-arrow-left-line"></i> Back
+                <div class="mt-4 border-t border-gray-100 pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <button type="button" id="prevBtn" onclick="moveStep(-1)" class="hidden text-gray-500 font-extrabold hover:text-black transition-all flex items-center gap-2 px-4 py-2 order-2 md:order-1 text-xs">
+                        <i class="ri-arrow-left-line font-bold"></i> Back
                     </button>
-                    <div class="flex-1"></div>
-                    <button type="button" id="nextBtn" onclick="moveStep(1)" class="bg-[#2F3CFF] text-white px-10 py-5 rounded-2xl font-bold shadow-xl shadow-blue-200 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3">
+                    <div class="hidden md:block flex-1"></div>
+                    <button type="button" id="nextBtn" onclick="moveStep(1)" class="w-full md:w-auto bg-[#2F3CFF] text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 order-1 md:order-2 text-xs uppercase tracking-wider">
                         Continue <i class="ri-arrow-right-line"></i>
                     </button>
-                    <button type="submit" id="submitBtn" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3">
-                         Submit Profile <i class="ri-checkbox-circle-fill"></i>
+                    <button type="submit" id="submitBtn" class="hidden w-full md:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 order-1 md:order-2 text-xs uppercase tracking-wider">
+                         Submit <i class="ri-checkbox-circle-fill"></i>
                     </button>
                 </div>
             </form>
@@ -237,17 +239,54 @@ if ($is_completed) {
             document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== totalSteps);
         }
 
-        function previewFile(input, targetId) {
-            const preview = document.getElementById(targetId);
+        function previewProfilePhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            const placeholder = document.getElementById('photoPlaceholder');
+            const img = document.getElementById('photoImg');
             const file = input.files[0];
+            
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    img.src = e.target.result;
+                    placeholder.classList.add('hidden');
+                    preview.classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
             }
         }
+
+        // Add Drag & Drop Support
+        ['photoDrop', 'docDrop'].forEach(id => {
+            const el = document.getElementById(id);
+            if(!el) return;
+
+            el.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                el.classList.add('border-[#2F3CFF]', 'bg-blue-50');
+            });
+
+            el.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                el.classList.remove('border-[#2F3CFF]', 'bg-blue-50');
+            });
+
+            el.addEventListener('drop', (e) => {
+                e.preventDefault();
+                el.classList.remove('border-[#2F3CFF]', 'bg-blue-50');
+                const file = e.dataTransfer.files[0];
+                const input = el.querySelector('input');
+                
+                if (file) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    input.files = dataTransfer.files;
+                    
+                    if(id === 'photoDrop') previewProfilePhoto(input);
+                    else previewDoc(input);
+                }
+            });
+        });
 
         function previewDoc(input) {
             const preview = document.getElementById('docPreview');

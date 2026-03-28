@@ -105,8 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-3">
               <i data-lucide="shield-check" class="w-5 h-5"></i>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Set New Password</h2>
-          <p class="text-gray-400 mt-1 text-[13px] tracking-tight">Enter your new security credentials.</p>
+          <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Set New Password</h2>
+          <p class="text-gray-500 mt-2 text-[15px] font-medium tracking-tight leading-relaxed">Choose a strong password for your account.</p>
       </div>
 
       <?php if ($success): ?>
@@ -127,16 +127,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- Password Input -->
           <div class="relative group input-focus border-2 border-gray-100 rounded-xl bg-gray-50/30 transition-all">
               <input type="password" name="new_password" id="new_password_desktop" placeholder="New Password"
-                  class="w-full bg-transparent py-3 focus:outline-none pl-11 pr-11 text-gray-800 text-[13px]" required minlength="6" />
-              <i data-lucide="key" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
+                  class="w-full bg-transparent py-4 focus:outline-none pl-12 pr-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400" required minlength="6" />
+              <i data-lucide="key" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
               <button type="button" onclick="togglePass('new_password_desktop', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  <i data-lucide="eye" class="w-4 h-4"></i>
+                  <i data-lucide="eye" class="w-5 h-5"></i>
               </button>
           </div>
           
           <!-- Strength Bar -->
           <div class="px-1 -mt-2">
-              <div class="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div id="strength-bar-desktop" class="strength-bar h-full w-0 bg-gray-200"></div>
               </div>
           </div>
@@ -144,24 +144,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- Confirm Password -->
           <div class="relative group input-focus border-2 border-gray-100 rounded-xl bg-gray-50/30 transition-all">
               <input type="password" name="confirm_password" placeholder="Confirm Password"
-                  class="w-full bg-transparent py-3 focus:outline-none pl-11 text-gray-800 text-[13px]" required minlength="6" />
-              <i data-lucide="lock" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
+                  class="w-full bg-transparent py-4 focus:outline-none pl-12 text-gray-800 text-[15px] font-medium placeholder:text-gray-400" required minlength="6" />
+              <i data-lucide="lock" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
           </div>
 
           <button type="submit"
-              class="w-full bg-[#2F3CFF] hover:bg-[#2430D8] text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-100 transition-all flex items-center justify-center gap-2 mt-1 transform active:scale-[0.98]">
+              class="w-full bg-[#2F3CFF] hover:bg-[#2430D8] text-white font-extrabold py-4 rounded-xl shadow-lg shadow-blue-100 transition-all flex items-center justify-center gap-2 mt-2 transform active:scale-[0.98] text-lg tracking-wide">
               Confirm Reset
           </button>
 
-          <div class="text-center pt-1">
-              <a href="login.php" class="text-gray-400 hover:text-blue-600 text-[12px] font-medium transition-colors inline-block">
-                  Return to Login
-              </a>
-          </div>
       </form>
     </div>
-
-    <!-- Right Blue Section -->
     <div class="bg-[#2F3CFF] text-white flex flex-col justify-center items-center p-8 w-[45%] relative overflow-hidden">
       <!-- Icon Composition -->
       <div class="relative z-10 text-center flex flex-col items-center">
@@ -176,9 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <i data-lucide="lock" class="w-3 h-3"></i>
               </div>
           </div>
-          <h2 class="text-xl font-bold mb-2 tracking-tight">Identity Secured.</h2>
-          <p class="text-blue-100/60 text-[12px] leading-relaxed max-w-[180px] mx-auto font-light">
-              Your account security is our top priority. Choose a strong, unique password.
+          <h2 class="text-2xl font-bold mb-2 tracking-tight text-white">Identity Secured.</h2>
+          <p class="text-white/90 text-[13px] leading-snug max-w-[240px] mx-auto font-semibold tracking-tight">
+              Your security is our priority. Please choose a strong, unique password.
           </p>
       </div>
     </div>
