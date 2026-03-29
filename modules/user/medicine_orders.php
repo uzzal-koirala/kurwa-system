@@ -29,6 +29,100 @@ $pharmacies_res = $conn->query($pharmacies_sql);
         .closed-vendor { opacity: 0.7; filter: grayscale(0.6); cursor: not-allowed !important; }
         .status-badge.status-closed { background: #ef4444; }
         .status-badge.status-open { background: #22c55e; }
+
+        /* Store Closed Modal CSS */
+        .closed-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .closed-modal-card {
+            background: white;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            animation: cardPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardPop {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .closed-icon-ctn {
+            width: 90px;
+            height: 90px;
+            background: #f5f3ff;
+            color: #8b5cf6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 25px;
+            border: 2px solid #ede9fe;
+            position: relative;
+        }
+
+        .closed-icon-ctn::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 2px solid #f5f3ff;
+            border-radius: 50%;
+            animation: pulse-ring-purple 2s infinite;
+        }
+
+        @keyframes pulse-ring-purple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .closed-time-badge {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .closed-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .closed-btn:hover {
+            background: #334155;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -63,9 +157,16 @@ $pharmacies_res = $conn->query($pharmacies_sql);
                 $is_open = ($curr_time >= $p['opening_time'] && $curr_time <= $p['closing_time']);
                 $status_text = $is_open ? 'Open' : 'Closed';
                 $status_class = $is_open ? 'status-open' : 'status-closed';
-                $click_action = $is_open ? "openUploadModal({$p['id']}, '" . addslashes($p['name']) . "')" : "alert('This pharmacy is currently closed. It operates from " . date('h:i A', strtotime($p['opening_time'])) . " to " . date('h:i A', strtotime($p['closing_time'])) . ".');";
+                $open_fmt = date('h:i A', strtotime($p['opening_time']));
+                $close_fmt = date('h:i A', strtotime($p['closing_time']));
+                $click_action = $is_open ? "openUploadModal({$p['id']}, '" . addslashes($p['name']) . "')" : "showClosedModal(this)";
             ?>
-            <div class="pharmacy-card <?= !$is_open ? 'closed-vendor' : '' ?>" data-name="<?= strtolower(htmlspecialchars($p['name'])) ?>" onclick="<?= $click_action ?>">
+            <div class="pharmacy-card <?= !$is_open ? 'closed-vendor' : '' ?>" 
+                 data-name="<?= strtolower(htmlspecialchars($p['name'])) ?>" 
+                 data-full-name="<?= htmlspecialchars($p['name']) ?>"
+                 data-open-time="<?= $open_fmt ?>"
+                 data-close-time="<?= $close_fmt ?>"
+                 onclick="<?= $click_action ?>">
                 <button class="view-profile-btn" onclick="goToProfile(event, <?= $p['id'] ?>)" title="View Store Profile">
                     <i class="ri-eye-line"></i>
                 </button>
@@ -115,6 +216,24 @@ $pharmacies_res = $conn->query($pharmacies_sql);
         </div>
 
         <button class="btn-primary" id="submitBtn" disabled onclick="submitOrder()">Place Order & Wait for Delivery</button>
+    </div>
+</div>
+
+<!-- Pharmacy Closed Modal -->
+<div id="closedModal" class="closed-modal-overlay">
+    <div class="closed-modal-card">
+        <div class="closed-icon-ctn">
+            <i class="ri-time-line"></i>
+        </div>
+        <h2 id="closedStoreName" style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Pharmacy Closed</h2>
+        <p style="color: #64748b; font-size: 15px; line-height: 1.5;">This pharmacy is currently off-duty and not accepting new prescriptions at this moment.</p>
+        
+        <div class="closed-time-badge">
+            <i class="ri-calendar-todo-line" style="color: #8b5cf6;"></i>
+            <span>Hours: <span id="closedOperatingHours">08:00 AM - 10:00 PM</span></span>
+        </div>
+
+        <button onclick="closeClosedModal()" class="closed-btn">Understood</button>
     </div>
 </div>
 
@@ -207,6 +326,23 @@ $pharmacies_res = $conn->query($pharmacies_sql);
         if (event.target == document.getElementById('uploadModal')) {
             closeModal();
         }
+        if (event.target == document.getElementById('closedModal')) {
+            closeClosedModal();
+        }
+    }
+
+    function showClosedModal(el) {
+        const name = el.dataset.fullName;
+        const openTime = el.dataset.openTime;
+        const closeTime = el.dataset.closeTime;
+        
+        document.getElementById('closedStoreName').innerText = name + ' is Closed';
+        document.getElementById('closedOperatingHours').innerText = `${openTime} - ${closeTime}`;
+        document.getElementById('closedModal').style.display = 'flex';
+    }
+
+    function closeClosedModal() {
+        document.getElementById('closedModal').style.display = 'none';
     }
 </script>
 </body>

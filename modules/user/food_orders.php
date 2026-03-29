@@ -243,7 +243,13 @@ $canteens_res = $conn->query($canteens_sql);
             background: #ffffff;
         }
 
-        .closed-vendor { opacity: 0.7; filter: grayscale(0.5); cursor: not-allowed !important; }
+        .closed-vendor { 
+            opacity: 0.7; 
+            filter: grayscale(0.5); 
+            cursor: not-allowed !important; 
+            pointer-events: auto !important; 
+        }
+        .closed-vendor * { pointer-events: none; }
         .canteen-status.status-closed { background: #ef4444; }
         .canteen-status.status-open { background: #22c55e; }
 
@@ -383,9 +389,14 @@ $canteens_res = $conn->query($canteens_sql);
                     $status_class = $is_open ? 'status-open' : 'status-closed';
                     $open_fmt = date('h:i A', strtotime($canteen['opening_time']));
                     $close_fmt = date('h:i A', strtotime($canteen['closing_time']));
-                    $click_action = $is_open ? "loadMenu({$canteen['id']}, '" . addslashes($canteen['name']) . "')" : "showClosedModal('" . addslashes($canteen['name']) . "', '$open_fmt', '$close_fmt')";
+                    $click_action = $is_open ? "loadMenu({$canteen['id']}, '" . addslashes($canteen['name']) . "')" : "showClosedModal(this)";
                 ?>
-                <div class="canteen-card <?= !$is_open ? 'closed-vendor' : '' ?>" data-name="<?= strtolower(htmlspecialchars($canteen['name'])) ?>" onclick="<?= $click_action ?>">
+                <div class="canteen-card <?= !$is_open ? 'closed-vendor' : '' ?>" 
+                     data-name="<?= strtolower(htmlspecialchars($canteen['name'])) ?>" 
+                     data-full-name="<?= htmlspecialchars($canteen['name']) ?>"
+                     data-open-time="<?= $open_fmt ?>"
+                     data-close-time="<?= $close_fmt ?>"
+                     onclick="<?= $click_action ?>">
                     <div class="canteen-img-wrapper">
                         <?php 
                             $img = !empty($canteen['image_url']) ? '../../'.$canteen['image_url'] : 'https://images.unsplash.com/photo-1517248135467-4c7ed9d42339?w=500&q=80';
@@ -536,19 +547,6 @@ $canteens_res = $conn->query($canteens_sql);
     let currentView = 'canteens';
     let checkoutMap = null;
     let checkoutMarker = null;
-
-    }
-
-    function showClosedModal(name, openTime, closeTime) {
-        document.getElementById('closedStoreName').innerText = name + ' is Closed';
-        document.getElementById('closedOperatingHours').innerText = `${openTime} - ${closeTime}`;
-        document.getElementById('closedModal').style.display = 'flex';
-    }
-
-    function closeClosedModal() {
-        document.getElementById('closedModal').style.display = 'none';
-    }
-
     function reverseGeocode(lat, lng) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
             .then(res => res.json())
@@ -934,7 +932,11 @@ $canteens_res = $conn->query($canteens_sql);
         }
     }
 
-    function showClosedModal(name, openTime, closeTime) {
+    function showClosedModal(el) {
+        const name = el.dataset.fullName;
+        const openTime = el.dataset.openTime;
+        const closeTime = el.dataset.closeTime;
+        
         document.getElementById('closedStoreName').innerText = name + ' is Closed';
         document.getElementById('closedOperatingHours').innerText = `${openTime} - ${closeTime}`;
         document.getElementById('closedModal').style.display = 'flex';
