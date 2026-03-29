@@ -364,6 +364,18 @@ if ($tx_stmt) {
     </div>
 </div>
 
+<!-- Error Activation Modal -->
+<div id="errorActivationModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:40px 30px; border-radius:24px; width:100%; max-width:380px; text-align:center; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
+        <div style="width:80px; height:80px; background:#fef2f2; color:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 20px; box-shadow:0 10px 25px rgba(239, 68, 68, 0.2);">
+            <i class="ri-error-warning-fill"></i>
+        </div>
+        <h2 style="color:#0f172a; font-size:24px; font-weight:700; margin-bottom:12px;">Activation Failed</h2>
+        <p id="errorActivationMessage" style="color:#64748b; font-size:15px; margin-bottom:25px; line-height:1.5;">An error occurred.</p>
+        <button onclick="document.getElementById('errorActivationModal').style.display='none'" style="width:100%; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; padding:15px; border:none; border-radius:12px; font-weight:700; font-size:16px; cursor:pointer; box-shadow:0 6px 15px rgba(239, 68, 68, 0.3); transition:0.3s;">Understood</button>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     function setAmount(amount) {
@@ -555,7 +567,9 @@ if ($tx_stmt) {
                 document.getElementById('activationModal').style.display = 'none';
                 document.getElementById('successActivationModal').style.display = 'flex';
             } else {
-                alert("Error: " + data.message);
+                document.getElementById('activationModal').style.display = 'none';
+                document.getElementById('errorActivationMessage').innerText = data.message;
+                document.getElementById('errorActivationModal').style.display = 'flex';
                 btn.innerHTML = origText;
                 btn.disabled = false;
             }
