@@ -84,6 +84,7 @@ if ($tx_stmt) {
             border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
+            font-family: 'Poppins', sans-serif;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: 0.2s;
         }
@@ -351,6 +352,18 @@ if ($tx_stmt) {
     </div>
 </div>
 
+<!-- Success Activation Modal -->
+<div id="successActivationModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:40px 30px; border-radius:24px; width:100%; max-width:380px; text-align:center; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
+        <div style="width:80px; height:80px; background:#ecfdf5; color:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 20px; box-shadow:0 10px 25px rgba(16, 185, 129, 0.2);">
+            <i class="ri-checkbox-circle-fill"></i>
+        </div>
+        <h2 style="color:#0f172a; font-size:24px; font-weight:700; margin-bottom:12px;">Success!</h2>
+        <p style="color:#64748b; font-size:15px; margin-bottom:25px; line-height:1.5;">Your Kurwa Pay card is now active. You received a unique 10-digit number and can start making instant transfers.</p>
+        <button onclick="location.reload()" style="width:100%; background:linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color:white; padding:15px; border:none; border-radius:12px; font-weight:700; font-size:16px; cursor:pointer; box-shadow:0 6px 15px rgba(67, 97, 238, 0.3); transition:0.3s;"><i class="ri-rocket-line" style="margin-right:5px;"></i> Awesome!</button>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     function setAmount(amount) {
@@ -538,8 +551,9 @@ if ($tx_stmt) {
                 const formattedCN = cn.substring(0,4) + ' ' + cn.substring(4,8) + ' ' + cn.substring(8,10);
                 document.getElementById('displayCardNumber').innerText = formattedCN;
                 
-                alert("Success! Your card is now active.");
-                location.reload(); // Reload to update transaction history
+                // Show beautiful success modal instead of alert
+                document.getElementById('activationModal').style.display = 'none';
+                document.getElementById('successActivationModal').style.display = 'flex';
             } else {
                 alert("Error: " + data.message);
                 btn.innerHTML = origText;
