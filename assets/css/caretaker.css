@@ -192,7 +192,7 @@
 
 .caretaker-image {
     width: 100%;
-    height: 240px;
+    height: 180px;
     border-radius: 18px;
     overflow: hidden;
     position: relative;
@@ -242,14 +242,14 @@
     color: var(--text-muted);
     font-size: 14px;
     font-weight: 500;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .caretaker-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .caretaker-meta span {
