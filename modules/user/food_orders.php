@@ -78,6 +78,64 @@ $canteens_res = $conn->query($canteens_sql);
             color: #ef4444;
             transform: rotate(90deg);
         }
+
+        /* Cart Sidebar CSS */
+        .cart-sidebar-overlay {
+            display: none;
+            position: fixed;
+            z-index: 9998;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cart-sidebar-overlay.show {
+            opacity: 1;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 25px 30px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-body {
+            padding: 20px 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .cart-footer {
+            padding: 20px 30px 30px;
+            border-top: 1px solid #e2e8f0;
+            background: #fff;
+        }
     </style>
 </head>
 <body>
@@ -93,8 +151,16 @@ $canteens_res = $conn->query($canteens_sql);
         
         <!-- View 1: Canteen Selection -->
         <div id="canteenSelection">
-            <div class="order-header">
+            <div class="order-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <h1><i class="ri-restaurant-fill"></i> Order Delicious Food</h1>
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" onclick="openCheckout()" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #3542f3; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="View Cart">
+                        <i class="ri-shopping-cart-2-line"></i>
+                    </button>
+                    <button type="button" onclick="window.location.href='my_orders.php'" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #475569; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="My Orders">
+                        <i class="ri-shopping-bag-3-line"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="search-area">
@@ -130,13 +196,23 @@ $canteens_res = $conn->query($canteens_sql);
 
         <!-- View 2: Menu Browser (Hidden by default) -->
         <div id="menuView">
-            <div class="menu-header">
-                <div class="back-btn" onclick="showCanteens()">
-                    <i class="ri-arrow-left-line"></i>
+            <div class="menu-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="back-btn" onclick="showCanteens()">
+                        <i class="ri-arrow-left-line"></i>
+                    </div>
+                    <div class="menu-title-area">
+                        <h2 id="currentCanteenName" style="margin: 0; font-size: 20px;">Canteen Name</h2>
+                        <p id="canteenMetaInfo" style="margin: 0; font-size: 12px; color: #64748b;">Rating: 4.8 • Healthy & Fresh</p>
+                    </div>
                 </div>
-                <div class="menu-title-area">
-                    <h2 id="currentCanteenName">Canteen Name</h2>
-                    <p id="canteenMetaInfo">Rating: 4.8 • Healthy & Fresh</p>
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" onclick="openCheckout()" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #3542f3; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="View Cart">
+                        <i class="ri-shopping-cart-2-line"></i>
+                    </button>
+                    <button type="button" onclick="window.location.href='my_orders.php'" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #475569; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="My Orders">
+                        <i class="ri-shopping-bag-3-line"></i>
+                    </button>
                 </div>
             </div>
 
@@ -160,13 +236,21 @@ $canteens_res = $conn->query($canteens_sql);
     <span id="cartTotal">Rs. 0</span>
 </div>
 
-<!-- Checkout Modal -->
-<div id="checkoutModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeCheckout()">&times;</span>
-        <h2 style="margin-top:0; color:#0f172a;"><i class="ri-shopping-basket-fill" style="color:var(--primary);"></i> Checkout</h2>
-        <div id="checkoutItems" style="margin-bottom: 20px; max-height:200px; overflow-y:auto; border-bottom:1px solid #e2e8f0; padding-bottom:15px;"></div>
-        
+<!-- Cart Sidebar overlay -->
+<div id="cartOverlay" class="cart-sidebar-overlay" onclick="closeCheckout()"></div>
+
+<!-- Cart Sidebar -->
+<div id="cartSidebar" class="cart-sidebar">
+    <div class="cart-header">
+        <h2 style="margin:0; color:#0f172a; display: flex; align-items: center; gap: 8px;"><i class="ri-shopping-basket-fill" style="color:#3542f3;"></i> Cart</h2>
+        <span class="close-modal" onclick="closeCheckout()" style="position: static; font-size: 28px;">&times;</span>
+    </div>
+    
+    <div class="cart-body">
+        <div id="checkoutItems" style="margin-bottom: 20px;"></div>
+    </div>
+    
+    <div class="cart-footer">
         <div class="price-summary" style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px;">
             <div style="display:flex; justify-content:space-between; font-weight:700; font-size:18px; color:#1e293b;">
                 <span>Total Amount:</span>
@@ -175,11 +259,11 @@ $canteens_res = $conn->query($canteens_sql);
         </div>
 
         <form id="checkoutForm" onsubmit="submitOrder(event)">
-            <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">
                 <label style="font-weight:600; font-size:14px; color:#475569;">Delivery Address</label>
                 <input type="text" id="deliveryAddress" required placeholder="Apt 4B, 123 Main St..." style="padding:12px; border:1px solid #e2e8f0; border-radius:10px; font-family:inherit;">
             </div>
-            <button type="submit" style="width:100%; margin-top:20px; background:#3542f3; color:#fff; border:none; padding:14px; border-radius:12px; font-weight:700; cursor:pointer; font-size:15px;">
+            <button type="submit" style="width:100%; background:#3542f3; color:#fff; border:none; padding:16px; border-radius:12px; font-weight:700; cursor:pointer; font-size:16px; box-shadow: 0 4px 15px rgba(53, 66, 243, 0.3);">
                 <i class="ri-checkbox-circle-line"></i> Place Order
             </button>
         </form>
@@ -289,7 +373,7 @@ $canteens_res = $conn->query($canteens_sql);
                         <p class="food-desc">${food.description}</p>
                         <div class="food-price-cta">
                             <span class="price-tag">Rs. ${parseFloat(food.price).toLocaleString()}</span>
-                            <button class="add-btn" onclick="addToCart(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.price})">
+                            <button class="add-btn" onclick="addToCart(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.price}, '${food.image_url}')">
                                 <i class="ri-add-line"></i>
                             </button>
                         </div>
@@ -310,13 +394,13 @@ $canteens_res = $conn->query($canteens_sql);
         document.querySelectorAll('.canteen-card').forEach(card => card.style.display = 'flex');
     }
 
-    function addToCart(id, name, price) {
+    function addToCart(id, name, price, image = '') {
         // Check if item already exists
         const existingItem = cart.find(item => item.id === id);
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
-            cart.push({id, name, price, quantity: 1});
+            cart.push({id, name, price, quantity: 1, image});
         }
         updateCartUI();
         
@@ -344,35 +428,55 @@ $canteens_res = $conn->query($canteens_sql);
     }
 
     function openCheckout() {
-        if(cart.length === 0) {
-            alert('Your cart is empty!');
-            return;
-        }
-        document.getElementById('checkoutModal').style.display = 'flex';
+        const overlay = document.getElementById('cartOverlay');
+        const sidebar = document.getElementById('cartSidebar');
+        overlay.style.display = 'block';
+        setTimeout(() => overlay.classList.add('show'), 10);
+        sidebar.classList.add('open');
         
         const container = document.getElementById('checkoutItems');
+        const footer = document.querySelector('.cart-footer');
+        
+        if(cart.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding: 60px 20px;">
+                    <div style="width: 80px; height: 80px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="ri-shopping-cart-2-line" style="font-size: 36px; color: #cbd5e1;"></i>
+                    </div>
+                    <h3 style="color:#1e293b; margin-bottom:10px; font-weight: 700; font-size: 18px;">Your cart is empty</h3>
+                    <p style="color:#64748b; font-size:14px; margin-bottom:30px; line-height: 1.5;">Looks like you haven't added any delicious food yet.</p>
+                    <button onclick="closeCheckout()" style="background:#f1f5f9; color:#475569; border:none; padding:14px 28px; border-radius:12px; font-weight:600; cursor:pointer; transition:0.3s; width: 100%;">Continue Browsing</button>
+                </div>
+            `;
+            footer.style.display = 'none';
+            return;
+        }
+        
+        footer.style.display = 'block';
         container.innerHTML = '';
         cart.forEach((item, index) => {
             const itemTotal = parseFloat(item.price) * item.quantity;
+            const fallbackImg = item.image ? item.image : '../../assets/images/placeholder.jpg';
+            
             container.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:14px; color:#334155; padding: 12px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <div style="display:flex; align-items:center; gap: 15px; margin-bottom:12px; padding: 12px; background: #fff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: 0.2s;">
+                <img src="${fallbackImg}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; background: #f8fafc;">
+                
                 <div style="flex: 1;">
-                    <span style="font-weight:600; font-size:15px; color:#0f172a; display:block;">${item.name}</span>
-                    <span style="color:#64748b; font-size:12px;">Rs. ${parseFloat(item.price).toLocaleString()} each</span>
+                    <span style="font-weight:600; font-size:15px; color:#0f172a; display:block; margin-bottom: 4px;">${item.name}</span>
+                    <strong style="color:#3542f3; font-size: 14px;">Rs. ${itemTotal.toLocaleString()}</strong>
                 </div>
                 
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <strong style="color:#3542f3; width: 70px; text-align:right;">Rs. ${itemTotal.toLocaleString()}</strong>
-                    
-                    <div style="display:flex; align-items:center; background:#fff; border:1px solid #cbd5e1; border-radius:8px; overflow:hidden;">
-                        <button type="button" onclick="updateQuantity(${index}, -1)" style="background:transparent; border:none; padding:4px 10px; cursor:pointer; font-weight:700; color:#475569; font-size:16px;">-</button>
-                        <span style="width:24px; text-align:center; font-weight:600; font-size:14px;">${item.quantity}</span>
-                        <button type="button" onclick="updateQuantity(${index}, 1)" style="background:transparent; border:none; padding:4px 10px; cursor:pointer; font-weight:700; color:#3542f3; font-size:16px;">+</button>
-                    </div>
-                    
-                    <button type="button" onclick="removeFromCart(${index})" style="background:#fee2e2; color:#ef4444; border:none; padding:6px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-                        <i class="ri-delete-bin-line"></i>
+                <div style="display:flex; flex-direction: column; align-items:flex-end; gap:8px;">
+                    <button type="button" onclick="removeFromCart(${index})" style="background:transparent; color:#ef4444; border:none; padding:4px; font-size: 18px; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity: 0.7; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                        <i class="ri-close-circle-fill"></i>
                     </button>
+                    
+                    <div style="display:flex; align-items:center; background:#f8fafc; border-radius:8px; padding: 2px;">
+                        <button type="button" onclick="updateQuantity(${index}, -1)" style="background:transparent; border:none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor:pointer; font-weight:700; color:#475569; font-size:16px; border-radius: 6px; transition: 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='transparent'">-</button>
+                        <span style="width:24px; text-align:center; font-weight:600; font-size:13px; color: #1e293b;">${item.quantity}</span>
+                        <button type="button" onclick="updateQuantity(${index}, 1)" style="background:#fff; border:none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor:pointer; font-weight:700; color:#3542f3; font-size:16px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">+</button>
+                    </div>
                 </div>
             </div>`;
         });
@@ -385,7 +489,7 @@ $canteens_res = $conn->query($canteens_sql);
         if (cart[index].quantity + change > 0) {
             cart[index].quantity += change;
             updateCartUI();
-            openCheckout(); // Re-render modal
+            openCheckout(); // Re-render sidebar
         } else if (cart[index].quantity + change === 0) {
             removeFromCart(index); // Remove if quantity hits 0
         }
@@ -394,15 +498,17 @@ $canteens_res = $conn->query($canteens_sql);
     function removeFromCart(index) {
         cart.splice(index, 1);
         updateCartUI();
-        if (cart.length === 0) {
-            closeCheckout();
-        } else {
-            openCheckout(); // Re-render modal
-        }
+        openCheckout(); // Re-render sidebar
     }
 
     function closeCheckout() {
-        document.getElementById('checkoutModal').style.display = 'none';
+        const overlay = document.getElementById('cartOverlay');
+        const sidebar = document.getElementById('cartSidebar');
+        
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.style.display = 'none', 300);
+        
         document.getElementById('deliveryAddress').value = '';
     }
 
