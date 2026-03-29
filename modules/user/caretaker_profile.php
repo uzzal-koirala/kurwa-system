@@ -328,8 +328,135 @@ $skills = [
     </div>
 </div>
 
-<!-- Booking Modal omitted for brevity, keeping existing functionality -->
+<!-- Booking Modal -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeBookingModal">&times;</span>
+        <h2 style="margin-top:0; color:#0f172a; display:flex; align-items:center; gap:10px;">
+            <i class="ri-calendar-check-fill" style="color:#2F3CFF;"></i> Book Caretaker
+        </h2>
+        <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Secure your dates with <?= htmlspecialchars($caretaker['full_name']) ?>. Price is Rs. <?= number_format($caretaker['price_per_day']) ?> per day.</p>
+        
+        <form id="bookingForm" class="booking-form">
+            <input type="hidden" name="caretaker_id" value="<?= $caretaker_id ?>">
+            <div class="input-group">
+                <label for="startDate">Start Date</label>
+                <input type="text" id="startDate" name="start_date" placeholder="Select start date" required>
+            </div>
+            <div class="input-group">
+                <label for="endDate">End Date (Inclusive)</label>
+                <input type="text" id="endDate" name="end_date" placeholder="Select end date" required>
+            </div>
+            
+            <div class="price-summary" id="priceSummary" style="display:none;">
+                <div class="price-row">
+                    <span>Daily Rate:</span>
+                    <span>Rs. <?= number_format($caretaker['price_per_day']) ?></span>
+                </div>
+                <div class="price-row">
+                    <span>Total Days:</span>
+                    <span id="numDays">0</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total Amount:</span>
+                    <span id="totalPrice">Rs. 0</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width:100%; padding:15px; font-weight:700; font-size:16px;">
+                <i class="ri-checkbox-circle-line"></i> Confirm Booking
+            </button>
+        </form>
+    </div>
+</div>
 
 <script src="../../assets/js/sidebar.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('bookingModal');
+        const bookBtn = document.getElementById('bookNowBtn');
+        const closeBtn = document.getElementById('closeBookingModal');
+        const bookingForm = document.getElementById('bookingForm');
+        const dailyRate = <?= $caretaker['price_per_day'] ?>;
+        
+        // Initialize Flatpickr
+        const startPicker = flatpickr("#startDate", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr) {
+                endPicker.set('minDate', dateStr);
+                calculateTotal();
+            }
+        });
+
+        const endPicker = flatpickr("#endDate", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function() {
+                calculateTotal();
+            }
+        });
+
+        function calculateTotal() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            const summary = document.getElementById('priceSummary');
+
+            if (start && end) {
+                const d1 = new Date(start);
+                const d2 = new Date(end);
+                const diffTime = Math.abs(d2 - d1);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                
+                document.getElementById('numDays').innerText = diffDays;
+                document.getElementById('totalPrice').innerText = "Rs. " + (diffDays * dailyRate).toLocaleString();
+                summary.style.display = 'block';
+            } else {
+                summary.style.display = 'none';
+            }
+        }
+
+        // Modal Controls
+        bookBtn.onclick = () => modal.style.display = 'flex';
+        closeBtn.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => {
+            if (event.target == modal) modal.style.display = 'none';
+        }
+
+        // Submit Booking
+        bookingForm.onsubmit = function(e) {
+            e.preventDefault();
+            const submitBtn = bookingForm.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Processing...';
+
+            const formData = new FormData(bookingForm);
+            
+            fetch('handlers/process_booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+            })
+            .catch(err => {
+                console.error('Booking error:', err);
+                alert("An error occurred. Please try again.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            });
+        };
+    });
+</script>
 </body>
 </html>
