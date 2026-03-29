@@ -58,17 +58,7 @@ if ($tx_stmt) {
         <!-- Top Section: Balance & Topup Form -->
         <div class="payment-hero">
             <div class="payment-left">
-                <!-- Coupon Section (First Row) -->
-                <div class="coupon-section">
-                    <h3><i class="ri-ticket-2-line" style="color: #2F3CFF;"></i> Have a Coupon Code?</h3>
-                    <div class="coupon-input-group">
-                        <input type="text" id="couponCode" placeholder="Enter code (e.g. WELCOME100)">
-                        <button class="redeem-btn" onclick="redeemCoupon()">Redeem</button>
-                    </div>
-                    <p id="couponMessage" style="font-size: 12px; margin-top: 10px; display: none;"></p>
-                </div>
-
-                <!-- Balance Card (Second Row) -->
+                <!-- Balance Card (First Row) -->
                 <div class="balance-card-large">
                     <div class="balance-header">
                         <div class="chip-icon"></div>
@@ -82,6 +72,16 @@ if ($tx_stmt) {
                         <div class="card-number">.... .... .... <?= str_pad($user_id, 4, '0', STR_PAD_LEFT) ?></div>
                         <i class="ri-visa-line" style="font-size: 32px; opacity: 0.8;"></i>
                     </div>
+                </div>
+
+                <!-- Coupon Section (Second Row) -->
+                <div class="coupon-section">
+                    <h3><i class="ri-ticket-2-line" style="color: #2F3CFF;"></i> Have a Coupon Code?</h3>
+                    <div class="coupon-input-group">
+                        <input type="text" id="couponCode" placeholder="Enter code (e.g. WELCOME100)">
+                        <button class="redeem-btn" onclick="redeemCoupon()">Redeem</button>
+                    </div>
+                    <p id="couponMessage" style="font-size: 12px; margin-top: 10px; display: none;"></p>
                 </div>
             </div>
 

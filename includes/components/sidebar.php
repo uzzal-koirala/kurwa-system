@@ -70,6 +70,10 @@ $user_avatar = !empty($_SESSION['profile_picture']) ? '/Kurwa/kurwa-system/' . $
             <i class="ri-restaurant-2-line"></i>
             <span>Food Orders</span>
         </a>
+        <a href="my_orders.php" class="menu-item <?php echo($current_page === 'my_orders') ? 'active' : ''; ?>">
+            <i class="ri-shopping-bag-3-fill"></i>
+            <span>My Orders</span>
+        </a>
         <a href="medicine_orders.php" class="menu-item <?php echo($current_page === 'medicine_orders') ? 'active' : ''; ?>">
             <i class="ri-capsule-line"></i>
             <span>Order Medicines</span>
