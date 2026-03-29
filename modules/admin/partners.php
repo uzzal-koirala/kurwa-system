@@ -81,7 +81,7 @@ $canteens = $conn->query("SELECT * FROM canteens ORDER BY id DESC");
                     <?php while($c = $canteens->fetch_assoc()): ?>
                     <tr>
                         <td style="font-weight:700;"><?= htmlspecialchars($c['name']) ?></td>
-                        <td style="font-size:12px;"><?= htmlspecialchars($c['address']) ?></td>
+                        <td style="font-size:12px;"><?= htmlspecialchars($c['address'] ?? $c['type'] ?? 'N/A') ?></td>
                         <td><button style="background:none; border:none; color:var(--success); cursor:pointer;"><i class="ri-settings-4-line"></i></button></td>
                     </tr>
                     <?php endwhile; ?>

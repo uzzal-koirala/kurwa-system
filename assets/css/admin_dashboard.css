@@ -14,10 +14,14 @@
     --success: #22c55e;
 }
 
+body.admin-body,
+body.admin-body *:not(i):not([class^="ri-"]):not([class*=" ri-"]) {
+    font-family: 'Poppins', sans-serif !important;
+}
+
 body.admin-body {
     background-color: var(--admin-bg);
     color: var(--admin-text);
-    font-family: 'Poppins', sans-serif;
     margin: 0;
     overflow-x: hidden;
 }
