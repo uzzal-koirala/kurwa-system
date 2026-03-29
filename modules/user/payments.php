@@ -114,6 +114,26 @@ if ($tx_stmt) {
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .card-holder { font-size: 14px; text-transform: uppercase; font-weight: 500; margin-top: 5px; opacity: 0.9; }
+
+        .btn-transfer-trigger {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-transfer-trigger:hover {
+            background: white;
+            color: #3542f3;
+        }
     </style>
 </head>
 <body>
@@ -144,7 +164,14 @@ if ($tx_stmt) {
                     <?php endif; ?>
                     
                     <div class="balance-header">
-                        <div class="chip-icon"></div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="chip-icon"></div>
+                            <?php if ($kurwa_pay_active): ?>
+                            <button class="btn-transfer-trigger" onclick="openTransferModal()">
+                                <i class="ri-swap-line"></i> Transfer
+                            </button>
+                            <?php endif; ?>
+                        </div>
                         <div class="brand-logo">KURWA PAY</div>
                     </div>
                     <div class="balance-body">
@@ -168,20 +195,6 @@ if ($tx_stmt) {
                         <button class="redeem-btn" onclick="redeemCoupon()">Redeem</button>
                     </div>
                     <p id="couponMessage" style="font-size: 12px; margin-top: 10px; display: none;"></p>
-                </div>
-
-                <!-- Transfer Money Section (Third Row) -->
-                <div class="transfer-section" style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); margin-top: 20px;">
-                    <h3 style="margin-top:0; color:#0f172a; margin-bottom:5px;"><i class="ri-swap-line" style="color:#2F3CFF; margin-right:5px;"></i> Transfer Money</h3>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Send money to another user instantly using their 10-digit card number.</p>
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                        <input type="text" id="transferCard" placeholder="Recipient 10-Digit Card" maxlength="10" style="padding:12px; border:1px solid #e2e8f0; border-radius:10px; font-family:inherit; font-weight:600; letter-spacing:1px; outline:none;" onfocus="this.style.borderColor='#3542f3';" onblur="this.style.borderColor='#e2e8f0';">
-                        <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:12px; color:#64748b; font-weight:600;">Rs.</span>
-                            <input type="number" id="transferAmount" placeholder="Amount" min="10" style="width:100%; padding:12px 12px 12px 40px; border:1px solid #e2e8f0; border-radius:10px; font-family:inherit; outline:none;" onfocus="this.style.borderColor='#3542f3';" onblur="this.style.borderColor='#e2e8f0';">
-                        </div>
-                        <button class="transfer-btn" id="btnSendMoney" onclick="initiateTransfer()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; padding:14px; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-size:15px; box-shadow:0 4px 10px rgba(16,185,129,0.3);"><i class="ri-send-plane-fill"></i> Send Money</button>
-                    </div>
                 </div>
             </div>
 
@@ -388,6 +401,34 @@ if ($tx_stmt) {
     </div>
 </div>
 
+<!-- Transfer Money Modal -->
+<div id="transferModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:24px; width:100%; max-width:400px; text-align:center; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
+        <div style="width:60px; height:60px; background:#eff6ff; color:#2F3CFF; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 15px;">
+            <i class="ri-swap-line"></i>
+        </div>
+        <h2 style="margin-bottom:5px; color:#0f172a; font-size:22px;">Transfer Money</h2>
+        <p style="color:#64748b; font-size:13px; margin-bottom:25px;">Send money to another Kurwa Pay user instantly.</p>
+        
+        <div style="display:flex; flex-direction:column; gap:15px; text-align:left;">
+            <div>
+                <label style="font-size:12px; font-weight:600; color:#475569; margin-bottom:5px; display:block;">Recipient 10-Digit Card</label>
+                <input type="text" id="transferCard" placeholder="e.g. 5194028133" maxlength="10" style="width:100%; padding:14px; border:1px solid #e2e8f0; border-radius:12px; font-family:inherit; font-weight:600; letter-spacing:1px; outline:none;" onfocus="this.style.borderColor='#3542f3';" onblur="this.style.borderColor='#e2e8f0';">
+            </div>
+            <div>
+                <label style="font-size:12px; font-weight:600; color:#475569; margin-bottom:5px; display:block;">Amount (Rs.)</label>
+                <div style="position:relative;">
+                    <span style="position:absolute; left:14px; top:14px; color:#64748b; font-weight:600;">Rs.</span>
+                    <input type="number" id="transferAmount" placeholder="0.00" min="10" style="width:100%; padding:14px 14px 14px 45px; border:1px solid #e2e8f0; border-radius:12px; font-family:inherit; font-weight:600; outline:none;" onfocus="this.style.borderColor='#3542f3';" onblur="this.style.borderColor='#e2e8f0';">
+                </div>
+            </div>
+        </div>
+        
+        <button class="transfer-btn" id="btnSendMoney" onclick="initiateTransfer()" style="width:100%; margin-top:25px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; padding:16px; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-size:16px; box-shadow:0 6px 15px rgba(16,185,129,0.3);"><i class="ri-send-plane-fill"></i> Send Money</button>
+        <button onclick="document.getElementById('transferModal').style.display='none'" style="width:100%; margin-top:10px; background:transparent; color:#64748b; border:1px solid #e2e8f0; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='#f8fafc'">Cancel</button>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     function setAmount(amount) {
@@ -573,6 +614,12 @@ if ($tx_stmt) {
         document.getElementById('activationModal').style.display = 'flex';
     }
 
+    function openTransferModal() {
+        document.getElementById('transferCard').value = '';
+        document.getElementById('transferAmount').value = '';
+        document.getElementById('transferModal').style.display = 'flex';
+    }
+
     function confirmActivateKurwaPay() {
         const btn = document.getElementById('btnConfirmActivate');
         const origText = btn.innerHTML;
@@ -642,6 +689,8 @@ if ($tx_stmt) {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                // Hide transfer modal
+                document.getElementById('transferModal').style.display = 'none';
                 // Show OTP modal
                 document.getElementById('confirmTransferAmount').innerText = parseFloat(amount).toLocaleString();
                 document.getElementById('confirmTransferName').innerText = data.recipient_name;
