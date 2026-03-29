@@ -8,7 +8,10 @@ $user_name = $_SESSION['full_name'];
 
 // Fetch pharmacies linked to user's hospital
 $hospital_id = $_SESSION['hospital_id'];
-$pharmacies_sql = "SELECT * FROM pharmacies WHERE status = 'open' AND hospital_id = $hospital_id ORDER BY rating DESC";
+$pharmacies_sql = "SELECT id, name, address, image_url, status, rating, delivery_time, opening_time, closing_time 
+                  FROM pharmacies 
+                  WHERE status = 'open' AND hospital_id = $hospital_id 
+                  ORDER BY rating DESC";
 $pharmacies_res = $conn->query($pharmacies_sql);
 ?>
 <!DOCTYPE html>
@@ -22,6 +25,11 @@ $pharmacies_res = $conn->query($pharmacies_sql);
     <link rel="stylesheet" href="../../assets/css/medicine_order.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .closed-vendor { opacity: 0.7; filter: grayscale(0.6); cursor: not-allowed !important; }
+        .status-badge.status-closed { background: #ef4444; }
+        .status-badge.status-open { background: #22c55e; }
+    </style>
 </head>
 <body>
 
@@ -50,13 +58,23 @@ $pharmacies_res = $conn->query($pharmacies_sql);
         </div>
 
         <div class="pharmacy-grid" id="pharmacyGrid">
-            <?php while($p = $pharmacies_res->fetch_assoc()): ?>
-            <div class="pharmacy-card" data-name="<?= strtolower(htmlspecialchars($p['name'])) ?>" onclick="openUploadModal(<?= $p['id'] ?>, '<?= htmlspecialchars($p['name']) ?>')">
+            <?php while($p = $pharmacies_res->fetch_assoc()): 
+                $curr_time = date('H:i:s');
+                $is_open = ($curr_time >= $p['opening_time'] && $curr_time <= $p['closing_time']);
+                $status_text = $is_open ? 'Open' : 'Closed';
+                $status_class = $is_open ? 'status-open' : 'status-closed';
+                $click_action = $is_open ? "openUploadModal({$p['id']}, '" . addslashes($p['name']) . "')" : "alert('This pharmacy is currently closed. It operates from " . date('h:i A', strtotime($p['opening_time'])) . " to " . date('h:i A', strtotime($p['closing_time'])) . ".');";
+            ?>
+            <div class="pharmacy-card <?= !$is_open ? 'closed-vendor' : '' ?>" data-name="<?= strtolower(htmlspecialchars($p['name'])) ?>" onclick="<?= $click_action ?>">
                 <button class="view-profile-btn" onclick="goToProfile(event, <?= $p['id'] ?>)" title="View Store Profile">
                     <i class="ri-eye-line"></i>
                 </button>
                 <div class="pharmacy-image">
-                    <img src="<?= $p['image_url'] ?>" alt="<?= htmlspecialchars($p['name']) ?>">
+                    <?php 
+                        $img = !empty($p['image_url']) ? '../../'.$p['image_url'] : 'https://images.unsplash.com/photo-1576602976047-174e57a47881?w=500&q=80';
+                    ?>
+                    <img src="<?= $img ?>" alt="<?= htmlspecialchars($p['name']) ?>">
+                    <span class="status-badge <?= $status_class ?>" style="position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: white;"><?= $status_text ?></span>
                 </div>
                 <div class="pharmacy-info">
                     <h3><?= htmlspecialchars($p['name']) ?></h3>

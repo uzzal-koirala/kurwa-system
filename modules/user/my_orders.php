@@ -277,13 +277,17 @@ if ($orders_res && $orders_res->num_rows > 0) {
                 if(data.success) {
                     let html = '';
                     data.items.forEach(item => {
+                        let noteHtml = item.special_notes ? `<div style="font-size:11px; color:#ef4444; font-weight:600; margin-top:4px; padding:4px 8px; background:#fff5f5; border-radius:6px; display:inline-block;"><i class="ri-information-line"></i> Note: ${item.special_notes}</div>` : '';
                         html += `
-                        <div class="receipt-item">
-                            <div class="item-info">
-                                <span class="item-name">${item.name || 'Custom Item'}</span>
-                                <span class="item-meta">Qty: ${item.quantity} • Rs. ${parseFloat(item.price).toLocaleString()} each</span>
+                        <div class="receipt-item" style="flex-direction:column; align-items:flex-start; gap:0;">
+                            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                                <div class="item-info">
+                                    <span class="item-name">${item.name || 'Custom Item'}</span>
+                                    <span class="item-meta">Qty: ${item.quantity} • Rs. ${parseFloat(item.price).toLocaleString()} each</span>
+                                </div>
+                                <span class="item-price">Rs. ${(item.quantity * item.price).toLocaleString()}</span>
                             </div>
-                            <span class="item-price">Rs. ${(item.quantity * item.price).toLocaleString()}</span>
+                            ${noteHtml}
                         </div>`;
                     });
                     itemsContainer.innerHTML = html;

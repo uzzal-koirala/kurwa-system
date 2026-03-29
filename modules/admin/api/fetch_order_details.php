@@ -4,23 +4,27 @@ require_once INC_PATH . '/core/auth_check.php';
 
 header('Content-Type: application/json');
 
+if ($_SESSION['role'] !== 'admin') {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
 $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
-$user_id = $_SESSION['user_id'];
 
 if ($order_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'Invalid order ID']);
     exit;
 }
 
-// 1. Verify this order belongs to the user
-$verify_sql = "SELECT id, delivery_lat, delivery_lng FROM restaurant_orders WHERE id = $order_id AND user_id = $user_id";
-$verify_res = $conn->query($verify_sql);
+// 1. Fetch order metadata
+$order_sql = "SELECT id, special_notes as overall_notes FROM restaurant_orders WHERE id = $order_id";
+$order_res = $conn->query($order_sql);
 
-if (!$verify_res || $verify_res->num_rows === 0) {
-    echo json_encode(['success' => false, 'message' => 'Order not found or unauthorized']);
+if (!$order_res || $order_res->num_rows === 0) {
+    echo json_encode(['success' => false, 'message' => 'Order not found']);
     exit;
 }
-$order_data = $verify_res->fetch_assoc();
+$order_data = $order_res->fetch_assoc();
 
 // 2. Fetch items 
 $items_sql = "
@@ -49,8 +53,7 @@ if ($items_res && $items_res->num_rows > 0) {
 
 echo json_encode([
     'success' => true,
-    'delivery_lat' => $order_data['delivery_lat'],
-    'delivery_lng' => $order_data['delivery_lng'],
+    'overall_notes' => $order_data['overall_notes'],
     'items' => $items
 ]);
 ?>

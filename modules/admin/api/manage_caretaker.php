@@ -24,6 +24,15 @@ if ($action === 'add' || $action === 'edit') {
     $patients = (int)($_POST['patients_helped'] ?? 0);
     $about = $conn->real_escape_string($_POST['about_text']);
     $video_url = $conn->real_escape_string($_POST['video_url']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $pass_raw = $_POST['password'] ?? '';
+    $location_id = (int)($_POST['location_id'] ?? 0);
+    $hospital_id = (int)($_POST['hospital_id'] ?? 0);
+    $opening_time = $conn->real_escape_string($_POST['opening_time'] ?? '09:00:00');
+    $closing_time = $conn->real_escape_string($_POST['closing_time'] ?? '21:00:00');
+    
+    // Convert phone_number from form to phone for DB consistency
+    $phone = $phone_number; 
     
     // Existing image URL (fallback)
     $image_url = $_POST['image_url'] ?? '';
@@ -50,23 +59,36 @@ if ($action === 'add' || $action === 'edit') {
     }
 
     if ($action === 'add') {
-        $sql = "INSERT INTO caretakers (full_name, phone_number, hospital_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, image_url, video_url) 
-                VALUES ('$full_name', '$phone_number', '$hospital_name', '$category', '$specialization', $rating, $experience, $price, $patients, '$about', '$image_url', '$video_url')";
+        $hashed_pass = password_hash($pass_raw, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO caretakers (full_name, phone, email, password, hospital_name, category, specialization, rating, experience_years, price_per_day, location_id, hospital_id, patients_helped, about_text, image_url, video_url, verified, status, opening_time, closing_time) 
+                VALUES ('$full_name', '$phone', '$email', '$hashed_pass', '$hospital_name', '$category', '$specialization', $rating, $experience, $price, $location_id, $hospital_id, $patients, '$about', '$image_url', '$video_url', 1, 'approved', '$opening_time', '$closing_time')";
     } else {
         $id = (int)$_POST['id'];
+        $pass_update = "";
+        if (!empty($pass_raw)) {
+            $hashed_pass = password_hash($pass_raw, PASSWORD_DEFAULT);
+            $pass_update = ", password = '$hashed_pass'";
+        }
+
         $sql = "UPDATE caretakers SET 
                 full_name = '$full_name', 
-                phone_number = '$phone_number',
+                phone = '$phone',
+                email = '$email',
                 hospital_name = '$hospital_name',
                 category = '$category', 
                 specialization = '$specialization', 
                 rating = $rating, 
                 experience_years = $experience, 
                 price_per_day = $price, 
+                location_id = $location_id,
+                hospital_id = $hospital_id,
                 patients_helped = $patients, 
                 about_text = '$about', 
                 image_url = '$image_url',
-                video_url = '$video_url'
+                video_url = '$video_url',
+                opening_time = '$opening_time',
+                closing_time = '$closing_time'
+                $pass_update
                 WHERE id = $id";
     }
 

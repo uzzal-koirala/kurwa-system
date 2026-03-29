@@ -7,7 +7,7 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$current_page = "caretakers"; // We use the same side-link, but we filter for pending
+$current_page = "caretaker_approvals";
 
 // Fetch pending caretakers
 $pending = $conn->query("SELECT * FROM caretakers WHERE onboarding_completed = 1 AND status = 'pending' ORDER BY created_at DESC");

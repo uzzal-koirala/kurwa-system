@@ -51,7 +51,7 @@ $admin_role = 'System Control';
             <span>Control Center</span>
         </a>
 
-        <span class="menu-label">Management</span>
+        <span class="menu-label">Databases</span>
         
         <a href="users.php" class="menu-item <?php echo($current_page === 'users') ? 'active' : ''; ?>">
             <i class="ri-group-line"></i>
@@ -59,7 +59,19 @@ $admin_role = 'System Control';
         </a>
         <a href="caretakers.php" class="menu-item <?php echo($current_page === 'caretakers') ? 'active' : ''; ?>">
             <i class="ri-heart-pulse-line"></i>
-            <span>Expert Directory</span>
+            <span>Caretaker Database</span>
+        </a>
+        <a href="restaurants.php" class="menu-item <?php echo($current_page === 'restaurants') ? 'active' : ''; ?>">
+            <i class="ri-restaurant-line"></i>
+            <span>Canteen Database</span>
+        </a>
+        <a href="pharmacies.php" class="menu-item <?php echo($current_page === 'pharmacies') ? 'active' : ''; ?>">
+            <i class="ri-medicine-bottle-line"></i>
+            <span>Pharmacy Database</span>
+        </a>
+        <a href="hospitals.php" class="menu-item <?php echo($current_page === 'hospitals') ? 'active' : ''; ?>">
+            <i class="ri-hospital-line"></i>
+            <span>Hospital Database</span>
         </a>
         <a href="caretaker_approvals.php" class="menu-item <?php echo($current_page === 'caretaker_approvals') ? 'active' : ''; ?>">
             <i class="ri-checkbox-circle-line"></i>
@@ -69,25 +81,15 @@ $admin_role = 'System Control';
             <i class="ri-bookmark-3-line"></i>
             <span>Expert Categories</span>
         </a>
-        <a href="partners.php" class="menu-item <?php echo($current_page === 'partners') ? 'active' : ''; ?>">
-            <i class="ri-store-2-line"></i>
-            <span>Partners & Stores</span>
+        <a href="locations.php" class="menu-item <?php echo($current_page === 'locations') ? 'active' : ''; ?>">
+            <i class="ri-map-pin-2-line"></i>
+            <span>Service Locations</span>
         </a>
         <a href="orders.php" class="menu-item <?php echo($current_page === 'orders') ? 'active' : ''; ?>">
             <i class="ri-exchange-funds-line"></i>
             <span>Global Orders</span>
         </a>
 
-        <span class="menu-label">Administration</span>
-        
-        <a href="reports.php" class="menu-item <?php echo($current_page === 'reports') ? 'active' : ''; ?>">
-            <i class="ri-pie-chart-2-line"></i>
-            <span>System Reports</span>
-        </a>
-        <a href="settings.php" class="menu-item <?php echo($current_page === 'settings') ? 'active' : ''; ?>">
-            <i class="ri-settings-4-line"></i>
-            <span>Global Settings</span>
-        </a>
     </div>
 
     <div class="sidebar-footer">

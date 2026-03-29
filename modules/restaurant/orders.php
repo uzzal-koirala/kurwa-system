@@ -257,6 +257,7 @@ $orders = $conn->query($query);
                                     <option value="cancelled" <?= $o['status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
                                 </select>
                                 <button type="submit" class="btn-update">Save</button>
+                                <button type="button" onclick="viewOrderItems(<?= $o['id'] ?>, '<?= str_pad($o['id'], 5, '0', STR_PAD_LEFT) ?>')" style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.2); color:#2563eb; width:42px; border-radius:10px; cursor:pointer;"><i class="ri-eye-line"></i></button>
                             </form>
                         </td>
                     </tr>
@@ -272,8 +273,72 @@ $orders = $conn->query($query);
         <?php endif; ?>
     </div>
 </div>
+</div>
+
+<!-- Order Items Modal -->
+<div id="itemsModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:35px; border-radius:24px; width:100%; max-width:500px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); position:relative;">
+        <h2 style="margin:0 0 10px 0; color:#0f172a; font-size:22px; font-weight:800;">Order #ORD-<span id="m_order_id">00000</span></h2>
+        <p style="color:#64748b; font-size:14px; margin-bottom:25px;">Review the items and special requests for this order.</p>
+        
+        <div id="m_items_container" style="max-height:400px; overflow-y:auto; margin-bottom:25px;">
+            <!-- Items will be injected here -->
+        </div>
+
+        <div id="m_overall_notes" style="display:none; padding:15px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:20px;">
+            <strong style="display:block; font-size:12px; color:#475569; margin-bottom:5px;"><i class="ri-sticky-note-line"></i> Overall Order Note:</strong>
+            <p id="m_overall_notes_text" style="margin:0; font-size:13px; color:#1e293b; line-height:1.5;"></p>
+        </div>
+
+        <button onclick="document.getElementById('itemsModal').style.display='none'" style="width:100%; background:#f1f5f9; color:#475569; border:none; padding:14px; border-radius:12px; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='#e2e8f0'">Close View</button>
+    </div>
+</div>
 
 <script src="../../assets/js/sidebar.js"></script>
+<script>
+async function viewOrderItems(id, displayId) {
+    const modal = document.getElementById('itemsModal');
+    const container = document.getElementById('m_items_container');
+    const overallNotesDiv = document.getElementById('m_overall_notes');
+    const overallNotesText = document.getElementById('m_overall_notes_text');
+    
+    document.getElementById('m_order_id').innerText = displayId;
+    container.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b;"><i class="ri-loader-4-line ri-spin" style="font-size:24px;"></i><br>Loading items...</div>';
+    overallNotesDiv.style.display = 'none';
+    modal.style.display = 'flex';
+
+    try {
+        const res = await fetch(`handlers/fetch_order_details.php?order_id=${id}`);
+        const data = await res.json();
+        
+        if(data.success) {
+            let html = '';
+            data.items.forEach(item => {
+                let noteHtml = item.special_notes ? `<div style="margin-top:8px; padding:8px 12px; background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; color:#e11d48; font-size:12px; font-weight:600;"><i class="ri-information-line"></i> Request: ${item.special_notes}</div>` : '';
+                html += `
+                <div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; flex-direction:column; gap:5px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:700; color:#0f172a; font-size:15px;">${item.quantity}x ${item.name}</span>
+                        <span style="font-weight:800; color:#1e293b; font-size:14px;">Rs. ${(item.quantity * item.price).toLocaleString()}</span>
+                    </div>
+                    ${noteHtml}
+                </div>`;
+            });
+            container.innerHTML = html;
+
+            if(data.overall_notes) {
+                overallNotesText.innerText = data.overall_notes;
+                overallNotesDiv.style.display = 'block';
+            }
+        } else {
+            container.innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444;">${data.message}</div>`;
+        }
+    } catch(err) {
+        console.error(err);
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444;">Failed to fetch order details.</div>`;
+    }
+}
+</script>
 <?php if(isset($_GET['success'])): ?>
 <script>
     Swal.fire({

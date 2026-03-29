@@ -6,9 +6,12 @@ $current_page = 'food_orders';
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['full_name'];
 
-// Fetch canteens linked to user's hospital
+// Fetch canteens (managed in restaurants table) linked to user's hospital
 $hospital_id = $_SESSION['hospital_id'];
-$canteens_sql = "SELECT * FROM canteens WHERE status = 'open' AND hospital_id = $hospital_id ORDER BY rating DESC";
+$canteens_sql = "SELECT id, name, image_url, status, rating, opening_time, closing_time, 'Canteen' as type, '15-20 min' as delivery_time 
+                FROM restaurants 
+                WHERE status = 'active' AND hospital_id = $hospital_id 
+                ORDER BY rating DESC";
 $canteens_res = $conn->query($canteens_sql);
 ?>
 <!DOCTYPE html>
@@ -239,6 +242,102 @@ $canteens_res = $conn->query($canteens_sql);
             box-shadow: 0 0 0 3px rgba(53, 66, 243, 0.15);
             background: #ffffff;
         }
+
+        .closed-vendor { opacity: 0.7; filter: grayscale(0.5); cursor: not-allowed !important; }
+        .canteen-status.status-closed { background: #ef4444; }
+        .canteen-status.status-open { background: #22c55e; }
+
+        /* Store Closed Modal CSS */
+        .closed-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .closed-modal-card {
+            background: white;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            animation: cardPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardPop {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .closed-icon-ctn {
+            width: 90px;
+            height: 90px;
+            background: #fff7ed;
+            color: #f97316;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 25px;
+            border: 2px solid #ffedd5;
+            position: relative;
+        }
+
+        .closed-icon-ctn::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 2px solid #fff7ed;
+            border-radius: 50%;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .closed-time-badge {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .closed-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .closed-btn:hover {
+            background: #334155;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -278,12 +377,22 @@ $canteens_res = $conn->query($canteens_sql);
                 <?php 
                 $canteens_res->data_seek(0);
                 while($canteen = $canteens_res->fetch_assoc()): 
+                    $curr_time = date('H:i:s');
+                    $is_open = ($curr_time >= $canteen['opening_time'] && $curr_time <= $canteen['closing_time']);
+                    $status_text = $is_open ? 'Open' : 'Closed';
+                    $status_class = $is_open ? 'status-open' : 'status-closed';
+                    $open_fmt = date('h:i A', strtotime($canteen['opening_time']));
+                    $close_fmt = date('h:i A', strtotime($canteen['closing_time']));
+                    $click_action = $is_open ? "loadMenu({$canteen['id']}, '" . addslashes($canteen['name']) . "')" : "showClosedModal('" . addslashes($canteen['name']) . "', '$open_fmt', '$close_fmt')";
                 ?>
-                <div class="canteen-card" data-name="<?= strtolower(htmlspecialchars($canteen['name'])) ?>" onclick="loadMenu(<?= $canteen['id'] ?>, '<?= htmlspecialchars($canteen['name']) ?>')">
+                <div class="canteen-card <?= !$is_open ? 'closed-vendor' : '' ?>" data-name="<?= strtolower(htmlspecialchars($canteen['name'])) ?>" onclick="<?= $click_action ?>">
                     <div class="canteen-img-wrapper">
-                        <img src="<?= $canteen['image_url'] ?>" alt="<?= htmlspecialchars($canteen['name']) ?>">
+                        <?php 
+                            $img = !empty($canteen['image_url']) ? '../../'.$canteen['image_url'] : 'https://images.unsplash.com/photo-1517248135467-4c7ed9d42339?w=500&q=80';
+                        ?>
+                        <img src="<?= $img ?>" alt="<?= htmlspecialchars($canteen['name']) ?>">
                         <span class="canteen-badge"><?= htmlspecialchars($canteen['type']) ?></span>
-                        <span class="canteen-status">Open</span>
+                        <span class="canteen-status <?= $status_class ?>"><?= $status_text ?></span>
                     </div>
                     <div class="canteen-info">
                         <h3><?= htmlspecialchars($canteen['name']) ?></h3>
@@ -339,6 +448,24 @@ $canteens_res = $conn->query($canteens_sql);
     <span id="cartCount">0 Items</span>
     <span class="divider">|</span>
     <span id="cartTotal">Rs. 0</span>
+</div>
+
+<!-- Store Closed Modal -->
+<div id="closedModal" class="closed-modal-overlay">
+    <div class="closed-modal-card">
+        <div class="closed-icon-ctn">
+            <i class="ri-time-line"></i>
+        </div>
+        <h2 id="closedStoreName" style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Canteen Closed</h2>
+        <p style="color: #64748b; font-size: 15px; line-height: 1.5;">This canteen is currently off-duty and not accepting new orders at this moment.</p>
+        
+        <div class="closed-time-badge">
+            <i class="ri-calendar-todo-line" style="color: #f97316;"></i>
+            <span>Hours: <span id="closedOperatingHours">08:00 AM - 10:00 PM</span></span>
+        </div>
+
+        <button onclick="closeClosedModal()" class="closed-btn">Understood</button>
+    </div>
 </div>
 
 <!-- Cart Sidebar overlay -->
@@ -409,6 +536,18 @@ $canteens_res = $conn->query($canteens_sql);
     let currentView = 'canteens';
     let checkoutMap = null;
     let checkoutMarker = null;
+
+    }
+
+    function showClosedModal(name, openTime, closeTime) {
+        document.getElementById('closedStoreName').innerText = name + ' is Closed';
+        document.getElementById('closedOperatingHours').innerText = `${openTime} - ${closeTime}`;
+        document.getElementById('closedModal').style.display = 'flex';
+    }
+
+    function closeClosedModal() {
+        document.getElementById('closedModal').style.display = 'none';
+    }
 
     function reverseGeocode(lat, lng) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
@@ -793,6 +932,16 @@ $canteens_res = $conn->query($canteens_sql);
             submitBtn.innerHTML = '<i class="ri-checkbox-circle-line"></i> Place Order';
             submitBtn.disabled = false;
         }
+    }
+
+    function showClosedModal(name, openTime, closeTime) {
+        document.getElementById('closedStoreName').innerText = name + ' is Closed';
+        document.getElementById('closedOperatingHours').innerText = `${openTime} - ${closeTime}`;
+        document.getElementById('closedModal').style.display = 'flex';
+    }
+
+    function closeClosedModal() {
+        document.getElementById('closedModal').style.display = 'none';
     }
 </script>
 </body>
