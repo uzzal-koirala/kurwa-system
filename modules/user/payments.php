@@ -336,6 +336,21 @@ if ($tx_stmt) {
     </div>
 </div>
 
+<!-- Activation Modal -->
+<div id="activationModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:35px 30px; border-radius:24px; width:100%; max-width:380px; text-align:center; box-shadow: 0 25px 50px rgba(0,0,0,0.25); position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-50px; left:-50px; width:150px; height:150px; background:linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(58, 12, 163, 0.1) 100%); border-radius:50%;"></div>
+        <div style="width:70px; height:70px; background:linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 20px; box-shadow:0 10px 20px rgba(67, 97, 238, 0.3); position:relative; z-index:2;">
+            <i class="ri-flashlight-fill"></i>
+        </div>
+        <h2 style="margin-bottom:12px; color:#0f172a; font-size:22px; font-weight:700; position:relative; z-index:2;">Activate Kurwa Pay?</h2>
+        <p style="color:#475569; font-size:14px; margin-bottom:25px; line-height:1.6; position:relative; z-index:2;">A one-time activation fee of <strong>Rs. 500</strong> will be seamlessly deducted from your wallet to instantly unlock your premium virtual card.</p>
+        
+        <button onclick="confirmActivateKurwaPay()" id="btnConfirmActivate" style="width:100%; background:linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color:white; padding:15px; border:none; border-radius:12px; font-weight:700; font-size:16px; cursor:pointer; margin-bottom:12px; box-shadow:0 6px 15px rgba(67, 97, 238, 0.3); transition:0.3s; position:relative; z-index:2;"><i class="ri-checkbox-circle-line"></i> Confirm Activation</button>
+        <button onclick="document.getElementById('activationModal').style.display='none'" style="width:100%; background:transparent; color:#64748b; border:1px solid #e2e8f0; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; transition:0.2s; position:relative; z-index:2;" onmouseover="this.style.background='#f8fafc'">Cancel</button>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     function setAmount(amount) {
@@ -496,9 +511,11 @@ if ($tx_stmt) {
     FormatDisplayBalance = (bal) => parseFloat(bal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     function activateKurwaPay() {
-        if(!confirm("Are you sure you want to activate the Kurwa Pay Card? A one-time fee of Rs. 500 will be deducted from your wallet.")) return;
+        document.getElementById('activationModal').style.display = 'flex';
+    }
 
-        const btn = document.getElementById('btnActivate');
+    function confirmActivateKurwaPay() {
+        const btn = document.getElementById('btnConfirmActivate');
         const origText = btn.innerHTML;
         btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Processing...';
         btn.disabled = true;
