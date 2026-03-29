@@ -80,19 +80,21 @@ try {
     if (!$upd_r->execute()) throw new Exception("Failed to add to recipient.");
     
     // 4. Record transactions
-    $tx_id = 'TXN_' . strtoupper(uniqid());
+    $tx_id_base = 'TXN_' . strtoupper(uniqid());
     
     $desc_sender = "Transfer Sent to " . $recipient['full_name'] . " (" . $recipient_card . ")";
     $amt_s = -$amount;
+    $tx_id_s = $tx_id_base . "_S";
     $tx_stmt_s = $conn->prepare("INSERT INTO transactions (user_id, amount, type, status, transaction_id, description) VALUES (?, ?, 'payment', 'completed', ?, ?)");
-    $tx_stmt_s->bind_param("idss", $user_id, $amt_s, $tx_id, $desc_sender);
-    if (!$tx_stmt_s->execute()) throw new Exception("Failed to log sender transaction.");
+    $tx_stmt_s->bind_param("idss", $user_id, $amt_s, $tx_id_s, $desc_sender);
+    if (!$tx_stmt_s->execute()) throw new Exception("Failed to log sender transaction: " . $tx_stmt_s->error);
     
     $desc_rcvr = "Transfer Received from " . $sender['full_name'] . " (" . $sender['kurwa_pay_card_number'] . ")";
     $amt_r = $amount;
+    $tx_id_r = $tx_id_base . "_R";
     $tx_stmt_r = $conn->prepare("INSERT INTO transactions (user_id, amount, type, status, transaction_id, description) VALUES (?, ?, 'topup', 'completed', ?, ?)");
-    $tx_stmt_r->bind_param("idss", $recipient_id, $amt_r, $tx_id, $desc_rcvr);
-    if (!$tx_stmt_r->execute()) throw new Exception("Failed to log receiver transaction.");
+    $tx_stmt_r->bind_param("idss", $recipient_id, $amt_r, $tx_id_r, $desc_rcvr);
+    if (!$tx_stmt_r->execute()) throw new Exception("Failed to log receiver transaction: " . $tx_stmt_r->error);
     
     $conn->commit();
     unset($_SESSION['pending_transfer']);
