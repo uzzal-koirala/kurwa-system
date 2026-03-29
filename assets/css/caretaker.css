@@ -137,6 +137,7 @@
     transition: var(--transition);
     white-space: nowrap;
     box-shadow: var(--card-shadow);
+    font-family: 'Poppins', sans-serif;
 }
 
 .category-card i {

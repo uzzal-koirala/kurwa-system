@@ -2,6 +2,9 @@
 require_once '../../includes/core/config.php';
 require_once '../../includes/core/auth_check.php';
 $current_page = 'caretakers';
+
+// Fetch dynamic categories
+$categories_res = $conn->query("SELECT * FROM caretaker_categories ORDER BY name ASC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,23 +55,14 @@ $current_page = 'caretakers';
                     <i class="ri-grid-fill"></i>
                     <span>All</span>
                 </button>
-                <button class="category-card" data-category="General Care">
-                    <i class="ri-user-heart-line"></i>
-                    <span>General Care</span>
-                </button>
-                <button class="category-card" data-category="Elderly Care">
-                    <i class="ri-wheelchair-line"></i>
-                    <span>Elderly Care</span>
-                </button>
-                <button class="category-card" data-category="Post-Surgery">
-                    <i class="ri-heart-pulse-line"></i>
-                    <span>Post-Surgery</span>
-                </button>
-                <button class="category-card" data-category="Special Needs">
-                    <i class="ri-mental-health-line"></i>
-                    <span>Special Needs</span>
-                </button>
-
+                <?php if ($categories_res && $categories_res->num_rows > 0): ?>
+                    <?php while($cat = $categories_res->fetch_assoc()): ?>
+                    <button class="category-card" data-category="<?= htmlspecialchars($cat['name']) ?>">
+                        <i class="ri-user-heart-line"></i>
+                        <span><?= htmlspecialchars($cat['name']) ?></span>
+                    </button>
+                    <?php endwhile; ?>
+                <?php endif; ?>
             </div>
 
             <!-- section header -->

@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="caretaker-image">
                     <img src="${person.image_url || 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=600&q=80'}" alt="${person.full_name}">
-                    <span class="ct-role-badge"><i class="ri-user-heart-line"></i> Caretaker</span>
+                    <span class="ct-role-badge"><i class="ri-user-heart-line"></i> ${person.category || 'Caretaker'}</span>
                 </div>
                 <div class="caretaker-info">
                     <h3>${person.full_name}</h3>
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span><i class="ri-user-heart-line"></i> ${person.patients_helped}+ patients</span>
                     </div>
                     <div class="caretaker-bottom">
-                        <strong>Rs. ${parseFloat(person.price_per_day).toLocaleString()}/day</strong>
+                        <strong style="font-size: 14px;">Rs. ${parseFloat(person.price_per_day).toLocaleString()}/day</strong>
                         <button class="fav-icon" onclick="toggleFavorite(event, ${person.id})">
                             <i class="${person.is_favorite ? 'ri-heart-3-fill' : 'ri-heart-3-line'}"></i>
                         </button>
