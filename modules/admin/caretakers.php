@@ -137,6 +137,17 @@ $caretakers = $conn->query("SELECT * FROM caretakers ORDER BY created_at DESC");
                     <input type="text" name="specialization" id="f_specialization" required style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white;">
                 </div>
                 <div class="form-group">
+                    <label style="display:block; color:var(--admin-text-muted); font-size:12px; margin-bottom:5px;">Phone Number</label>
+                    <input type="text" name="phone_number" id="f_phone" required placeholder="e.g. 9800000000" style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white;">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:15px;">
+                <div class="form-group">
+                    <label style="display:block; color:var(--admin-text-muted); font-size:12px; margin-bottom:5px;">Hospital Name (Availability)</label>
+                    <input type="text" name="hospital_name" id="f_hospital" required style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white;">
+                </div>
+                <div class="form-group">
                     <label style="display:block; color:var(--admin-text-muted); font-size:12px; margin-bottom:5px;">Experience (Years)</label>
                     <input type="number" name="experience_years" id="f_experience" value="0" style="width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:10px; padding:10px; color:white;">
                 </div>
@@ -247,6 +258,8 @@ function openModal(mode, data = null) {
         document.getElementById('f_full_name').value = data.full_name;
         document.getElementById('f_category').value = data.category;
         document.getElementById('f_specialization').value = data.specialization;
+        document.getElementById('f_phone').value = data.phone_number || '';
+        document.getElementById('f_hospital').value = data.hospital_name || '';
         document.getElementById('f_experience').value = data.experience_years;
         document.getElementById('f_price').value = data.price_per_day;
         document.getElementById('f_patients').value = data.patients_helped;

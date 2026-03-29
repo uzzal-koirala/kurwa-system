@@ -21,8 +21,8 @@ if ($caretaker_id <= 0 || !$start_date || !$end_date) {
     exit;
 }
 
-// 1. Fetch caretaker price
-$stmt = $conn->prepare("SELECT full_name, price_per_day FROM caretakers WHERE id = ?");
+// 1. Fetch caretaker details
+$stmt = $conn->prepare("SELECT full_name, price_per_day, phone_number FROM caretakers WHERE id = ?");
 $stmt->bind_param("i", $caretaker_id);
 $stmt->execute();
 $ct = $stmt->get_result()->fetch_assoc();
@@ -59,10 +59,12 @@ $days = $interval->days + 1;
 $total_price = $days * $ct['price_per_day'];
 
 // 3. Check user balance
-$stmt = $conn->prepare("SELECT balance FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT full_name, balance FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$user_balance = $stmt->get_result()->fetch_assoc()['balance'];
+$user_res = $stmt->get_result()->fetch_assoc();
+$user_balance = $user_res['balance'];
+$user_name = $user_res['full_name'];
 
 if ($user_balance < $total_price) {
     echo json_encode(['success' => false, 'message' => 'Insufficient balance. Please top up your wallet. Total needed: Rs. ' . number_format($total_price)]);
@@ -91,6 +93,14 @@ try {
     $stmt->execute();
 
     $conn->commit();
+    
+    // D. Send SMS notification to caretaker
+    if (!empty($ct['phone_number'])) {
+        require_once '../../../includes/core/sms_helper.php';
+        $sms_msg = "Hello " . $ct['full_name'] . ", you have a new booking from " . $user_name . " from " . $start_date . " to " . $end_date . ". Total: Rs. " . number_format($total_price) . ". Please check your dashboard.";
+        send_sms($ct['phone_number'], $sms_msg);
+    }
+
     echo json_encode(['success' => true, 'message' => 'Booking successful! Your session is reserved.']);
 
 } catch (Exception $e) {

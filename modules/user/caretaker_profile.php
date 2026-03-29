@@ -249,6 +249,10 @@ $skills = [
                             <span class="value"><?= htmlspecialchars($caretaker['working_hours'] ?: 'Flexible') ?></span>
                         </li>
                         <li>
+                            <span class="label">Available At:</span>
+                            <span class="value"><?= htmlspecialchars($caretaker['hospital_name'] ?: 'Local Center') ?></span>
+                        </li>
+                        <li>
                             <span class="label">Rate:</span>
                             <span class="value price">Rs. <?= number_format($caretaker['price_per_day']) ?> / day</span>
                         </li>

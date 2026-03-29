@@ -16,6 +16,8 @@ if ($action === 'add' || $action === 'edit') {
     $full_name = $conn->real_escape_string($_POST['full_name']);
     $category = $conn->real_escape_string($_POST['category']);
     $specialization = $conn->real_escape_string($_POST['specialization']);
+    $phone_number = $conn->real_escape_string($_POST['phone_number']);
+    $hospital_name = $conn->real_escape_string($_POST['hospital_name']);
     $rating = (float)($_POST['rating'] ?? 0);
     $experience = (int)($_POST['experience_years'] ?? 0);
     $price = (float)($_POST['price_per_day'] ?? 0);
@@ -48,12 +50,14 @@ if ($action === 'add' || $action === 'edit') {
     }
 
     if ($action === 'add') {
-        $sql = "INSERT INTO caretakers (full_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, image_url, video_url) 
-                VALUES ('$full_name', '$category', '$specialization', $rating, $experience, $price, $patients, '$about', '$image_url', '$video_url')";
+        $sql = "INSERT INTO caretakers (full_name, phone_number, hospital_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, image_url, video_url) 
+                VALUES ('$full_name', '$phone_number', '$hospital_name', '$category', '$specialization', $rating, $experience, $price, $patients, '$about', '$image_url', '$video_url')";
     } else {
         $id = (int)$_POST['id'];
         $sql = "UPDATE caretakers SET 
                 full_name = '$full_name', 
+                phone_number = '$phone_number',
+                hospital_name = '$hospital_name',
                 category = '$category', 
                 specialization = '$specialization', 
                 rating = $rating, 
