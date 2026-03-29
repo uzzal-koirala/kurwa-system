@@ -35,11 +35,11 @@ $admin_role = 'System Control';
         </div>
         
         <button class="desktop-toggle" id="desktopSidebarToggle" aria-label="Toggle Sidebar">
-            <i class="ri-skip-back-line"></i>
+            <i class="ri-menu-4-line"></i>
         </button>
         
         <button class="close-sidebar" id="closeSidebar" aria-label="Close Sidebar">
-            <i class="ri-close-large-line"></i>
+            <i class="ri-menu-4-line"></i>
         </button>
     </div>
 
