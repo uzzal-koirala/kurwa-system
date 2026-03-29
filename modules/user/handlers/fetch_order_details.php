@@ -13,13 +13,14 @@ if ($order_id <= 0) {
 }
 
 // 1. Verify this order belongs to the user
-$verify_sql = "SELECT id FROM restaurant_orders WHERE id = $order_id AND user_id = $user_id";
+$verify_sql = "SELECT id, delivery_lat, delivery_lng FROM restaurant_orders WHERE id = $order_id AND user_id = $user_id";
 $verify_res = $conn->query($verify_sql);
 
 if (!$verify_res || $verify_res->num_rows === 0) {
     echo json_encode(['success' => false, 'message' => 'Order not found or unauthorized']);
     exit;
 }
+$order_data = $verify_res->fetch_assoc();
 
 // 2. Fetch items 
 $items_sql = "
@@ -46,6 +47,8 @@ if ($items_res && $items_res->num_rows > 0) {
 
 echo json_encode([
     'success' => true,
+    'delivery_lat' => $order_data['delivery_lat'],
+    'delivery_lng' => $order_data['delivery_lng'],
     'items' => $items
 ]);
 ?>

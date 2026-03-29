@@ -19,6 +19,9 @@ if (!$input) {
 $user_id = $_SESSION['user_id'];
 $restaurant_id = intval($input['restaurant_id']);
 $address = $conn->real_escape_string($input['delivery_address'] ?? '');
+$lat = isset($input['delivery_lat']) && $input['delivery_lat'] !== '' ? floatval($input['delivery_lat']) : null;
+$lng = isset($input['delivery_lng']) && $input['delivery_lng'] !== '' ? floatval($input['delivery_lng']) : null;
+$special_notes = $conn->real_escape_string($input['special_notes'] ?? '');
 $total_amount = floatval($input['total_amount']);
 $items = $input['items'] ?? [];
 
@@ -45,8 +48,8 @@ try {
     $conn->query("UPDATE users SET balance = $new_balance WHERE id = $user_id");
 
     // 1. Insert into restaurant_orders
-    $stmt = $conn->prepare("INSERT INTO restaurant_orders (restaurant_id, user_id, total_amount, status, delivery_address) VALUES (?, ?, ?, 'pending', ?)");
-    $stmt->bind_param("iids", $restaurant_id, $user_id, $total_amount, $address);
+    $stmt = $conn->prepare("INSERT INTO restaurant_orders (restaurant_id, user_id, total_amount, special_notes, status, delivery_address, delivery_lat, delivery_lng) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)");
+    $stmt->bind_param("iidssdd", $restaurant_id, $user_id, $total_amount, $special_notes, $address, $lat, $lng);
     if (!$stmt->execute()) {
         throw new Exception("Failed to create order record: " . $stmt->error);
     }
@@ -59,19 +62,20 @@ try {
     }
     
     // 2. Insert items into restaurant_order_items
-    $stmt_item = $conn->prepare("INSERT INTO restaurant_order_items (order_id, menu_item_id, quantity, price, item_name) VALUES (?, ?, ?, ?, ?)");
+    $stmt_item = $conn->prepare("INSERT INTO restaurant_order_items (order_id, menu_item_id, quantity, price, item_name, special_notes) VALUES (?, ?, ?, ?, ?, ?)");
     
     foreach ($items as $item) {
         $mi_id = intval($item['id']);
         $mi_qty = intval($item['quantity'] ?? 1);
         $mi_price = floatval($item['price']);
         $mi_name = isset($item['name']) ? $item['name'] : 'Menu Item';
+        $mi_note = isset($item['special_note']) && trim($item['special_note']) !== '' ? $item['special_note'] : null;
         
         if ($mi_id <= 0 || $mi_qty <= 0) {
             throw new Exception("Invalid menu item or quantity.");
         }
         
-        $stmt_item->bind_param("iiids", $order_id, $mi_id, $mi_qty, $mi_price, $mi_name);
+        $stmt_item->bind_param("iiidss", $order_id, $mi_id, $mi_qty, $mi_price, $mi_name, $mi_note);
         if (!$stmt_item->execute()) {
             throw new Exception("Failed to save order items. " . $stmt_item->error);
         }

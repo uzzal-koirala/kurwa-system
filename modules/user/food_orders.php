@@ -22,6 +22,7 @@ $canteens_res = $conn->query($canteens_sql);
     <link rel="stylesheet" href="../../assets/css/food_order.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
     <style>
         .loading-spinner {
             display: none;
@@ -136,6 +137,108 @@ $canteens_res = $conn->query($canteens_sql);
             border-top: 1px solid #e2e8f0;
             background: #fff;
         }
+
+        /* Header Action Buttons */
+        .hdr-action-btn {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #475569;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hdr-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        .hdr-action-btn.primary {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            border: none;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .hdr-action-btn.primary:hover {
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .hdr-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            height: 20px;
+            min-width: 20px;
+            padding: 0 5px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+            transform: scale(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+        }
+
+        .hdr-cart-badge.show {
+            transform: scale(1);
+        }
+
+        /* Empty vector */
+        .empty-cart-icon-container {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 1), 0 10px 20px rgba(0, 0, 0, 0.04);
+            border: 4px solid #ffffff;
+        }
+        
+        .empty-cart-icon-container i {
+            font-size: 42px;
+            background: linear-gradient(135deg, #3542f3 0%, #4361ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .item-note-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #475569;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+        }
+        
+        .item-note-input:focus {
+            outline: none;
+            border-color: #3542f3;
+            box-shadow: 0 0 0 3px rgba(53, 66, 243, 0.15);
+            background: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -154,10 +257,11 @@ $canteens_res = $conn->query($canteens_sql);
             <div class="order-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <h1><i class="ri-restaurant-fill"></i> Order Delicious Food</h1>
                 <div style="display: flex; gap: 15px;">
-                    <button type="button" onclick="openCheckout()" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #3542f3; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="View Cart">
+                    <button type="button" class="hdr-action-btn primary" onclick="openCheckout()" title="View Cart">
                         <i class="ri-shopping-cart-2-line"></i>
+                        <span class="hdr-cart-badge" id="hdrCartBadge1">0</span>
                     </button>
-                    <button type="button" onclick="window.location.href='my_orders.php'" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #475569; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="My Orders">
+                    <button type="button" class="hdr-action-btn" onclick="window.location.href='my_orders.php'" title="My Orders">
                         <i class="ri-shopping-bag-3-line"></i>
                     </button>
                 </div>
@@ -207,10 +311,11 @@ $canteens_res = $conn->query($canteens_sql);
                     </div>
                 </div>
                 <div style="display: flex; gap: 15px;">
-                    <button type="button" onclick="openCheckout()" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #3542f3; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="View Cart">
+                    <button type="button" class="hdr-action-btn primary" onclick="openCheckout()" title="View Cart">
                         <i class="ri-shopping-cart-2-line"></i>
+                        <span class="hdr-cart-badge" id="hdrCartBadge2">0</span>
                     </button>
-                    <button type="button" onclick="window.location.href='my_orders.php'" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #475569; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.2s;" title="My Orders">
+                    <button type="button" class="hdr-action-btn" onclick="window.location.href='my_orders.php'" title="My Orders">
                         <i class="ri-shopping-bag-3-line"></i>
                     </button>
                 </div>
@@ -260,9 +365,17 @@ $canteens_res = $conn->query($canteens_sql);
 
         <form id="checkoutForm" onsubmit="submitOrder(event)">
             <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">
-                <label style="font-weight:600; font-size:14px; color:#475569;">Delivery Address</label>
-                <input type="text" id="deliveryAddress" required placeholder="Apt 4B, 123 Main St..." style="padding:12px; border:1px solid #e2e8f0; border-radius:10px; font-family:inherit;">
+                <label style="font-weight:600; font-size:14px; color:#475569; display: flex; justify-content: space-between; align-items: center;">
+                    Delivery Address
+                    <button type="button" onclick="getCurrentLocation()" style="background:#f1f5f9; color:#3542f3; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:600; font-size:11px;"><i class="ri-map-pin-user-fill"></i> Get Location</button>
+                </label>
+                <div id="checkoutMap" style="height: 140px; border-radius: 12px; margin-bottom: 4px; border: 1px solid #e2e8f0; z-index: 1;"></div>
+                <input type="hidden" id="deliveryLat">
+                <input type="hidden" id="deliveryLng">
+                <input type="text" id="deliveryAddress" placeholder="Apt 4B, 123 Main St..." style="padding:12px; border:1px solid #e2e8f0; border-radius:10px; font-family:inherit;">
             </div>
+                <!-- Overall Special Notes Removed: User requested per-item notes only -->
+                <input type="hidden" id="specialNotes" value="">
             <button type="submit" style="width:100%; background:#3542f3; color:#fff; border:none; padding:16px; border-radius:12px; font-weight:700; cursor:pointer; font-size:16px; box-shadow: 0 4px 15px rgba(53, 66, 243, 0.3);">
                 <i class="ri-checkbox-circle-line"></i> Place Order
             </button>
@@ -287,12 +400,111 @@ $canteens_res = $conn->query($canteens_sql);
     </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     let cart = JSON.parse(localStorage.getItem('food_cart')) || [];
     let currentCanteenId = parseInt(localStorage.getItem('food_canteen_id')) || 0;
     let currentFoodItems = [];
     let currentView = 'canteens';
+    let checkoutMap = null;
+    let checkoutMarker = null;
+
+    function reverseGeocode(lat, lng) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    const shortAddress = data.display_name.split(',').slice(0, 3).join(', ');
+                    document.getElementById('deliveryAddress').value = shortAddress;
+                }
+            })
+            .catch(err => console.log('Reverse geocoding failed', err));
+    }
+
+    function initCheckoutMap() {
+        if(checkoutMap) {
+            setTimeout(() => checkoutMap.invalidateSize(), 300);
+            return;
+        }
+        
+        const defaultLat = 27.7172;
+        const defaultLng = 85.3240;
+        
+        checkoutMap = L.map('checkoutMap').setView([defaultLat, defaultLng], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(checkoutMap);
+
+        const customIcon = L.divIcon({
+            className: 'custom-map-marker',
+            html: '<div style="background:#3542f3; color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 6px rgba(0,0,0,0.3); border:2px solid white;"><i class="ri-map-pin-user-fill"></i></div>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30]
+        });
+
+        checkoutMarker = L.marker([defaultLat, defaultLng], {icon: customIcon, draggable: true}).addTo(checkoutMap);
+        
+        document.getElementById('deliveryLat').value = defaultLat;
+        document.getElementById('deliveryLng').value = defaultLng;
+
+        checkoutMarker.on('dragend', function(e) {
+            const position = checkoutMarker.getLatLng();
+            document.getElementById('deliveryLat').value = position.lat;
+            document.getElementById('deliveryLng').value = position.lng;
+            reverseGeocode(position.lat, position.lng);
+        });
+
+        checkoutMap.on('click', function(e) {
+            checkoutMarker.setLatLng(e.latlng);
+            document.getElementById('deliveryLat').value = e.latlng.lat;
+            document.getElementById('deliveryLng').value = e.latlng.lng;
+            reverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
+        
+        setTimeout(() => checkoutMap.invalidateSize(), 300);
+    }
+
+    function getCurrentLocation() {
+        const btn = document.querySelector('[onclick="getCurrentLocation()"]');
+        btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Locating...';
+
+        const setLocation = (lat, lng) => {
+            checkoutMap.setView([lat, lng], 16);
+            checkoutMarker.setLatLng([lat, lng]);
+            document.getElementById('deliveryLat').value = lat;
+            document.getElementById('deliveryLng').value = lng;
+            btn.innerHTML = '<i class="ri-map-pin-user-fill"></i> Get Location';
+            reverseGeocode(lat, lng);
+        };
+
+        const fallbackLocation = () => {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.latitude && data.longitude) {
+                        setLocation(data.latitude, data.longitude);
+                    } else {
+                        throw new Error("No IP location Data");
+                    }
+                })
+                .catch(err => {
+                    alert("Could not pull location automatically. Please select manually on map.");
+                    btn.innerHTML = '<i class="ri-map-pin-user-fill"></i> Get Location';
+                });
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => setLocation(position.coords.latitude, position.coords.longitude),
+                (error) => fallbackLocation(), 
+                { timeout: 5000, enableHighAccuracy: true }
+            );
+        } else {
+            fallbackLocation();
+        }
+    }
 
     // Initialize UI on page load
     window.onload = function() {
@@ -324,14 +536,8 @@ $canteens_res = $conn->query($canteens_sql);
     function loadMenu(canteenId, name) {
         currentView = 'menu';
         
-        // If users switch canteens, ideally they get a prompt to clear cart. 
-        // For now, if canteenId changes, we hard-clear the cart.
-        if(currentCanteenId !== canteenId && cart.length > 0) {
-            if(!confirm("Changing restaurants will clear your current cart. Proceed?")) return;
-            cart = [];
-            updateCartUI();
-        }
         
+
         currentCanteenId = canteenId;
         localStorage.setItem('food_canteen_id', canteenId);
         
@@ -422,8 +628,24 @@ $canteens_res = $conn->query($canteens_sql);
             document.getElementById('cartTotal').innerText = `Rs. ${total.toLocaleString()}`;
             document.getElementById('cartIndicator').style.display = 'flex';
             document.getElementById('cartIndicator').onclick = openCheckout;
+            
+            // Update header badges
+            ['hdrCartBadge1', 'hdrCartBadge2'].forEach(id => {
+                const badge = document.getElementById(id);
+                if (badge) {
+                    badge.innerText = count;
+                    badge.classList.add('show');
+                }
+            });
         } else {
             document.getElementById('cartIndicator').style.display = 'none';
+            // Hide header badges
+            ['hdrCartBadge1', 'hdrCartBadge2'].forEach(id => {
+                const badge = document.getElementById(id);
+                if (badge) {
+                    badge.classList.remove('show');
+                }
+            });
         }
     }
 
@@ -440,8 +662,8 @@ $canteens_res = $conn->query($canteens_sql);
         if(cart.length === 0) {
             container.innerHTML = `
                 <div style="text-align:center; padding: 60px 20px;">
-                    <div style="width: 80px; height: 80px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                        <i class="ri-shopping-cart-2-line" style="font-size: 36px; color: #cbd5e1;"></i>
+                    <div class="empty-cart-icon-container">
+                        <i class="ri-shopping-cart-2-fill"></i>
                     </div>
                     <h3 style="color:#1e293b; margin-bottom:10px; font-weight: 700; font-size: 18px;">Your cart is empty</h3>
                     <p style="color:#64748b; font-size:14px; margin-bottom:30px; line-height: 1.5;">Looks like you haven't added any delicious food yet.</p>
@@ -459,10 +681,10 @@ $canteens_res = $conn->query($canteens_sql);
             const fallbackImg = item.image ? item.image : '../../assets/images/placeholder.jpg';
             
             container.innerHTML += `
-            <div style="display:flex; align-items:center; gap: 15px; margin-bottom:12px; padding: 12px; background: #fff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: 0.2s;">
+            <div style="display:flex; align-items:center; gap: 15px; margin-bottom:12px; padding: 12px; background: #fff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: 0.2s; flex-wrap: wrap;">
                 <img src="${fallbackImg}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; background: #f8fafc;">
                 
-                <div style="flex: 1;">
+                <div style="flex: 1; min-width: 100px;">
                     <span style="font-weight:600; font-size:15px; color:#0f172a; display:block; margin-bottom: 4px;">${item.name}</span>
                     <strong style="color:#3542f3; font-size: 14px;">Rs. ${itemTotal.toLocaleString()}</strong>
                 </div>
@@ -478,11 +700,24 @@ $canteens_res = $conn->query($canteens_sql);
                         <button type="button" onclick="updateQuantity(${index}, 1)" style="background:#fff; border:none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor:pointer; font-weight:700; color:#3542f3; font-size:16px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">+</button>
                     </div>
                 </div>
+                <div style="flex-basis: 100%; margin-top: 4px;">
+                    <input type="text" class="item-note-input" placeholder="Add note for ${item.name} (optional)..." value="${item.special_note || ''}" oninput="updateItemNote(${index}, this.value)" />
+                </div>
             </div>`;
         });
         
         const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
         document.getElementById('checkoutTotal').innerText = `Rs. ${total.toLocaleString()}`;
+        
+        // Init Map
+        initCheckoutMap();
+    }
+
+    function updateItemNote(index, note) {
+        cart[index].special_note = note;
+        // Don't call updateCartUI immediately to avoid losing focus on input
+        // Just save to local storage
+        localStorage.setItem('food_cart', JSON.stringify(cart));
     }
 
     function updateQuantity(index, change) {
@@ -520,11 +755,17 @@ $canteens_res = $conn->query($canteens_sql);
         submitBtn.disabled = true;
 
         const address = document.getElementById('deliveryAddress').value;
+        const notes = document.getElementById('specialNotes').value;
+        const lat = document.getElementById('deliveryLat').value || null;
+        const lng = document.getElementById('deliveryLng').value || null;
         const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
         
         const payload = {
             restaurant_id: currentCanteenId,
             delivery_address: address,
+            special_notes: notes,
+            delivery_lat: lat,
+            delivery_lng: lng,
             total_amount: total,
             items: cart
         };

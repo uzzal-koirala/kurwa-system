@@ -46,6 +46,7 @@ if ($orders_res && $orders_res->num_rows > 0) {
     <link rel="stylesheet" href="../../assets/css/my_orders.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
 </head>
 <body>
 
@@ -180,6 +181,9 @@ if ($orders_res && $orders_res->num_rows > 0) {
         </div>
         
         <div class="modal-body">
+            <!-- Map Section -->
+            <div id="trackerMapContainer" style="height: 220px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #e2e8f0; display:none; background: #f8fafc; z-index:1;"></div>
+
             <!-- Timeline (Only shown for non-cancelled orders) -->
             <div class="tracker-container" id="timelineContainer">
                 <div class="timeline">
@@ -227,8 +231,13 @@ if ($orders_res && $orders_res->num_rows > 0) {
     </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="../../assets/js/sidebar.js"></script>
 <script>
+    let trackerMap = null;
+    let riderMarker = null;
+    let riderInterval = null;
+
     function switchTab(view) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('activeView').style.display = 'none';
@@ -278,6 +287,15 @@ if ($orders_res && $orders_res->num_rows > 0) {
                         </div>`;
                     });
                     itemsContainer.innerHTML = html;
+                    
+                    // Render Map
+                    const mapContainer = document.getElementById('trackerMapContainer');
+                    if (status.toLowerCase() !== 'cancelled' && data.delivery_lat && data.delivery_lng) {
+                        mapContainer.style.display = 'block';
+                        initTrackerMap(data.delivery_lat, data.delivery_lng, status.toLowerCase());
+                    } else {
+                        mapContainer.style.display = 'none';
+                    }
                 } else {
                     itemsContainer.innerHTML = `<div style="padding:20px; text-align:center; color:#ef4444;">Failed to load items.</div>`;
                 }
@@ -287,8 +305,60 @@ if ($orders_res && $orders_res->num_rows > 0) {
             });
     }
 
+    function initTrackerMap(lat, lng, status) {
+        if(trackerMap) {
+            trackerMap.remove();
+        }
+        
+        trackerMap = L.map('trackerMapContainer').setView([lat, lng], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(trackerMap);
+        
+        // Home Marker
+        const homeIcon = L.divIcon({
+            className: 'home-marker',
+            html: '<div style="background:#3542f3; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 6px rgba(0,0,0,0.3); border:2px solid white;"><i class="ri-home-smile-fill" style="font-size:18px;"></i></div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 36]
+        });
+        L.marker([lat, lng], {icon: homeIcon}).addTo(trackerMap);
+        
+        // Rider Marker
+        if (status === 'out_for_delivery' || status === 'preparing') {
+            const riderIcon = L.divIcon({
+                className: 'rider-marker',
+                html: '<div style="background:#ef4444; color:white; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(239,68,68,0.5); border:3px solid white;"><i class="ri-ebike-2-fill" style="font-size:24px;"></i></div>',
+                iconSize: [44, 44],
+                iconAnchor: [22, 22]
+            });
+            
+            // Start rider some distance away
+            let rLat = parseFloat(lat) - 0.008;
+            let rLng = parseFloat(lng) - 0.008;
+            riderMarker = L.marker([rLat, rLng], {icon: riderIcon}).addTo(trackerMap);
+            
+            // Adjust bounds to fit both
+            const group = new L.featureGroup([L.marker([lat, lng]), riderMarker]);
+            trackerMap.fitBounds(group.getBounds(), {padding: [30, 30]});
+            
+            // Simulate smooth rider movement towards home
+            if (riderInterval) clearInterval(riderInterval);
+            riderInterval = setInterval(() => {
+                const latDiff = (lat - rLat) * 0.1;
+                const lngDiff = (lng - rLng) * 0.1;
+                rLat += latDiff;
+                rLng += lngDiff;
+                riderMarker.setLatLng([rLat, rLng]);
+            }, 1500);
+        }
+        
+        setTimeout(() => trackerMap.invalidateSize(), 300);
+    }
+
     function closeTracker() {
         document.getElementById('orderModal').classList.remove('active');
+        if (riderInterval) clearInterval(riderInterval);
     }
 
     function updateTimeline(status) {
