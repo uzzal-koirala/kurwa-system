@@ -10,7 +10,7 @@ if ($caretaker_id <= 0) {
 }
 
 // Fetch caretaker data
-$sql = "SELECT id, full_name, category, specialization, rating, experience_years, price_per_day, patients_helped, about_text, availability, working_hours, image_url, video_url FROM caretakers WHERE id = ?";
+$sql = "SELECT id, full_name, phone_number, category, specialization, hospital_name, rating, experience_years, price_per_day, patients_helped, about_text, availability, working_hours, image_url, video_url FROM caretakers WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $caretaker_id);
 $stmt->execute();
