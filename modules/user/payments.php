@@ -376,6 +376,18 @@ if ($tx_stmt) {
     </div>
 </div>
 
+<!-- Reusable Alert Modal -->
+<div id="beautyAlertModal" class="modal" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:35px 30px; border-radius:24px; width:100%; max-width:380px; text-align:center; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
+        <div id="beautyAlertIcon" style="width:70px; height:70px; background:#fef2f2; color:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:35px; margin:0 auto 20px;">
+            <i class="ri-information-line"></i>
+        </div>
+        <h2 id="beautyAlertTitle" style="margin-bottom:10px; color:#0f172a; font-size:20px; font-weight:700;">Notice</h2>
+        <p id="beautyAlertMessage" style="color:#64748b; font-size:14px; margin-bottom:25px; line-height:1.5;">Message goes here.</p>
+        <button onclick="document.getElementById('beautyAlertModal').style.display='none'" style="width:100%; background:#3542f3; color:white; padding:14px; border:none; border-radius:12px; font-weight:700; font-size:15px; cursor:pointer; transition:0.3s;">Okay</button>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     function setAmount(amount) {
@@ -403,7 +415,7 @@ if ($tx_stmt) {
         const method = document.querySelector('.method-item.active span').innerText.toLowerCase();
 
         if (amount < 100) {
-            alert('Minimum top up amount is Rs. 100');
+            showBeautyAlert("Minimum Amount", "Minimum top up amount is Rs. 100", "error");
             return;
         }
         
@@ -441,14 +453,14 @@ if ($tx_stmt) {
                     document.body.appendChild(form);
                     form.submit();
                 } else {
-                    alert(data.message || 'Error occurred');
+                    showBeautyAlert("Payment Error", data.message || 'Error occurred', "error");
                     btn.innerHTML = originalHtml;
                     btn.disabled = false;
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert('Connection error. Please try again.');
+                showBeautyAlert("Connection Error", "Connection error. Please try again.", "error");
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             });
@@ -489,7 +501,7 @@ if ($tx_stmt) {
         const btn = document.querySelector('.redeem-btn');
         
         if (!code) {
-            alert('Please enter a coupon code');
+            showBeautyAlert("Missing Code", "Please enter a coupon code to redeem.", "error");
             return;
         }
 
@@ -534,6 +546,28 @@ if ($tx_stmt) {
 
     // KURWA PAY SPECIFIC SCRIPTS
     FormatDisplayBalance = (bal) => parseFloat(bal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    function showBeautyAlert(title, message, type = 'info') {
+        const modal = document.getElementById('beautyAlertModal');
+        const iconContainer = document.getElementById('beautyAlertIcon');
+        const titleEl = document.getElementById('beautyAlertTitle');
+        const msgEl = document.getElementById('beautyAlertMessage');
+        
+        titleEl.innerText = title;
+        msgEl.innerText = message;
+        
+        if (type === 'error') {
+            iconContainer.style.background = '#fef2f2';
+            iconContainer.style.color = '#ef4444';
+            iconContainer.innerHTML = '<i class="ri-error-warning-line"></i>';
+        } else {
+            iconContainer.style.background = '#eff6ff';
+            iconContainer.style.color = '#3b82f6';
+            iconContainer.innerHTML = '<i class="ri-information-line"></i>';
+        }
+        
+        modal.style.display = 'flex';
+    }
 
     function activateKurwaPay() {
         document.getElementById('activationModal').style.display = 'flex';
@@ -587,11 +621,11 @@ if ($tx_stmt) {
         const amount = document.getElementById('transferAmount').value;
 
         if (rcptCard.length !== 10) {
-            alert("Please enter a valid 10-digit recipient card number.");
+            showBeautyAlert("Invalid Card", "Please enter a valid 10-digit recipient card number.", "error");
             return;
         }
         if (amount <= 0) {
-            alert("Please enter a valid transfer amount.");
+            showBeautyAlert("Invalid Amount", "Please enter a valid transfer amount.", "error");
             return;
         }
 
@@ -614,7 +648,7 @@ if ($tx_stmt) {
                 document.getElementById('transferOtp').value = '';
                 document.getElementById('otpModal').style.display = 'flex';
             } else {
-                alert("Notice: " + data.message);
+                showBeautyAlert("Notice", data.message, "info");
             }
         })
         .catch(e => {
@@ -648,13 +682,12 @@ if ($tx_stmt) {
             if (data.success) {
                 document.getElementById('otpModal').style.display = 'none';
                 document.getElementById('displayBalance').innerText = FormatDisplayBalance(data.new_balance);
-                document.getElementById('transferCard').value = '';
                 document.getElementById('transferAmount').value = '';
                 
-                alert("Success: " + data.message);
-                location.reload(); // To update history
+                showBeautyAlert("Success", data.message, "info");
+                setTimeout(() => location.reload(), 1500); 
             } else {
-                alert("Verification Failed: " + data.message);
+                showBeautyAlert("Verification Failed", data.message, "error");
                 btn.innerHTML = origText;
                 btn.disabled = false;
             }
