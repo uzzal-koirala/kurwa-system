@@ -186,6 +186,23 @@ $canteens_res = $conn->query($canteens_sql);
     </div>
 </div>
 
+<!-- Success Modal -->
+<div id="successModal" class="modal">
+    <div class="modal-content" style="text-align:center; padding: 40px 20px; max-width: 400px;">
+        <div style="width: 80px; height: 80px; background: #ecfdf5; color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);">
+            <i class="ri-checkbox-circle-fill"></i>
+        </div>
+        <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-weight: 700; font-size: 24px;">Order Placed!</h2>
+        <p style="color: #64748b; margin-bottom: 25px; line-height: 1.5;">Your delicious food is being prepared by the restaurant. You can track its live status in your order history.</p>
+        <button type="button" onclick="window.location.href='my_orders.php'" style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: #fff; border: none; padding: 14px 30px; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; box-shadow: 0 4px 15px rgba(53, 66, 243, 0.3); transition: 0.3s;">
+            <i class="ri-map-pin-user-line" style="vertical-align: middle; margin-right: 5px;"></i> Track My Order
+        </button>
+        <button type="button" onclick="document.getElementById('successModal').style.display='none'" style="background: transparent; color: #64748b; border: 1px solid #e2e8f0; padding: 14px 30px; border-radius: 12px; margin-top: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; transition: 0.3s;">
+            Continue Browsing
+        </button>
+    </div>
+</div>
+
 <script src="../../assets/js/sidebar.js"></script>
 <script>
     let cart = JSON.parse(localStorage.getItem('food_cart')) || [];
@@ -415,7 +432,7 @@ $canteens_res = $conn->query($canteens_sql);
             const result = await response.json();
             
             if (result.success) {
-                alert('Order placed successfully! The restaurant has received your order.');
+                document.getElementById('successModal').style.display = 'flex';
                 cart = [];
                 updateCartUI();
                 closeCheckout();

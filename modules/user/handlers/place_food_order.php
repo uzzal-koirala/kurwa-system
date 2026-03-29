@@ -47,24 +47,34 @@ try {
     // 1. Insert into restaurant_orders
     $stmt = $conn->prepare("INSERT INTO restaurant_orders (restaurant_id, user_id, total_amount, status, delivery_address) VALUES (?, ?, ?, 'pending', ?)");
     $stmt->bind_param("iids", $restaurant_id, $user_id, $total_amount, $address);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        throw new Exception("Failed to create order record: " . $stmt->error);
+    }
     
-    $order_id = $conn->insert_id;
+    $order_id = $stmt->insert_id;
+    
+    // Validate that order_id is actually captured correctly
+    if (!$order_id || $order_id <= 0) {
+        throw new Exception("Critical error: Order ID generation failed.");
+    }
     
     // 2. Insert items into restaurant_order_items
-    $stmt_item = $conn->prepare("INSERT INTO restaurant_order_items (order_id, menu_item_id, quantity, price) VALUES (?, ?, ?, ?)");
+    $stmt_item = $conn->prepare("INSERT INTO restaurant_order_items (order_id, menu_item_id, quantity, price, item_name) VALUES (?, ?, ?, ?, ?)");
     
     foreach ($items as $item) {
         $mi_id = intval($item['id']);
         $mi_qty = intval($item['quantity'] ?? 1);
         $mi_price = floatval($item['price']);
+        $mi_name = isset($item['name']) ? $item['name'] : 'Menu Item';
         
         if ($mi_id <= 0 || $mi_qty <= 0) {
             throw new Exception("Invalid menu item or quantity.");
         }
         
-        $stmt_item->bind_param("iiid", $order_id, $mi_id, $mi_qty, $mi_price);
-        $stmt_item->execute();
+        $stmt_item->bind_param("iiids", $order_id, $mi_id, $mi_qty, $mi_price, $mi_name);
+        if (!$stmt_item->execute()) {
+            throw new Exception("Failed to save order items. " . $stmt_item->error);
+        }
     }
     
     // 3. Record transaction in payment history (Negative amount for payment)

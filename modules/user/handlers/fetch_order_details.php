@@ -21,16 +21,14 @@ if (!$verify_res || $verify_res->num_rows === 0) {
     exit;
 }
 
-// 2. Fetch items (Try joining restaurant_menu first, fallback to food_items)
+// 2. Fetch items 
 $items_sql = "
     SELECT 
-        roi.quantity, 
-        roi.price,
-        COALESCE(rm.name, fi.name, 'Menu Item') AS name
-    FROM restaurant_order_items roi
-    LEFT JOIN restaurant_menu rm ON roi.menu_item_id = rm.id
-    LEFT JOIN food_items fi ON roi.menu_item_id = fi.id
-    WHERE roi.order_id = $order_id
+        quantity, 
+        price,
+        COALESCE(item_name, 'Menu Item') AS name
+    FROM restaurant_order_items
+    WHERE order_id = $order_id
 ";
 
 $items_res = $conn->query($items_sql);

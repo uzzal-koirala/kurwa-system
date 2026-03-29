@@ -10,10 +10,8 @@ $orders_query = "
     SELECT 
         o.*, c.name AS restaurant_name, c.image_url AS restaurant_image,
         (
-            SELECT GROUP_CONCAT(CONCAT(roi.quantity, 'x ', COALESCE(rm.name, fi.name, 'Menu Item')) SEPARATOR ', ')
+            SELECT GROUP_CONCAT(CONCAT(roi.quantity, 'x ', COALESCE(roi.item_name, 'Menu Item')) SEPARATOR ', ')
             FROM restaurant_order_items roi
-            LEFT JOIN restaurant_menu rm ON roi.menu_item_id = rm.id
-            LEFT JOIN food_items fi ON roi.menu_item_id = fi.id
             WHERE roi.order_id = o.id
         ) AS items_preview
     FROM restaurant_orders o
