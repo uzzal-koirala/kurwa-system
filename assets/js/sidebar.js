@@ -15,9 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 sidebar.classList.toggle('collapsed');
                 document.body.classList.toggle('sidebar-collapsed');
                 
-                // Always show burger icon
                 const icon = desktopToggleBtn.querySelector('i');
-                icon.className = 'ri-menu-line';
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.className = 'ri-menu-4-line';
+                } else {
+                    icon.className = 'ri-close-large-line';
+                }
             }
         });
     }
@@ -76,9 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
              document.body.classList.remove('sidebar-open');
              document.body.style.overflow = '';
              
-             // Always show burger icon
              const icon = desktopToggleBtn?.querySelector('i');
-             if (icon) icon.className = 'ri-menu-line';
+             if (icon) {
+                 if (sidebar && sidebar.classList.contains('collapsed')) {
+                     icon.className = 'ri-menu-4-line';
+                 } else {
+                     icon.className = 'ri-close-large-line';
+                 }
+             }
         }
     });
 });
