@@ -97,7 +97,7 @@ try {
     // D. Send SMS notification to caretaker
     if (!empty($ct['phone_number'])) {
         require_once '../../../includes/core/sms_helper.php';
-        $sms_msg = "Hello " . $ct['full_name'] . ", you have a new booking from " . $user_name . " from " . $start_date . " to " . $end_date . ". Total: Rs. " . number_format($total_price) . ". Please check your dashboard.";
+        $sms_msg = "तपाईंलाई नयाँ केयरटेकर बुकिङको रिक्वेस्ट आएको छ। कृपया ड्यासबोर्ड चेक गरी उक्त बुकिङ स्वीकार वा पूरा गरिदिनुहोला।";
         send_sms($ct['phone_number'], $sms_msg);
     }
 

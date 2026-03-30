@@ -154,11 +154,19 @@ $pharmacies_res = $conn->query($pharmacies_sql);
         <div class="pharmacy-grid" id="pharmacyGrid">
             <?php while($p = $pharmacies_res->fetch_assoc()): 
                 $curr_time = date('H:i:s');
-                $is_open = ($curr_time >= $p['opening_time'] && $curr_time <= $p['closing_time']);
+                $open = $p['opening_time'];
+                $close = $p['closing_time'];
+                
+                if ($open <= $close) {
+                    $is_open = ($curr_time >= $open && $curr_time <= $close);
+                } else {
+                    $is_open = ($curr_time >= $open || $curr_time <= $close);
+                }
+                
                 $status_text = $is_open ? 'Open' : 'Closed';
                 $status_class = $is_open ? 'status-open' : 'status-closed';
-                $open_fmt = date('h:i A', strtotime($p['opening_time']));
-                $close_fmt = date('h:i A', strtotime($p['closing_time']));
+                $open_fmt = date('h:i A', strtotime($open));
+                $close_fmt = date('h:i A', strtotime($close));
                 $click_action = $is_open ? "openUploadModal({$p['id']}, '" . addslashes($p['name']) . "')" : "showClosedModal(this)";
             ?>
             <div class="pharmacy-card <?= !$is_open ? 'closed-vendor' : '' ?>" 

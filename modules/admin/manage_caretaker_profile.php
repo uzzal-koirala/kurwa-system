@@ -338,7 +338,7 @@ if ($action === 'edit' && !empty($caretaker['location_id'])) {
                     <div class="form-row">
                         <div class="form-group">
                             <label>Phone Number</label>
-                            <input type="text" name="phone_number" class="form-control" required value="<?= htmlspecialchars($caretaker['phone_number'] ?? '') ?>" placeholder="e.g. 9841XXXXXX">
+                            <input type="text" name="phone_number" class="form-control" required value="<?= htmlspecialchars($caretaker['phone'] ?? '') ?>" placeholder="e.g. 9841XXXXXX">
                         </div>
                         <div class="form-group">
                             <label>Primary Location / Hospital</label>

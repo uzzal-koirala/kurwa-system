@@ -7,8 +7,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'caretaker') {
     exit;
 }
 
-$user_id = $_SESSION['user_id'];
-$full_name = $_SESSION['full_name'] ?? 'Caretaker';
+$user_id = $_SESSION['caretaker_id'];
+$full_name = $_SESSION['caretaker_name'] ?? 'Caretaker';
 $phone = $_SESSION['phone'] ?? '';
 
 // Check if already completed

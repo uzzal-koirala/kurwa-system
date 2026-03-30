@@ -64,7 +64,8 @@ if ($action === 'add' || $action === 'edit') {
                 status = '$status',
                 rating = $rating,
                 opening_time = '$opening_time',
-                closing_time = '$closing_time'
+                closing_time = '$closing_time',
+                verified = 1
                 $pass_update
                 WHERE id = $id";
     }

@@ -60,7 +60,8 @@ if ($action === 'add' || $action === 'edit') {
                 description = '$description',
                 video_url = '$video_url',
                 opening_time = '$opening_time',
-                closing_time = '$closing_time'
+                closing_time = '$closing_time',
+                verified = 1
                 WHERE id = $id";
     }
 

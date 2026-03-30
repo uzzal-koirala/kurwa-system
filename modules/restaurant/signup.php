@@ -29,15 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Email already registered.";
         } else {
             $hashed = password_hash($password, PASSWORD_DEFAULT);
-            $otp = rand(100000, 999999);
-            $stmt = $conn->prepare("INSERT INTO restaurants (name, email, phone, address, password, otp, verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
-            $stmt->bind_param("ssssss", $name, $email, $phone, $address, $hashed, $otp);
+            $stmt = $conn->prepare("INSERT INTO restaurants (name, email, phone, address, password, verified) VALUES (?, ?, ?, ?, ?, 1)");
+            $stmt->bind_param("sssss", $name, $email, $phone, $address, $hashed);
             if ($stmt->execute()) {
-                // Send OTP via SMS
-                $sms_message = "Dear " . $name . ", your restaurant verification code for Kurwa is: $otp.";
-                send_sms($phone, $sms_message);
-                
-                header("Location: verify_otp.php?email=" . urlencode($email));
+                // Successful registration
+                header("Location: login.php?success=Account+created+successfully.+Please+login.");
                 exit;
             } else {
                 $error = "Registration failed. Please try again.";

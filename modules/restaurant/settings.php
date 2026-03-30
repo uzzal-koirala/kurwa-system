@@ -38,43 +38,162 @@ $hospitals_res = $conn->query("SELECT * FROM hospitals ORDER BY name ASC");
         }
 
         .settings-nav {
-            background: white; border-radius: 20px; padding: 10px; border: 1px solid #f1f5f9; box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+            background: white; 
+            border-radius: 24px; 
+            padding: 15px; 
+            border: 1px solid #f1f5f9; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 20px;
         }
 
         .settings-link {
-            display: flex; align-items: center; gap: 12px; padding: 15px 20px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; border-radius: 12px; transition: 0.3s;
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            padding: 16px 20px; 
+            color: #64748b; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 15px; 
+            border-radius: 16px; 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 5px;
+        }
+
+        .settings-link i {
+            font-size: 20px;
+            transition: 0.3s;
         }
 
         .settings-link.active {
-            background: #fff2ed; color: var(--rest-primary);
+            background: linear-gradient(135deg, rgba(47, 60, 255, 0.1) 0%, rgba(47, 60, 255, 0.02) 100%); 
+            color: var(--rest-primary);
+            box-shadow: inset 3px 0 0 var(--rest-primary);
         }
 
         .settings-link:hover:not(.active) {
-            background: #f8fafc; color: var(--rest-secondary-dark);
+            background: #f8fafc; 
+            color: var(--rest-secondary-dark);
+            transform: translateX(4px);
         }
 
         .panel {
-            background: white; border-radius: 20px; padding: 35px; border: 1px solid #f1f5f9; box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+            background: white; 
+            border-radius: 28px; 
+            padding: 40px; 
+            border: 1px solid #f1f5f9; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
         }
 
-        .panel-title { font-size: 20px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0 0 25px 0; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--rest-secondary-dark), var(--rest-primary));
+        }
 
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-        .form-control { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; font-family: inherit; font-size: 14px; background: #f8fafc; transition: 0.3s; }
-        .form-control:focus { border-color: var(--rest-primary); background: white; outline: none; }
+        .panel-title { 
+            font-size: 24px; 
+            font-weight: 800; 
+            color: var(--rest-secondary-dark); 
+            margin: 0 0 5px 0; 
+        }
+
+        .form-group { margin-bottom: 24px; }
+        .form-label { display: block; font-size: 14px; font-weight: 700; color: var(--rest-secondary-dark); margin-bottom: 10px; }
+        
+        .input-wrapper {
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .input-wrapper i {
+            position: absolute; 
+            left: 18px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #94a3b8; 
+            font-size: 20px;
+            transition: 0.3s;
+            z-index: 5;
+        }
+
+        .form-control { 
+            width: 100%; 
+            padding: 16px; 
+            padding-left: 50px;
+            border-radius: 16px; 
+            border: 2px solid #f1f5f9; 
+            font-family: inherit; 
+            font-size: 15px; 
+            background: #f8fafc; 
+            color: var(--rest-secondary-dark);
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            outline: none;
+        }
+        
+        .form-control:focus { 
+            border-color: var(--rest-primary); 
+            background: white; 
+            box-shadow: 0 0 0 5px rgba(47, 60, 255, 0.1); 
+        }
+
+        .form-control:focus + i, .input-wrapper:focus-within i {
+            color: var(--rest-primary);
+        }
         
         .btn-save {
-            background: linear-gradient(135deg, #1b2559 0%, #2f3cff 100%); color: white; border: none; padding: 14px 30px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px rgba(47, 60, 255, 0.2); width: fit-content; display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, var(--rest-primary) 0%, #1A237E 100%); 
+            color: white; 
+            border: none; 
+            padding: 16px 35px; 
+            border-radius: 16px; 
+            font-weight: 800; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: 0 10px 25px rgba(47, 60, 255, 0.3); 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px;
+            letter-spacing: 0.5px;
         }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(47, 60, 255, 0.3); }
+        
+        .btn-save:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 15px 35px rgba(47, 60, 255, 0.4); 
+            background: linear-gradient(135deg, #1A237E 0%, var(--rest-primary) 100%);
+        }
 
         .image-upload-area {
-            width: 120px; height: 120px; border-radius: 20px; background: #eef2ff; border: 2px dashed #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; color: var(--rest-secondary); overflow: hidden; position: relative;
+            border-radius: 20px; 
+            background: #f8fafc; 
+            border: 2px dashed #cbd5e1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            color: #94a3b8; 
+            position: relative;
+            overflow: hidden;
         }
-        .image-upload-area:hover { border-color: var(--rest-primary); color: var(--rest-primary); background: #fff2ed; }
+        
+        .image-upload-area:hover { 
+            border-color: var(--rest-primary); 
+            color: var(--rest-primary); 
+            background: rgba(47, 60, 255, 0.02); 
+            transform: translateY(-2px);
+        }
 
         @media (max-width: 1024px) {
+
             .main-content { padding: 20px; margin-left: 0 !important; }
             .mobile-toggle { display: block !important; }
         }
@@ -102,79 +221,88 @@ $hospitals_res = $conn->query("SELECT * FROM hospitals ORDER BY name ASC");
     <div class="settings-container">
         <!-- Sidebar Nav inside Settings -->
         <div class="settings-nav">
-            <a href="#" class="settings-link active"><i class="ri-store-2-line" style="font-size: 18px;"></i> Store Profile</a>
-            <a href="#" class="settings-link"><i class="ri-time-line" style="font-size: 18px;"></i> Operating Hours</a>
-            <a href="#" class="settings-link"><i class="ri-bank-card-line" style="font-size: 18px;"></i> Payout Details</a>
-            <a href="#" class="settings-link"><i class="ri-lock-password-line" style="font-size: 18px;"></i> Security</a>
+            <a href="#" class="settings-link active"><i class="ri-store-2-line"></i> Store Profile</a>
+            <a href="#" class="settings-link"><i class="ri-time-line"></i> Operating Hours</a>
+            <a href="#" class="settings-link"><i class="ri-bank-card-line"></i> Payout Details</a>
+            <a href="#" class="settings-link"><i class="ri-shield-keyhole-line"></i> Security</a>
+            <a href="#" class="settings-link"><i class="ri-notification-3-line"></i> Notifications</a>
         </div>
 
-        <!-- Settings Content -->
         <div class="panel">
-            <h2 class="panel-title">Store Profile</h2>
+            <div style="border-bottom: 2px solid #f1f5f9; margin-bottom: 35px; padding-bottom: 20px;">
+                <h2 class="panel-title">Store Profile</h2>
+                <p style="font-size: 14px; color: #64748b; margin: 0;">Update your restaurant's public identity and contact info.</p>
+            </div>
+            
             <form onsubmit="saveSettings(event)">
-                <div style="display: flex; gap: 30px; margin-bottom: 30px;">
-                    <div>
-                        <span class="form-label">Store Logo</span>
-                        <div class="image-upload-area">
-                            <i class="ri-upload-cloud-2-line" style="font-size: 24px; margin-bottom: 5px;"></i>
-                            <span style="font-size: 11px; font-weight: 600;">Upload Logo</span>
+                <div style="display: flex; gap: 30px; margin-bottom: 40px; background: #f8fafc; padding: 30px; border-radius: 24px; border: 1px solid #f1f5f9; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <span class="form-label" style="text-align: center; margin-bottom: 12px;">Store Logo</span>
+                        <div class="image-upload-area" style="width: 130px; height: 130px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); background: white;">
+                            <i class="ri-image-add-fill" style="font-size: 36px; margin-bottom: 8px;"></i>
+                            <span style="font-size: 12px; font-weight: 700;">Upload Logo</span>
                         </div>
                     </div>
-                    <div>
-                        <span class="form-label">Cover Banner</span>
-                        <div class="image-upload-area" style="width: 250px;">
-                            <i class="ri-image-add-line" style="font-size: 24px; margin-bottom: 5px;"></i>
-                            <span style="font-size: 11px; font-weight: 600;">Upload Cover</span>
+                    <div style="flex-grow: 1; min-width: 250px;">
+                        <span class="form-label" style="margin-bottom: 12px;">Cover Banner</span>
+                        <div class="image-upload-area" style="width: 100%; height: 130px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); background: white;">
+                            <i class="ri-landscape-fill" style="font-size: 36px; margin-bottom: 8px;"></i>
+                            <span style="font-size: 12px; font-weight: 700;">Change Cover Photo</span>
                         </div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
                     <div class="form-group">
                         <label class="form-label">Store Name</label>
-                        <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($restaurant['name']) ?>">
+                        <div class="input-wrapper">
+                            <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($restaurant['name']) ?>">
+                            <i class="ri-store-3-line"></i>
+                        </div>
                     </div>
+                    
                     <div class="form-group">
-                        <label class="form-label">Owner Name</label>
-                        <input type="text" name="owner_name" class="form-control" value="<?= htmlspecialchars($restaurant['owner_name']) ?>">
+                        <label class="form-label">Primary Email</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($restaurant['email']) ?>">
+                            <i class="ri-mail-line"></i>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($restaurant['email']) ?>">
-                    </div>
+                    
                     <div class="form-group">
                         <label class="form-label">Phone Number</label>
-                        <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($restaurant['phone']) ?>">
+                        <div class="input-wrapper">
+                            <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($restaurant['phone']) ?>">
+                            <i class="ri-phone-line"></i>
+                        </div>
                     </div>
+                    
                     <div class="form-group">
-                        <label class="form-label">Service Location</label>
-                        <select name="location_id" class="form-control" required>
-                            <option value="">Select Location</option>
-                            <?php while($loc = $locations_res->fetch_assoc()): ?>
-                                <option value="<?= $loc['id'] ?>" <?= ($restaurant['location_id'] ?? 0) == $loc['id'] ? 'selected' : '' ?>><?= $loc['name'] ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Service Hospital</label>
-                        <select name="hospital_id" class="form-control" required>
-                            <option value="">Select Hospital</option>
-                            <?php 
-                            $hospitals_res->data_seek(0);
-                            while($hosp = $hospitals_res->fetch_assoc()): ?>
-                                <option value="<?= $hosp['id'] ?>" <?= ($restaurant['hospital_id'] ?? 0) == $hosp['id'] ? 'selected' : '' ?>><?= $hosp['name'] ?></option>
-                            <?php endwhile; ?>
-                        </select>
+                        <label class="form-label">Service City / Area</label>
+                        <div class="input-wrapper">
+                            <select name="location_id" class="form-control" required style="appearance: none;">
+                                <option value="">Select Location</option>
+                                <?php while($loc = $locations_res->fetch_assoc()): ?>
+                                    <option value="<?= $loc['id'] ?>" <?= ($restaurant['location_id'] ?? 0) == $loc['id'] ? 'selected' : '' ?>><?= $loc['name'] ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                            <i class="ri-map-pin-line"></i>
+                            <i class="ri-arrow-down-s-line" style="left: auto; right: 20px; font-size: 24px; pointer-events: none;"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Full Address</label>
-                    <textarea name="address" class="form-control" rows="3"><?= htmlspecialchars($restaurant['address']) ?></textarea>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label class="form-label">Full Address & Landmark</label>
+                    <div class="input-wrapper">
+                        <textarea name="address" class="form-control" rows="3" placeholder="Enter complete address..." style="padding-left: 20px;"><?= htmlspecialchars($restaurant['address']) ?></textarea>
+                    </div>
                 </div>
 
-                <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 25px;">
-                    <button type="submit" class="btn-save"><i class="ri-save-line"></i> Save Changes</button>
+                <div style="margin-top: 45px; border-top: 2px dashed #f1f5f9; padding-top: 35px; display: flex; justify-content: flex-end;">
+                    <button type="submit" class="btn-save">
+                        <i class="ri-checkbox-circle-fill"></i> Save Changes
+                    </button>
                 </div>
             </form>
         </div>

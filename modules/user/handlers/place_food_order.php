@@ -95,6 +95,19 @@ try {
 
     // Commit transaction
     $conn->commit();
+
+    // 4. Send SMS Notification to Restaurant Owner
+    $rest_res = $conn->query("SELECT phone FROM restaurants WHERE id = $restaurant_id");
+    if ($rest_res && $rest_res->num_rows > 0) {
+        $rest_data = $rest_res->fetch_assoc();
+        $rest_phone = $rest_data['phone'];
+        
+        if (!empty($rest_phone)) {
+            $sms_msg = "नमस्कार ! कुर्वा बाट फूड अर्डर रिक्वेस्ट आएको छ, कृपया ड्यासबोर्ड चेक गरी अर्डर पूरा गरिदिनुहोला।";
+            send_sms($rest_phone, $sms_msg);
+        }
+    }
+
     echo json_encode(['success' => true, 'message' => 'Order placed successfully. Amount deducted from wallet.', 'order_id' => $order_id, 'new_balance' => $new_balance]);
 
 } catch (Exception $e) {

@@ -55,6 +55,25 @@ $skills = [
     "Meal Preparation & Feeding",
     "Companionship & Emotional Support"
 ];
+
+// Fetch booked dates for this caretaker
+$booked_dates = [];
+$booking_sql = "SELECT start_date, end_date FROM caretaker_bookings WHERE caretaker_id = ? AND status IN ('pending', 'confirmed')";
+$b_stmt = $conn->prepare($booking_sql);
+$b_stmt->bind_param("i", $caretaker_id);
+$b_stmt->execute();
+$b_res = $b_stmt->get_result();
+while ($b_row = $b_res->fetch_assoc()) {
+    $period = new DatePeriod(
+        new DateTime($b_row['start_date']),
+        new DateInterval('P1D'),
+        (new DateTime($b_row['end_date']))->modify('+1 day')
+    );
+    foreach ($period as $date) {
+        $booked_dates[] = $date->format("Y-m-d");
+    }
+}
+$b_stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,6 +89,7 @@ $skills = [
     <!-- Flatpickr for better date selection -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Modal Styles */
         .modal {
@@ -186,6 +206,30 @@ $skills = [
             background: #f8fafc;
             border: 1px dashed #e2e8f0;
             border-radius: 20px;
+        }
+
+        /* Red Cross for Booked Dates */
+        .flatpickr-day.booked-date {
+            color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            position: relative;
+        }
+        .flatpickr-day.booked-date::after {
+            content: "×";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #ef4444;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        .flatpickr-day.booked-date:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
         }
     </style>
 </head>
@@ -384,9 +428,19 @@ $skills = [
         const dailyRate = <?= $caretaker['price_per_day'] ?>;
         
         // Initialize Flatpickr
+        const bookedDates = <?= json_encode($booked_dates) ?>;
+        
         const startPicker = flatpickr("#startDate", {
             minDate: "today",
             dateFormat: "Y-m-d",
+            disable: bookedDates,
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                if (bookedDates.includes(dateStr)) {
+                    dayElem.classList.add("booked-date");
+                    dayElem.title = "Already Booked";
+                }
+            },
             onChange: function(selectedDates, dateStr) {
                 endPicker.set('minDate', dateStr);
                 calculateTotal();
@@ -396,6 +450,14 @@ $skills = [
         const endPicker = flatpickr("#endDate", {
             minDate: "today",
             dateFormat: "Y-m-d",
+            disable: bookedDates,
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                if (bookedDates.includes(dateStr)) {
+                    dayElem.classList.add("booked-date");
+                    dayElem.title = "Already Booked";
+                }
+            },
             onChange: function() {
                 calculateTotal();
             }
@@ -445,17 +507,42 @@ $skills = [
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
-                    location.reload();
+                    Swal.fire({
+                        title: 'Booking Confirmed!',
+                        text: 'Your session with <?= htmlspecialchars($caretaker['full_name']) ?> is reserved and your payment has been processed.',
+                        icon: 'success',
+                        background: '#ffffff',
+                        confirmButtonColor: '#2F3CFF',
+                        confirmButtonText: 'Great!',
+                        backdrop: `rgba(15, 23, 42, 0.4) blur(4px)`,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInUp animate__faster'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutDown animate__faster'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
-                    alert(data.message);
+                    Swal.fire({
+                        title: 'Booking Failed',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnHtml;
                 }
             })
             .catch(err => {
                 console.error('Booking error:', err);
-                alert("An error occurred. Please try again.");
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An unexpected error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444'
+                });
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnHtml;
             });

@@ -33,7 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['profile_picture'] = $user['profile_picture'];
         $_SESSION['role'] = $user['role'];
         $_SESSION['location_id'] = $user['location_id'];
-        header("Location: user_dashboard.php");
+
+        // Role-based redirection
+        if ($user['role'] === 'admin') {
+          header("Location: ../admin/dashboard.php");
+        } elseif ($user['role'] === 'caretaker') {
+          header("Location: ../caretaker/dashboard.php");
+        } else {
+          header("Location: user_dashboard.php");
+        }
         exit;
       } else {
         $error = "Invalid email/phone or password.";

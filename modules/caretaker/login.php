@@ -23,7 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $caretaker = $result->fetch_assoc();
       if (password_verify($password, $caretaker['password'])) {
         $_SESSION['user_id'] = $caretaker['id'];
+        $_SESSION['caretaker_id'] = $caretaker['id'];
         $_SESSION['full_name'] = $caretaker['full_name'];
+        $_SESSION['caretaker_name'] = $caretaker['full_name'];
         $_SESSION['email'] = $caretaker['email'];
         $_SESSION['role'] = 'caretaker';
         $_SESSION['phone'] = $caretaker['phone'];

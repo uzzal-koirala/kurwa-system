@@ -60,8 +60,8 @@ if ($action === 'add' || $action === 'edit') {
 
     if ($action === 'add') {
         $hashed_pass = password_hash($pass_raw, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO caretakers (full_name, phone, email, password, hospital_name, category, specialization, rating, experience_years, price_per_day, location_id, hospital_id, patients_helped, about_text, image_url, video_url, verified, status, opening_time, closing_time) 
-                VALUES ('$full_name', '$phone', '$email', '$hashed_pass', '$hospital_name', '$category', '$specialization', $rating, $experience, $price, $location_id, $hospital_id, $patients, '$about', '$image_url', '$video_url', 1, 'approved', '$opening_time', '$closing_time')";
+        $sql = "INSERT INTO caretakers (full_name, phone, phone_number, email, password, hospital_name, category, specialization, rating, experience_years, price_per_day, location_id, hospital_id, patients_helped, about_text, image_url, video_url, verified, status, opening_time, closing_time, onboarding_completed) 
+                VALUES ('$full_name', '$phone', '$phone', '$email', '$hashed_pass', '$hospital_name', '$category', '$specialization', $rating, $experience, $price, $location_id, $hospital_id, $patients, '$about', '$image_url', '$video_url', 1, 'approved', '$opening_time', '$closing_time', 1)";
     } else {
         $id = (int)$_POST['id'];
         $pass_update = "";
@@ -73,6 +73,7 @@ if ($action === 'add' || $action === 'edit') {
         $sql = "UPDATE caretakers SET 
                 full_name = '$full_name', 
                 phone = '$phone',
+                phone_number = '$phone',
                 email = '$email',
                 hospital_name = '$hospital_name',
                 category = '$category', 
@@ -87,7 +88,10 @@ if ($action === 'add' || $action === 'edit') {
                 image_url = '$image_url',
                 video_url = '$video_url',
                 opening_time = '$opening_time',
-                closing_time = '$closing_time'
+                closing_time = '$closing_time',
+                onboarding_completed = 1,
+                verified = 1,
+                status = 'approved'
                 $pass_update
                 WHERE id = $id";
     }

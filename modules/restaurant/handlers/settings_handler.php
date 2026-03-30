@@ -10,7 +10,6 @@ $restaurant_id = $_SESSION['restaurant_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
-    $owner_name = trim($_POST['owner_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $address = trim($_POST['address'] ?? '');
@@ -22,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE restaurants SET name=?, owner_name=?, email=?, phone=?, address=?, location_id=?, hospital_id=? WHERE id=?");
-    $stmt->bind_param("sssssiii", $name, $owner_name, $email, $phone, $address, $location_id, $hospital_id, $restaurant_id);
+    $stmt = $conn->prepare("UPDATE restaurants SET name=?, email=?, phone=?, address=?, location_id=?, hospital_id=? WHERE id=?");
+    $stmt->bind_param("ssssiii", $name, $email, $phone, $address, $location_id, $hospital_id, $restaurant_id);
 
     if ($stmt->execute()) {
         // Update session name if changed

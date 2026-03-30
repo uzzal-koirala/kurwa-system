@@ -384,11 +384,19 @@ $canteens_res = $conn->query($canteens_sql);
                 $canteens_res->data_seek(0);
                 while($canteen = $canteens_res->fetch_assoc()): 
                     $curr_time = date('H:i:s');
-                    $is_open = ($curr_time >= $canteen['opening_time'] && $curr_time <= $canteen['closing_time']);
+                    $open = $canteen['opening_time'];
+                    $close = $canteen['closing_time'];
+                    
+                    if ($open <= $close) {
+                        $is_open = ($curr_time >= $open && $curr_time <= $close);
+                    } else {
+                        $is_open = ($curr_time >= $open || $curr_time <= $close);
+                    }
+                    
                     $status_text = $is_open ? 'Open' : 'Closed';
                     $status_class = $is_open ? 'status-open' : 'status-closed';
-                    $open_fmt = date('h:i A', strtotime($canteen['opening_time']));
-                    $close_fmt = date('h:i A', strtotime($canteen['closing_time']));
+                    $open_fmt = date('h:i A', strtotime($open));
+                    $close_fmt = date('h:i A', strtotime($close));
                     $click_action = $is_open ? "loadMenu({$canteen['id']}, '" . addslashes($canteen['name']) . "')" : "showClosedModal(this)";
                 ?>
                 <div class="canteen-card <?= !$is_open ? 'closed-vendor' : '' ?>" 

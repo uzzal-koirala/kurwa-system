@@ -62,76 +62,229 @@ $items = $conn->query($items_query);
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Items Grid */
-        .items-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;
+        /* Categories Grid */
+        .category-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .item-card {
-            background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; transition: 0.3s; position: relative; display: flex; flex-direction: column;
+        .category-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .item-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
-
-        .item-img {
-            width: 100%; height: 180px; object-fit: cover; background: #eef2ff; position: relative;
+        .category-card:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12);
+            border-color: var(--rest-primary);
         }
 
-        .item-placeholder {
-            width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #eef2ff; color: var(--rest-secondary); font-size: 40px;
+        .category-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: #fff2ed;
+            color: var(--rest-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 16px;
+            transition: 0.3s;
         }
 
-        .item-category-badge {
-            position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; color: var(--rest-secondary-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .category-card:hover .category-icon-wrapper {
+            background: var(--rest-primary);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
         }
 
-        .item-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .item-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0 0 5px 0; }
-        .item-desc { font-size: 12px; color: var(--text-muted); margin: 0 0 15px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; }
-        .item-price { font-size: 18px; font-weight: 800; color: var(--rest-primary); margin-bottom: 15px; }
-
-        .item-actions {
-            display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 15px;
+        .category-info h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--rest-secondary-dark);
+            margin: 0 0 4px 0;
         }
 
-        /* Toggle Switch */
-        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #22c55e; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        .category-info p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+            font-weight: 500;
+        }
 
-        .action-btns { display: flex; gap: 8px; }
-        .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; transition: 0.2s; }
-        .edit-btn { background: #eef2ff; color: var(--rest-secondary); }
-        .edit-btn:hover { background: var(--rest-secondary); color: white; }
-        .delete-btn { background: #fee2e2; color: #ef4444; }
-        .delete-btn:hover { background: #ef4444; color: white; }
+        .category-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            opacity: 1; /* Always visible for better UX on touch */
+        }
 
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .modal.active { display: flex; animation: fadeInModal 0.3s ease; }
+        .category-header-banner {
+            background: linear-gradient(135deg, var(--rest-secondary-dark) 0%, #0f172a 100%);
+            border-radius: 28px;
+            padding: 35px 45px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .category-header-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--rest-primary) 0%, transparent 70%);
+            opacity: 0.15;
+            filter: blur(40px);
+            border-radius: 50%;
+        }
+
+        .category-banner-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .category-banner-content h2 {
+            color: white;
+            font-size: 26px;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .category-banner-content h2 i {
+            background: rgba(234, 88, 12, 0.15);
+            color: var(--rest-primary);
+            padding: 8px;
+            border-radius: 12px;
+            font-size: 22px;
+        }
+
+        .category-banner-content p {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 15px;
+            margin: 0;
+            max-width: 420px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .add-category-wrapper {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px;
+            border-radius: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-grow: 1;
+            max-width: 550px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }
         
-        .modal-content { background: white; border-radius: 20px; width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-        .modal-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
-        .modal-title { font-size: 18px; font-weight: 800; color: var(--rest-secondary-dark); margin: 0; }
-        .modal-close { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
-        .modal-body { padding: 25px; }
+        .add-category-wrapper:focus-within {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(234, 88, 12, 0.15);
+        }
 
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 12px 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-family: inherit; font-size: 14px; transition: 0.3s; background: #f8fafc; }
-        .form-control:focus { border-color: var(--rest-primary); background: white; outline: none; }
-        textarea.form-control { resize: vertical; min-height: 100px; }
-        
-        /* Category List */
-        .category-list { display: flex; flex-direction: column; gap: 10px; max-width: 600px; }
-        .category-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .category-name { font-weight: 700; font-size: 15px; color: var(--text-main); }
-        .cat-actions { display: flex; gap: 10px; }
+        .add-category-input-group {
+            position: relative;
+            flex-grow: 1;
+        }
 
-        @keyframes fadeInModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .add-category-input-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 20px;
+            transition: 0.3s;
+        }
+
+        .add-category-input-group .form-control {
+            padding-left: 55px;
+            height: 56px;
+            font-size: 15px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-weight: 500;
+            width: 100%;
+            outline: none;
+            box-shadow: none;
+        }
+
+        .add-category-input-group .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+        }
+
+        .add-category-input-group .form-control:focus ~ i {
+            color: var(--rest-primary);
+        }
+
+        .btn-create-cat {
+            background: linear-gradient(135deg, var(--rest-primary) 0%, #d04d08 100%);
+            color: white;
+            border: none;
+            height: 56px;
+            padding: 0 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-create-cat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(234, 88, 12, 0.4);
+            background: linear-gradient(135deg, #f97316 0%, var(--rest-primary) 100%);
+        }
+
+        @keyframes fadeInModal { 
+            from { opacity: 0; transform: scale(0.95); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
 
         @media (max-width: 1024px) {
             .main-content { padding: 20px; margin-left: 0; }
@@ -207,9 +360,21 @@ $items = $conn->query($items_query);
 
     <!-- Categories Tab -->
     <div class="tab-content" id="tab-categories">
-        <div style="margin-bottom: 25px; display: flex; gap: 15px; max-width: 600px;">
-            <input type="text" id="newCategoryName" class="form-control" placeholder="New Category Name (e.g., Starters, Main Course)">
-            <button class="btn-add" onclick="addCategory()" style="white-space: nowrap;">Add Category</button>
+        <div class="category-header-banner">
+            <div class="category-banner-content">
+                <h2><i class="ri-folder-open-fill"></i> Organize Your Menu</h2>
+                <p>Create distinct categories like "Starters", "Main Course", or "Beverages" to seamlessly organize your culinary offerings and enhance the customer ordering experience.</p>
+            </div>
+            
+            <div class="add-category-wrapper">
+                <div class="add-category-input-group">
+                    <input type="text" id="newCategoryName" class="form-control" placeholder="Type new category name...">
+                    <i class="ri-grid-fill"></i>
+                </div>
+                <button class="btn-create-cat" onclick="addCategory()">
+                    <i class="ri-add-line"></i> Create
+                </button>
+            </div>
         </div>
 
         <div class="category-list">
@@ -217,15 +382,33 @@ $items = $conn->query($items_query);
             $categories->data_seek(0);
             if($categories && $categories->num_rows > 0): 
                 while($c = $categories->fetch_assoc()): 
+                    // Fetch product count for this category
+                    $cat_id = $c['id'];
+                    $count_stmt = $conn->prepare("SELECT COUNT(*) as total FROM restaurant_menu WHERE category_id = ?");
+                    $count_stmt->bind_param("i", $cat_id);
+                    $count_stmt->execute();
+                    $items_count = $count_stmt->get_result()->fetch_assoc()['total'];
+                    $count_stmt->close();
             ?>
-            <div class="category-item">
-                <span class="category-name"><?= htmlspecialchars($c['name']) ?></span>
-                <div class="cat-actions">
-                    <button class="btn-icon delete-btn" onclick="deleteCategory(<?= $c['id'] ?>)"><i class="ri-delete-bin-line"></i></button>
+            <div class="category-card">
+                <div class="category-icon-wrapper">
+                    <i class="ri-restaurant-2-line"></i>
+                </div>
+                <div class="category-info">
+                    <h3><?= htmlspecialchars($c['name']) ?></h3>
+                    <p><?= $items_count ?> Products</p>
+                </div>
+                <div class="category-actions">
+                    <button class="btn-icon delete-btn" onclick="deleteCategory(<?= $c['id'] ?>)" title="Delete Category">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
                 </div>
             </div>
             <?php endwhile; else: ?>
-            <p style="color: var(--text-muted);">No categories added yet.</p>
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: 24px; border: 2px dashed #f1f5f9;">
+                <i class="ri-folder-open-line" style="font-size: 48px; color: #cbd5e1; margin-bottom: 15px; display: block;"></i>
+                <p style="color: var(--text-muted); font-weight: 500;">No categories added yet. Start by creating your first category above!</p>
+            </div>
             <?php endif; ?>
         </div>
     </div>
@@ -236,7 +419,10 @@ $items = $conn->query($items_query);
 <div class="modal" id="itemModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title" id="modalTitle">Add New Item</h2>
+            <h2 class="modal-title" id="modalTitle">
+                <i class="ri-restaurant-line"></i> 
+                <span>Add New Item</span>
+            </h2>
             <button class="modal-close" onclick="closeItemModal()"><i class="ri-close-line"></i></button>
         </div>
         <div class="modal-body">
@@ -244,19 +430,18 @@ $items = $conn->query($items_query);
                 <input type="hidden" name="action" id="formAction" value="add_item">
                 <input type="hidden" name="item_id" id="itemId" value="">
                 
-                <div class="form-group">
-                    <label>Item Name *</label>
-                    <input type="text" name="name" id="itemName" class="form-control" required placeholder="e.g., Margherita Pizza">
+                <div class="input-group">
+                    <input type="text" name="name" id="itemName" class="form-control" required placeholder="Product Name">
+                    <i class="ri-edit-line"></i>
                 </div>
                 
-                <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label>Price (Rs.) *</label>
-                        <input type="number" step="0.01" name="price" id="itemPrice" class="form-control" required placeholder="0.00">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="input-group">
+                        <input type="number" step="0.01" name="price" id="itemPrice" class="form-control" required placeholder="Price (Rs)">
+                        <i class="ri-price-tag-3-line"></i>
                     </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select name="category_id" id="itemCategory" class="form-control" required>
+                    <div class="input-group">
+                        <select name="category_id" id="itemCategory" class="form-control" required style="padding-left: 48px;">
                             <option value="">Select Category</option>
                             <?php 
                             $categories->data_seek(0);
@@ -265,27 +450,33 @@ $items = $conn->query($items_query);
                             <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
                             <?php endwhile; ?>
                         </select>
+                        <i class="ri-folder-line"></i>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea name="description" id="itemDesc" class="form-control" placeholder="A brief description of the food..."></textarea>
+                <div class="input-group">
+                    <textarea name="description" id="itemDesc" class="form-control" placeholder="Product Description (optional)"></textarea>
                 </div>
                 
-                <div class="form-group">
-                    <label>Food Image</label>
-                    <input type="file" name="image" id="itemImage" class="form-control" accept="image/*">
-                    <p style="font-size: 11px; margin-top: 5px; color: var(--text-muted);">Leave empty to keep existing image during edit.</p>
+                <div class="upload-zone" id="uploadZone">
+                    <i class="ri-image-add-line"></i>
+                    <p id="uploadText">Click or Drag image here to upload</p>
+                    <input type="file" name="image" id="itemImage" accept="image/*" onchange="previewImage(this)">
+                </div>
+                <div class="preview-container" id="imagePreviewContainer">
+                    <img id="imagePreview" src="" alt="Preview">
                 </div>
 
-                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" name="is_available" id="itemStatus" checked style="width: 18px; height: 18px;">
-                    <label style="margin: 0;">Currently Available in Stock</label>
+                <div class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #f1f5f9;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="is_available" id="itemStatus" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span style="font-size: 14px; font-weight: 600; color: #475569;">Available in Stock</span>
                 </div>
 
-                <button type="submit" class="btn-add" style="width: 100%; justify-content: center; padding: 14px; font-size: 16px; margin-top: 10px;">
-                    <i class="ri-save-line"></i> Save Item
+                <button type="submit" class="btn-submit">
+                    <i class="ri-save-line"></i> Save Product Details
                 </button>
             </form>
         </div>
@@ -303,11 +494,17 @@ $items = $conn->query($items_query);
 
     // Modal Operations
     const modal = document.getElementById('itemModal');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    const previewImageEl = document.getElementById('imagePreview');
+    const uploadText = document.getElementById('uploadText');
     
     function openItemModal(item = null) {
         document.getElementById('itemForm').reset();
+        previewContainer.style.display = 'none';
+        uploadText.innerText = 'Click or Drag image here to upload';
+        
         if (item) {
-            document.getElementById('modalTitle').innerText = 'Edit Item';
+            document.querySelector('#modalTitle span').innerText = 'Edit Product Details';
             document.getElementById('formAction').value = 'edit_item';
             document.getElementById('itemId').value = item.id;
             document.getElementById('itemName').value = item.name;
@@ -315,8 +512,14 @@ $items = $conn->query($items_query);
             document.getElementById('itemCategory').value = item.category_id;
             document.getElementById('itemDesc').value = item.description;
             document.getElementById('itemStatus').checked = item.is_available == 1;
+            
+            if (item.image_url) {
+                previewImageEl.src = '../../' + item.image_url;
+                previewContainer.style.display = 'block';
+                uploadText.innerText = 'Change product image';
+            }
         } else {
-            document.getElementById('modalTitle').innerText = 'Add New Item';
+            document.querySelector('#modalTitle span').innerText = 'Add New Product';
             document.getElementById('formAction').value = 'add_item';
             document.getElementById('itemId').value = '';
             document.getElementById('itemStatus').checked = true;
@@ -326,6 +529,18 @@ $items = $conn->query($items_query);
 
     function closeItemModal() {
         modal.classList.remove('active');
+    }
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImageEl.src = e.target.result;
+                previewContainer.style.display = 'block';
+                uploadText.innerText = 'Image selected: ' + input.files[0].name;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     // Close modal on outside click
